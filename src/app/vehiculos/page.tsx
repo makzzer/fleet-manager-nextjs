@@ -1,6 +1,7 @@
 import React from "react";
 import VehiculoCard from "../components/Cards/VehiculoCards";
 
+
 // Lista de vehículos
 const vehiculosEjemplo = [
   {
