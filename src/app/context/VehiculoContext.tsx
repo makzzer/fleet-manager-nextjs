@@ -1,5 +1,3 @@
-// context/proveedorContext.tsx
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -36,7 +34,6 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     const fetchVehiculos = async () => {
         try {
             const response = await axios.get(apiVehiculosBackend);
-
             const fetchedVehiculos = response.data.data.map((item: any) => ({
                 marca: item.marca,
                 modelo: item.modelo,

@@ -17,7 +17,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <body className="min-h-screen bg-gray-800 text-white flex flex-col">
         <Navbar/>
      
-      <main className="flex-grow container mx-auto p-4">
+      <main className="flex-grow  container mx-auto p-4">
         {children}
       </main>
 
