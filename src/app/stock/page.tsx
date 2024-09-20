@@ -13,7 +13,8 @@ import { useRouter } from 'next/navigation';
 const Stock = () => {
 
     const router = useRouter();
-    const [productosStockBajo, setProductosStockBajo] = useState(5)
+    //const [productosStockBajo, setProductosStockBajo] = useState(5)
+    const [productosStockBajo] = useState(5);
     const productosEjemplo = [
         {
             id: 1,
@@ -108,8 +109,8 @@ const Stock = () => {
 
             <FiltrosProducto onFilter={handleFilter} />
 
-             {productosEjemplo.length > 0 ? (
-                <ProductTable products={productosEjemplo}  />
+            {productosEjemplo.length > 0 ? (
+                <ProductTable products={productosEjemplo} />
             ) : (
                 <div className="flex flex-col items-center justify-center mt-8 p-6 bg-gray-700 border border-gray-600 rounded-lg">
                     <p className="text-lg font-semibold text-white">

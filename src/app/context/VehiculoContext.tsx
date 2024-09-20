@@ -12,6 +12,8 @@ interface Vehiculo {
     color?: string,
 }
 
+
+
 interface VehiculoContextProps {
     vehiculos: Vehiculo[];
     fetchVehiculo: () => void;
@@ -34,10 +36,10 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     const fetchVehiculos = async () => {
         try {
             const response = await axios.get(apiVehiculosBackend);
-            const fetchedVehiculos = response.data.data.map((item: any) => ({
+            const fetchedVehiculos = response.data.data.map((item: Vehiculo) => ({
                 marca: item.marca,
                 modelo: item.modelo,
-                año: item.anio,
+                año: item.año,
                 color: item.color,
             }));
 
