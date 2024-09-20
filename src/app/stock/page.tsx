@@ -109,7 +109,7 @@ const Stock = () => {
             <FiltrosProducto onFilter={handleFilter} />
 
              {productosEjemplo.length > 0 ? (
-                <ProductTable products={productosEjemplo} onProductDeleted={() => { }} />
+                <ProductTable products={productosEjemplo}  />
             ) : (
                 <div className="flex flex-col items-center justify-center mt-8 p-6 bg-gray-700 border border-gray-600 rounded-lg">
                     <p className="text-lg font-semibold text-white">

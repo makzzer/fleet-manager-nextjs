@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import Image from 'next/image';
 
 interface Product {
   id: number;
@@ -18,10 +19,9 @@ interface Product {
 
 interface ProductTableProps {
   products: Product[];
-  onProductDeleted: (productId: number) => void;
 }
 
-const ProductTable: React.FC<ProductTableProps> = ({ products, onProductDeleted }) => {
+const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
   const [showScrollIcon, setShowScrollIcon] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -66,7 +66,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onProductDeleted 
               <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {product.qr ? (
-                  <img src={product.qr} alt="QR Code" className="w-12 h-12 object-contain" />
+                  <Image src={product.qr} alt="QR Code" width={48} height={48} />
                 ) : (
                   'Sin QR'
                 )}
@@ -107,6 +107,26 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onProductDeleted 
           ))}
         </tbody>
       </table>
+
+      {/* Flecha con bounce solo en responsive */}
+      {showScrollIcon && (
+        <div className="absolute bottom-0 right-0 p-2 text-gray-500 md:hidden">
+          <svg
+            className="w-6 h-6 animate-bounce"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            ></path>
+          </svg>
+        </div>
+      )}
     </div>
   );
 };
