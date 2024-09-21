@@ -3,64 +3,78 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 
-const apiVehiculosBackend = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/proveedores?populate=*`;
+const apiVehiculosBackend = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
 
-interface Vehiculo {
-    marca: string,
-    modelo: string,
-    año: number,
-    color?: string,
+interface Coordinates {
+  latitude: number;
+  longitude: number;
 }
 
-
+interface Vehiculo {
+  id: string;
+  status: string;
+  model: string;
+  brand: string;
+  year: number;
+  coordinates: Coordinates;
+  date_created: string;
+  date_updated: string;
+}
 
 interface VehiculoContextProps {
-    vehiculos: Vehiculo[];
-    fetchVehiculo: () => void;
+  vehiculos: Vehiculo[];
+  fetchVehiculos: () => void;
 }
 
 const VehiculoContext = createContext<VehiculoContextProps | undefined>(undefined);
 
 export const useVehiculo = () => {
-    const context = useContext(VehiculoContext);
-    if (!context) {
-        throw new Error('useVehiculo debe ser usado dentro de VehiculoProvider');
-    }
-    return context;
+  const context = useContext(VehiculoContext);
+  if (!context) {
+    throw new Error('useVehiculo debe ser usado dentro de VehiculoProvider');
+  }
+  return context;
 };
 
 export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
-    const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
+  const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
 
+  const fetchVehiculos = async () => {
+    try {
+      const response = await axios.get(apiVehiculosBackend);
+      const fetchedVehiculosData = response.data;
 
-    const fetchVehiculos = async () => {
-        try {
-            const response = await axios.get(apiVehiculosBackend);
-            const fetchedVehiculos = response.data.data.map((item: Vehiculo) => ({
-                marca: item.marca,
-                modelo: item.modelo,
-                año: item.año,
-                color: item.color,
-            }));
+      if (Array.isArray(fetchedVehiculosData)) {
+        const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map((item: any) => ({
+          id: item.id,
+          status: item.status,
+          model: item.model,
+          brand: item.brand,
+          year: item.year,
+          coordinates: {
+            latitude: item.coordinates.latitude,
+            longitude: item.coordinates.longitude,
+          },
+          date_created: item.date_created,
+          date_updated: item.date_updated,
+        }));
 
-            setVehiculos(fetchedVehiculos);
+        setVehiculos(fetchedVehiculos);
+      } else {
+        console.error('Error: fetchedVehiculosData no es un array', fetchedVehiculosData);
+      }
+    } catch (error) {
+      console.error('Error fetching vehiculos:', error);
+    }
+  };
 
-        } catch (error) {
-            console.error('Error fetching vehiculos:', error);
-        }
-    };
+  useEffect(() => {
+    fetchVehiculos();
+  }, []);
 
-    useEffect(() => {
-        fetchVehiculos();
-    }, []);
-
-    return (
-        <VehiculoContext.Provider value={{
-            vehiculos, fetchVehiculo() {
-
-            },
-        }}>
-            {children}
-        </VehiculoContext.Provider >
-    );
+  return (
+    <VehiculoContext.Provider value={{ vehiculos, fetchVehiculos }}>
+      {children}
+    </VehiculoContext.Provider>
+  );
 };
