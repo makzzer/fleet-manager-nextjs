@@ -45,7 +45,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
       const fetchedVehiculosData = response.data;
 
       if (Array.isArray(fetchedVehiculosData)) {
-        const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map((item: any) => ({
+        const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map((item: Vehiculo) => ({
           id: item.id,
           status: item.status,
           model: item.model,
@@ -70,7 +70,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchVehiculos();
-  }, []);
+  }, [fetchVehiculos]);
 
   return (
     <VehiculoContext.Provider value={{ vehiculos, fetchVehiculos }}>
