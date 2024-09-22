@@ -1,7 +1,15 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function Home() {
-  return (
-    <div>
-      <h1>Hola soy el Home</h1>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirige automáticamente a /dashboard
+    router.push('/dashboard');
+  }, [router]);
+
+  return null; // No necesitas renderizar nada ya que estás redirigiendo
 }
