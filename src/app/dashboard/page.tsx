@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
@@ -22,7 +22,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchVehiculos();
-    }, []);
+    }, [fetchVehiculos]);
 
     const lineChartData = {
         labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
@@ -70,7 +70,6 @@ const Dashboard = () => {
                     <p className="text-gray-400 mb-6">Administra los vehículos de la flota.</p>
                     <Link href="/vehiculos" className="text-lg text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">
                         Ir a Vehículos
-
                     </Link>
                 </div>
             </div>

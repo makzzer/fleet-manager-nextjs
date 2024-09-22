@@ -9,7 +9,7 @@ const Vehiculos = () => {
 
   useEffect(() => {
     fetchVehiculos();
-  }, []);
+  }, [fetchVehiculos]);
 
   const handleAgregarVehiculo = () => {
     // Aquí abres un modal o alert para agregar vehículo
