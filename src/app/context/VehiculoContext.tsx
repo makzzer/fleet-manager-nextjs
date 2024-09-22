@@ -42,10 +42,12 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   const fetchVehiculos = useCallback(async () => {
     try {
       const response = await axios.get(apiVehiculosBackend);
-      const fetchedVehiculosData = response.data;  // Aquí accedes directamente a data
+
+      // Aquí accedemos directamente al array de vehículos, ya que no existe el campo `data`
+      const fetchedVehiculosData = response.data;
 
       if (Array.isArray(fetchedVehiculosData)) {
-        const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map((item: any) => ({
+        const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map((item: Vehiculo) => ({
           id: item.id,
           status: item.status,
           model: item.model,
@@ -61,7 +63,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
 
         setVehiculos(fetchedVehiculos);
       } else {
-        console.error('Error: La respuesta no es un array válido', fetchedVehiculosData);
+        console.error('Error: La respuesta de la API no es un array válido', fetchedVehiculosData);
       }
     } catch (error) {
       console.error('Error fetching vehiculos:', error);
