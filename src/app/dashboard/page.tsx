@@ -72,6 +72,13 @@ const Dashboard = () => {
                         Ir a Vehículos
                     </Link>
                 </div>
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 className="text-2xl font-semibold text-blue-400 mb-4">Gestión de Stock</h2>
+                    <p className="text-gray-400 mb-6">Administra el stock de repuestos.</p>
+                    <Link href="/stock" className="text-lg text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">
+                        Ir a Stock
+                    </Link>
+                </div>
             </div>
         </div>
     );
