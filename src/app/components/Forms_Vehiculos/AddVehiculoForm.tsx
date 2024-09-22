@@ -36,15 +36,14 @@ const AddVehiculoForm = () => {
           },
         }),
       });
-      const data = await response.json();
       if (response.ok) {
         alert("Vehículo agregado con éxito");
-        // Aquí podrías actualizar la lista de vehículos
       }
     } catch (error) {
       console.error("Error al agregar vehículo:", error);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="bg-gray-800 p-4 rounded-lg">
