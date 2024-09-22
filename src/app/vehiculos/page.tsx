@@ -50,10 +50,9 @@ const Vehiculos = () => {
           model: result.value.model,
           year: result.value.year,
           coordinates: {
-              "latitude": 0,
-              "longitude": 0
+              "latitude": -34.5347879,
+              "longitude":  -58.7133719
           },
-          status: "AVAILABLE"
         };
 
         createVehiculo(vehiculo);

@@ -8,7 +8,6 @@ interface Coordinates {
 
 interface Vehiculo {
   id: string;
-  status: string;
   model: string;
   brand: string;
   year: number;
@@ -74,9 +73,6 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         {vehiculo.brand} {vehiculo.model} - {vehiculo.year}
       </h2>
       <p className="text-lg text-gray-300">ID: {vehiculo.id}</p>
-      <p className={`text-lg mt-1 ${vehiculo.status === 'AVAILABLE' ? 'text-green-400' : 'text-red-400'}`}>
-        Estado: {vehiculo.status}
-      </p>
       <div className="mt-4">
         <h3 className="text-xl font-semibold text-gray-400">Coordenadas</h3>
         <p className="text-lg text-gray-300">

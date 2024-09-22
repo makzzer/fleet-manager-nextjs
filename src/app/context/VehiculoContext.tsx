@@ -12,7 +12,6 @@ interface Coordinates {
 
 interface Vehiculo {
   id: string;
-  status: string;
   model: string;
   brand: string;
   year: number;
@@ -50,7 +49,6 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
       if (Array.isArray(fetchedVehiculosData)) {
         const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map((item: Vehiculo) => ({
           id: item.id,
-          status: item.status,
           model: item.model,
           brand: item.brand,
           year: item.year,
