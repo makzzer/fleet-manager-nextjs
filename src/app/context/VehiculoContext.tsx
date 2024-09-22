@@ -42,27 +42,31 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   const fetchVehiculos = useCallback(async () => {
     try {
       const response = await axios.get(apiVehiculosBackend);
-      const fetchedVehiculosData = response.data.data;
+      const fetchedVehiculosData = response.data;  // Aquí accedes directamente a data
 
-      const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map((item: any) => ({
-        id: item.id,
-        status: item.attributes.status,
-        model: item.attributes.model,
-        brand: item.attributes.brand,
-        year: item.attributes.year,
-        coordinates: {
-          latitude: item.attributes.coordinates.latitude,
-          longitude: item.attributes.coordinates.longitude,
-        },
-        date_created: item.attributes.date_created,
-        date_updated: item.attributes.date_updated,
-      }));
+      if (Array.isArray(fetchedVehiculosData)) {
+        const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map((item: any) => ({
+          id: item.id,
+          status: item.status,
+          model: item.model,
+          brand: item.brand,
+          year: item.year,
+          coordinates: {
+            latitude: item.coordinates.latitude,
+            longitude: item.coordinates.longitude,
+          },
+          date_created: item.date_created,
+          date_updated: item.date_updated,
+        }));
 
-      setVehiculos(fetchedVehiculos);
+        setVehiculos(fetchedVehiculos);
+      } else {
+        console.error('Error: La respuesta no es un array válido', fetchedVehiculosData);
+      }
     } catch (error) {
       console.error('Error fetching vehiculos:', error);
     }
-  }, []); // El hook useCallback asegura que la referencia a fetchVehiculos no cambie en cada render.
+  }, []); 
 
   useEffect(() => {
     fetchVehiculos();
