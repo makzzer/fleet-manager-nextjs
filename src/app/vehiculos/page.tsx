@@ -5,7 +5,7 @@ import { useVehiculo } from "../context/VehiculoContext";
 import Swal from 'sweetalert2';
 
 const Vehiculos = () => {
-  const { vehiculos, fetchVehiculos } = useVehiculo();
+  const { vehiculos, fetchVehiculos, createVehiculo } = useVehiculo();
 
   useEffect(() => {
     fetchVehiculos();
@@ -16,6 +16,7 @@ const Vehiculos = () => {
     Swal.fire({
       title: 'Agregar Vehículo',
       html: `
+        <input type="text" id="id" class="swal2-input" placeholder="Patente">
         <input type="text" id="brand" class="swal2-input" placeholder="Marca">
         <input type="text" id="model" class="swal2-input" placeholder="Modelo">
         <input type="number" id="year" class="swal2-input" placeholder="Año">
@@ -23,23 +24,40 @@ const Vehiculos = () => {
       confirmButtonText: 'Agregar',
       focusConfirm: false,
       preConfirm: () => {
+        const idElement = document.getElementById('id') as HTMLInputElement;
         const brandElement = document.getElementById('brand') as HTMLInputElement;
         const modelElement = document.getElementById('model') as HTMLInputElement;
         const yearElement = document.getElementById('year') as HTMLInputElement;
 
+        const id = idElement?.value;
         const brand = brandElement?.value;
         const model = modelElement?.value;
         const year = yearElement?.value;
 
-        if (!brand || !model || !year) {
+        if (!id || !brand || !model || !year) {
           Swal.showValidationMessage('Completa todos los campos');
           return null;
         }
 
-        return { brand, model, year };
+        return { id, brand, model, year };
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
+
+        let vehiculo = {
+          id: result.value.id,
+          brand: result.value.brand,
+          model: result.value.model,
+          year: result.value.year,
+          coordinates: {
+              "latitude": 0,
+              "longitude": 0
+          },
+          status: "AVAILABLE"
+        };
+
+        createVehiculo(vehiculo);
+
         // Lógica para agregar vehículo (usando el context o API)
         console.log('Vehículo agregado:', result.value);
       }

@@ -24,6 +24,7 @@ interface Vehiculo {
 interface VehiculoContextProps {
   vehiculos: Vehiculo[];
   fetchVehiculos: () => void;
+  createVehiculo: (vehiculo: Omit<Vehiculo, 'date_created' | 'date_updated'>) => Promise<void>;
 }
 
 const VehiculoContext = createContext<VehiculoContextProps | undefined>(undefined);
@@ -68,14 +69,23 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Error fetching vehiculos:', error);
     }
-  }, []); 
+  }, []);
+  
+  const createVehiculo = async (vehiculo: Omit<Vehiculo, 'date_created' | 'date_updated'>) => {
+    try {
+      const response = await axios.post(apiVehiculosBackend, vehiculo);
+      fetchVehiculos();
+    } catch (error) {
+      console.error('Error creating vehiculo:', error);
+    }
+  };
 
   useEffect(() => {
     fetchVehiculos();
   }, [fetchVehiculos]);
 
   return (
-    <VehiculoContext.Provider value={{ vehiculos, fetchVehiculos }}>
+    <VehiculoContext.Provider value={{ vehiculos, fetchVehiculos, createVehiculo }}>
       {children}
     </VehiculoContext.Provider>
   );
