@@ -54,9 +54,7 @@ const Navbar = () => {
 
                 {/*Links en dispositivos grandes*/}
                 <ul className="hidden md:flex space-x-4">
-                    <li>
-                        <a href="/" className="hover:text-gray-400">Inicio</a>
-                    </li>
+
                     <li>
                         <a href="/dashboard" className="hover:text-gray-400">Dashboard</a>
                     </li>
@@ -97,15 +95,7 @@ const Navbar = () => {
                         </button>
                     </div>
                     <ul className="flex flex-col items-center space-y-4 mt-8">
-                        <li>
-                            <a
-                                href="/"
-                                className="hover:text-gray-400"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Inicio
-                            </a>
-                        </li>
+
                         <li>
                             <a
                                 href="/dashboard"
