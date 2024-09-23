@@ -4,6 +4,17 @@ import React from "react";
 import { useParams } from "next/navigation";
 import { useVehiculo } from "../../context/VehiculoContext";
 
+//importo aca tambien el hook dynamic para usar 
+//el componente del mapa
+import dynamic from "next/dynamic";
+
+//y ahora voy a cargar el componente MapsVehiculo
+//de forma dinamica tambien
+
+const MapVehiculo = dynamic(() => import("@/app/components/Maps/MapVehiculo"), {
+  ssr: false,
+});
+
 const VehiculoDinamicoPage = () => {
   const { id } = useParams();
   const { vehiculos } = useVehiculo();
@@ -60,9 +71,7 @@ const VehiculoDinamicoPage = () => {
       <div className="mt-10">
         <h3 className="text-lg font-medium mb-4 text-blue-200">Ubicación</h3>
         <div className="bg-gray-800 h-64 rounded-lg shadow-lg flex items-center justify-center">
-          <div className="text-center text-blue-400">
-            Mapa (Espacio para componente Leaflet)
-          </div>
+          <MapVehiculo coordinates={vehiculoData.coordinates}/>
         </div>
       </div>
 
