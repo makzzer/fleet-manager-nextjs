@@ -1,18 +1,41 @@
 'use client';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import VehiculoCard from "../components/Cards/VehiculoCards";
 import { useVehiculo } from "../context/VehiculoContext";
 import Swal from 'sweetalert2';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import SearchBar from "../../app/components/SearchBar/SearchBar";
 
 const Vehiculos = () => {
   const { vehiculos, fetchVehiculos, createVehiculo } = useVehiculo();
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
+  const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos); // Estado para filtrar vehículos
 
   useEffect(() => {
-    fetchVehiculos();
+    const loadVehiculos = async () => {
+      setIsLoading(true); // Activamos la carga
+      await fetchVehiculos();
+      setIsLoading(false); // Desactivamos la carga
+    };
+    loadVehiculos();
   }, [fetchVehiculos]);
 
+  useEffect(() => {
+    setFilteredVehiculos(vehiculos);
+  }, [vehiculos]);
+
+  const handleSearch = (query: string) => {
+    const filtered = vehiculos.filter(
+      vehiculo =>
+        vehiculo.brand.toLowerCase().includes(query.toLowerCase()) ||
+        vehiculo.model.toLowerCase().includes(query.toLowerCase()) ||
+        vehiculo.id.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredVehiculos(filtered);
+  };
+
   const handleAgregarVehiculo = () => {
-    // Aquí abres un modal o alert para agregar vehículo
     Swal.fire({
       title: 'Agregar Vehículo',
       html: `
@@ -43,40 +66,56 @@ const Vehiculos = () => {
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-
         const vehiculo = {
           id: result.value.id,
           brand: result.value.brand,
           model: result.value.model,
           year: result.value.year,
           coordinates: {
-              "latitude": -34.5347879,
-              "longitude":  -58.7133719
+            "latitude": -34.5347879,
+            "longitude":  -58.7133719
           },
         };
 
         createVehiculo(vehiculo);
-
-        // Lógica para agregar vehículo (usando el context o API)
-        console.log('Vehículo agregado:', result.value);
       }
     });
   };
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="md:text-4xl text-3xl font-bold text-blue-400">Gestión de Vehículos</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">Gestión de Vehículos</h1>
         <button
           onClick={handleAgregarVehiculo}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
           Agregar Vehículo
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {vehiculos.map((vehiculo, index) => (
-          <VehiculoCard key={index} vehiculo={vehiculo} />
-        ))}
+
+      {/* Componente de búsqueda */}
+      <SearchBar onSearch={handleSearch} />
+
+      {/* Renderizado de los skeleton loaders o las cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {isLoading ? (
+          Array(6).fill(0).map((_, index) => (
+            <div key={index} className="p-4 bg-gray-800 rounded-lg">
+              <Skeleton height={200} />
+              <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} />
+              <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} />
+              <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} />
+            </div>
+          ))
+        ) : (
+          filteredVehiculos.length > 0 ? (
+            filteredVehiculos.map((vehiculo, index) => (
+              <VehiculoCard key={index} vehiculo={vehiculo} />
+            ))
+          ) : (
+            <p className="text-center col-span-3 text-blue-300">No se encontraron vehículos</p>
+          )
+        )}
       </div>
     </div>
   );
