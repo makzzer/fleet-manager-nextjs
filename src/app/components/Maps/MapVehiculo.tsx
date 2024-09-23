@@ -1,11 +1,21 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-
-//Hay que hacer que leaflet solo se ejecute en el cliente y no en el servidor
-//por eso vamos a usar este nuevo hook que se llama dynamic
-
 import dynamic from 'next/dynamic';
+import L from 'leaflet';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import markerRetina from 'leaflet/dist/images/marker-icon-2x.png';
 
+// Configurar el ícono personalizado de Leaflet
+const customMarker = new L.Icon({
+  iconUrl: markerIcon.src,
+  shadowUrl: markerShadow.src,
+  iconRetinaUrl: markerRetina.src,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
 interface MapVehiculoProps {
   coordinates: {
@@ -14,7 +24,7 @@ interface MapVehiculoProps {
   }
 }
 
-const MapVehiculo = ({coordinates}:MapVehiculoProps) => {
+const MapVehiculo = ({ coordinates }: MapVehiculoProps) => {
   return (
     <MapContainer
       center={[coordinates.latitude, coordinates.longitude]}
@@ -26,13 +36,16 @@ const MapVehiculo = ({coordinates}:MapVehiculoProps) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={[coordinates.latitude, coordinates.longitude]}>
+      <Marker
+        position={[coordinates.latitude, coordinates.longitude]}
+        icon={customMarker} // Usar el ícono personalizado
+      >
         <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
+          Vehículo localizado aquí.
         </Popup>
       </Marker>
     </MapContainer>
   );
 };
 
-export default dynamic(()=> Promise.resolve(MapVehiculo), {ssr: false});
+export default dynamic(() => Promise.resolve(MapVehiculo), { ssr: false });
