@@ -71,7 +71,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   
   const createVehiculo = async (vehiculo: Omit<Vehiculo, 'date_created' | 'date_updated'>) => {
     try {
-      const response = await axios.post(apiVehiculosBackend, vehiculo);
+      await axios.post(apiVehiculosBackend, vehiculo);
       fetchVehiculos();
     } catch (error) {
       console.error('Error creating vehiculo:', error);

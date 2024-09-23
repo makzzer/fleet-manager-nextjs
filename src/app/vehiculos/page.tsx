@@ -44,7 +44,7 @@ const Vehiculos = () => {
     }).then((result) => {
       if (result.isConfirmed && result.value) {
 
-        let vehiculo = {
+        const vehiculo = {
           id: result.value.id,
           brand: result.value.brand,
           model: result.value.model,
