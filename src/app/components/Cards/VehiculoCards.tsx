@@ -1,5 +1,5 @@
 import React from "react";
-import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 interface Coordinates {
   latitude: number;
@@ -20,7 +20,17 @@ interface VehiculoCardProps {
   vehiculo: Vehiculo;
 }
 
+
+
 const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
+
+  
+  const router = useRouter();
+
+  const handleViewVehiculo = (id: string) => {
+    router.push(`/vehiculo/${id}`);
+};
+
 
   {/*
   const handleDelete = () => {
@@ -93,7 +103,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
       <div className="flex justify-center mt-6">
 
       <button
-          //onClick={}
+          onClick={()=>handleViewVehiculo(vehiculo.id)}
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
           Ver Detalles
         </button>

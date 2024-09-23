@@ -8,6 +8,8 @@ const OCPage = () => {
   const { id } = useParams();
   const { vehiculos } = useVehiculo();
 
+  console.log(vehiculos)
+
   const vehiculoData = vehiculos.find((vehiculo) => vehiculo.id === id);
 
   if (!vehiculoData) {
@@ -56,6 +58,16 @@ const OCPage = () => {
           <div className="text-center">Mapa</div>
         </div>
       </div>
+
+
+      <div className="flex justify-center mt-10">
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+          <a href="/vehiculos">Volver</a>
+        </button>
+      </div>
+
+
     </div>
   );
 };
