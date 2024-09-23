@@ -27,7 +27,9 @@ const Navbar = () => {
         <nav className="bg-gray-900 text-white p-4 fixed top-0 left-0 w-full z-50 navbar">
             <div className="container mx-auto flex justify-between items-center">
                 {/*Logo*/}
+                <a href='/'>
                 <div className="text-2xl font-bold">Fleet Manager</div>
+                </a>
 
                 {/*Hamburguesa para pantallas pequeñas*/}
                 <div className="md:hidden">
