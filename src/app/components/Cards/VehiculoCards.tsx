@@ -28,7 +28,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const router = useRouter();
 
   const handleViewVehiculo = (id: string) => {
-    router.push(`/vehiculo/${id}`);
+    router.push(`/vehiculos/${id}`);
 };
 
 
