@@ -66,7 +66,7 @@ const Vehiculos = () => {
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-blue-400">Gestión de Vehículos</h1>
+        <h1 className="text-4xl font-bold text-blue-400">Gestión de Vehículos</h1>
         <button
           onClick={handleAgregarVehiculo}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">

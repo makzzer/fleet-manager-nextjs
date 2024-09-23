@@ -22,6 +22,7 @@ interface VehiculoCardProps {
 
 const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
 
+  {/*
   const handleDelete = () => {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -44,6 +45,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
     });
   };
 
+  
   const handleEdit = () => {
     // Aquí va la lógica para editar el vehículo
     Swal.fire({
@@ -66,6 +68,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
       allowOutsideClick: () => !Swal.isLoading()
     });
   };
+  */}
 
   return (
     <div className="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-lg text-white hover:bg-gray-900 transition duration-300 ease-in-out">
@@ -86,17 +89,28 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         <p className="text-sm">Creado el: {new Date(vehiculo.date_created).toLocaleString()}</p>
         <p className="text-sm">Actualizado el: {new Date(vehiculo.date_updated).toLocaleString()}</p>
       </div>
-      <div className="flex justify-between mt-6">
-        <button
+
+      <div className="flex justify-center mt-6">
+
+      <button
+          //onClick={}
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+          Ver Detalles
+        </button>
+
+      {/*  <button
           onClick={handleEdit}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
           Editar
         </button>
+
         <button
           onClick={handleDelete}
           className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
           Eliminar
         </button>
+        */}
+
       </div>
     </div>
   );
