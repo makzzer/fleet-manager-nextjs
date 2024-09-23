@@ -9,14 +9,14 @@ import SearchBar from "../../app/components/SearchBar/SearchBar";
 
 const Vehiculos = () => {
   const { vehiculos, fetchVehiculos, createVehiculo } = useVehiculo();
-  const [isLoading, setIsLoading] = useState(true); // Estado de carga
-  const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos); // Estado para filtrar vehículos
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
+  const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos); // Estado para filtrar vehículos por la barra
 
   useEffect(() => {
     const loadVehiculos = async () => {
-      setIsLoading(true); // Activamos la carga
+      setIsLoading(true); // esta es la carga para el Skeleton placeholder
       await fetchVehiculos();
-      setIsLoading(false); // Desactivamos la carga
+      setIsLoading(false); // Esta es la carga para el skeleton placeholder
     };
     loadVehiculos();
   }, [fetchVehiculos]);
@@ -25,6 +25,7 @@ const Vehiculos = () => {
     setFilteredVehiculos(vehiculos);
   }, [vehiculos]);
 
+  //el query va a ser lo que voy escribiendo en el input de la bar
   const handleSearch = (query: string) => {
     const filtered = vehiculos.filter(
       vehiculo =>
@@ -73,11 +74,19 @@ const Vehiculos = () => {
           year: result.value.year,
           coordinates: {
             "latitude": -34.5347879,
-            "longitude":  -58.7133719
+            "longitude": -58.7133719
           },
         };
 
         createVehiculo(vehiculo);
+
+
+        Swal.fire({
+          title: "Vehículo agregado con éxito",
+          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
+          icon: "success"
+        });
+
       }
     });
   };
@@ -93,7 +102,7 @@ const Vehiculos = () => {
         </button>
       </div>
 
-      {/* Componente de búsqueda */}
+      {/* Aca llamo a mi componente de la barra de busqueda*/}
       <SearchBar onSearch={handleSearch} />
 
       {/* Renderizado de los skeleton loaders o las cards */}
@@ -101,10 +110,15 @@ const Vehiculos = () => {
         {isLoading ? (
           Array(6).fill(0).map((_, index) => (
             <div key={index} className="p-4 bg-gray-800 rounded-lg">
-              <Skeleton height={200} />
-              <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} />
-              <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} />
-              <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} />
+              <Skeleton height={200} baseColor="#2d3748"  // Fondo del placeholder (oscuro)
+                highlightColor="#4a5568" />
+
+              <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"  // Fondo del placeholder (oscuro)
+                highlightColor="#4a5568" />
+              <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"  // Fondo del placeholder (oscuro)
+                highlightColor="#4a5568" />
+              <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"  // Fondo del placeholder (oscuro)
+                highlightColor="#4a5568" />
             </div>
           ))
         ) : (
