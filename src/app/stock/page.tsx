@@ -75,7 +75,7 @@ const Stock = () => {
     return (
         <div className="p-6 bg-gray-700 min-h-screen rounded-lg text-white">
             <div className="flex justify-between items-center mb-6">
-            <h1 className="text-4xl font-bold text-blue-400">Gestión de Stock</h1>
+            <h1 className="md:text-4xl text-3xl font-bold text-blue-400">Gestión de Stock</h1>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 <StatCard title="Usuarios activos" value="2" icon={<FaUsers />} />
