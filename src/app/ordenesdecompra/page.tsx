@@ -161,7 +161,7 @@ const OrdenesDeCompra = () => {
   };
 
   const handleView = (id: number) => {
-    router.push(`/orden-compra/${id}`);
+    router.push(`/ordenesdecompra/${id}`);
   };
 
   const handleComplete = async (orden: any) => {
