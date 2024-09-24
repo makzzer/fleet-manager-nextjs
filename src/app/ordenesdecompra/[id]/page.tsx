@@ -160,8 +160,8 @@ React.useEffect(() => {
 
   if (!orden) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8 text-center">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
+      <div className="min-h-screen bg-gray-800 p-8 text-center">
+        <h1 className="text-3xl font-bold mb-6 text-blue-400">
           Orden de compra no encontrada
         </h1>
       </div>
@@ -169,8 +169,8 @@ React.useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 text-center">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
+    <div className="min-h-screen bg-gray-700 p-8 text-center">
+      <h1 className="text-3xl font-bold mb-6 text-blue-400">
         Detalles de la Orden de Compra
       </h1>
       <OCDetails orden={orden} />

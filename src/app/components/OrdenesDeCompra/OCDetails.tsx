@@ -59,33 +59,33 @@ const OCDetails: React.FC<OCDetailsProps> = ({ orden }) => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6">
+    <div className="bg-gray-800 shadow-md rounded-lg p-6 text-white">
       <div className="flex flex-col items-center">
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className="text-2xl font-bold text-blue-400">
           Orden de Compra #{orden.id}
         </h2>
-        <h3 className="text-xl font-bold text-gray-800">
+        <h3 className="text-xl font-bold text-blue-300 mt-2">
           Proveedor: {orden.proveedor.name}
         </h3>
-        <p className="text-gray-600 mt-2 text-center">
+        <p className="text-gray-400 mt-2 text-center">
           Email del proveedor: {orden.proveedor.mail}
         </p>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-400 mt-2">
           <strong>Fecha de Creación:</strong> {orden.fecha_de_creacion}
         </p>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-400 mt-2">
           <strong>Estado:</strong> {orden.estado}
         </p>
-        <p className="text-xl font-semibold text-gray-800 mt-4">
+        <p className="text-xl font-semibold text-blue-300 mt-4">
           Total: ${orden.total_compra}
         </p>
 
-        <h3 className="text-xl font-bold mt-6 text-gray-800">Productos</h3>
+        <h3 className="text-xl font-bold mt-6 text-blue-400">Productos</h3>
         <ul className="mt-4 space-y-2">
           {orden.productos.map((producto) => (
-            <li key={producto.id} className="text-gray-700">
-              <strong>{producto.name}</strong> - Cantidad: {producto.cantidad} -
-              Precio: ${producto.precio}
+            <li key={producto.id} className="text-gray-300">
+              <strong className="text-blue-300">{producto.name}</strong> -
+              Cantidad: {producto.cantidad} - Precio: ${producto.precio}
             </li>
           ))}
         </ul>
@@ -94,13 +94,13 @@ const OCDetails: React.FC<OCDetailsProps> = ({ orden }) => {
       <div className="flex justify-center mt-8 space-x-4">
         <Link
           href="/ordenesdecompra"
-          className="bg-blue-500 px-4 py-2 rounded shadow-md hover:bg-blue-600 text-white"
+          className="bg-blue-600 px-4 py-2 rounded shadow-md hover:bg-blue-700 text-white"
         >
           Volver
         </Link>
         <button
           onClick={handleEditClick}
-          className="bg-yellow-500 px-4 py-2 rounded shadow-md hover:bg-yellow-600 text-white"
+          className="bg-yellow-600 px-4 py-2 rounded shadow-md hover:bg-yellow-700 text-white"
         >
           Editar
         </button>
