@@ -164,7 +164,7 @@ const OrdenesDeCompra = () => {
     router.push(`/ordenesdecompra/${id}`);
   };
 
-  const handleComplete = async (orden: any) => {
+  const handleComplete = async (orden: OrdenDeCompra) => {
     setLoading(true);
 
     try {
