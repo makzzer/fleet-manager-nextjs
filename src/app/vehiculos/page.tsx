@@ -46,6 +46,8 @@ const Vehiculos = () => {
         <input type="number" id="year" class="swal2-input" placeholder="Año">
       `,
       confirmButtonText: 'Agregar',
+      cancelButtonText: 'Cancelar',
+      showCancelButton: true,
       focusConfirm: false,
       preConfirm: () => {
         const idElement = document.getElementById('id') as HTMLInputElement;
