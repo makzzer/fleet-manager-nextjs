@@ -215,7 +215,7 @@ const OrdenesDeCompra = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-700 p-8">
+    <div className="min-h-screen bg-gray-900 p-8">
       <h1 className="text-3xl font-bold mb-6 text-blue-400">
         Órdenes de compra
       </h1>

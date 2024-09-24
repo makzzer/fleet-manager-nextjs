@@ -45,7 +45,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
   }, []);
 
   return (
-    <div className="bg-gray-700 shadow-md rounded-lg p-6 overflow-x-auto relative" ref={tableRef}>
+    <div className="bg-gray-800 shadow-md rounded-lg p-6 overflow-x-auto relative" ref={tableRef}>
       <table className="min-w-full divide-y divide-gray-600 table-auto">
         <thead className="bg-gray-800">
           <tr className='rounded-lg'>

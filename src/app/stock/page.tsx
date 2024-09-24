@@ -140,7 +140,7 @@ const Stock = () => {
 
   // Dashboard Component
   return (
-    <div className="p-6 bg-gray-700 min-h-screen rounded-lg text-white">
+    <div className="p-6 bg-gray-900 min-h-screen rounded-lg text-white">
       <div className="flex justify-between items-center mb-6">
         <h1 className="md:text-4xl text-3xl font-bold text-blue-400">
           Gestión de Stock
@@ -187,7 +187,7 @@ const Stock = () => {
       {productosEjemplo.length > 0 ? (
         <ProductTable products={productosEjemplo} />
       ) : (
-        <div className="flex flex-col items-center justify-center mt-8 p-6 bg-gray-700 border border-gray-600 rounded-lg">
+        <div className="flex flex-col items-center justify-center mt-8 p-6 bg-gray-800 border border-gray-700 rounded-lg">
           <p className="text-lg font-semibold text-white">
             No hay productos disponibles
           </p>
