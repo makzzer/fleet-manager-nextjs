@@ -28,7 +28,7 @@ const Navbar = () => {
             <div className="container mx-auto flex justify-between items-center">
                 {/*Logo*/}
                 <a href='/'>
-                <div className="text-2xl font-bold">Fleet Manager</div>
+                    <div className="text-2xl font-bold">Fleet Manager</div>
                 </a>
 
                 {/*Hamburguesa para pantallas pequeñas*/}
@@ -56,7 +56,9 @@ const Navbar = () => {
 
                 {/*Links en dispositivos grandes*/}
                 <ul className="hidden md:flex space-x-4">
-
+                    <li>
+                        <a href="/proveedores" className="hover:text-gray-400">Proveedores</a>
+                    </li>
                     <li>
                         <a href="/dashboard" className="hover:text-gray-400">Dashboard</a>
                     </li>
@@ -70,9 +72,8 @@ const Navbar = () => {
 
                 {/*Menú desplegable en dispositivos pequeños*/}
                 <div
-                    className={`${
-                        isOpen ? 'block' : 'hidden'
-                    } fixed top-0 left-0 w-full h-full bg-gray-900 text-white transition-all duration-300 ease-in-out z-40`}
+                    className={`${isOpen ? 'block' : 'hidden'
+                        } fixed top-0 left-0 w-full h-full bg-gray-900 text-white transition-all duration-300 ease-in-out z-40`}
                 >
                     <div className="p-4 flex justify-between items-center">
                         <div className="text-2xl font-bold">Fleet Manager</div>
@@ -97,7 +98,15 @@ const Navbar = () => {
                         </button>
                     </div>
                     <ul className="flex flex-col items-center space-y-4 mt-8">
-
+                        <li>
+                            <a
+                                href="/proveedores"
+                                className="hover:text-gray-400"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Proveedores
+                            </a>
+                        </li>
                         <li>
                             <a
                                 href="/dashboard"
