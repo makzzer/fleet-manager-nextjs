@@ -61,7 +61,7 @@ const Navbar = () => {
                         <a href="/dashboard" className="hover:text-gray-400">Dashboard</a>
                     </li>
                     <li>
-                        <a href="/vehiculos" className="hover:text-gray-400">Vehiculos</a>
+                        <a href="/vehiculos" className="hover:text-gray-400">Vehículos</a>
                     </li>
                     <li>
                         <a href="/stock" className="hover:text-gray-400">Stock</a>
@@ -113,7 +113,7 @@ const Navbar = () => {
                                 className="hover:text-gray-400"
                                 onClick={() => setIsOpen(false)}
                             >
-                                Vehiculos
+                                Vehículos
                             </a>
                         </li>
                         <li>
