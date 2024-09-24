@@ -66,6 +66,9 @@ const Navbar = () => {
                     <li>
                         <a href="/stock" className="hover:text-gray-400">Stock</a>
                     </li>
+                    <li>
+                        <a href="/login" className="hover:text-gray-400">Ingresar</a>
+                    </li>
                 </ul>
 
                 {/*Menú desplegable en dispositivos pequeños*/}
@@ -123,6 +126,15 @@ const Navbar = () => {
                                 onClick={() => setIsOpen(false)}
                             >
                                 Stock
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="/login"
+                                className="hover:text-gray-400"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Ingresar
                             </a>
                         </li>
                     </ul>
