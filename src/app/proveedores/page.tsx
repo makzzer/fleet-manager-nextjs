@@ -1,66 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import Skeleton from "react-loading-skeleton";
+// import Skeleton from "react-loading-skeleton";
 
 // import Link from "next/link";
 // import { FaUserTie, FaEnvelope, FaPhone, FaEnvelopeSquare } from 'react-icons/fa';
 import Swal from "sweetalert2";
-
-// arriba del return:
-// const handleAgregarProveedor = () => {
-//     Swal.fire({
-//       title: 'Agregar Vehículo',
-//       html: `
-//         <input type="text" id="id" class="swal2-input" placeholder="Patente">
-//         <input type="text" id="brand" class="swal2-input" placeholder="Marca">
-//         <input type="text" id="model" class="swal2-input" placeholder="Modelo">
-//         <input type="number" id="year" class="swal2-input" placeholder="Año">
-//       `,
-//       confirmButtonText: 'Agregar',
-//       focusConfirm: false,
-//       preConfirm: () => {
-//         const idElement = document.getElementById('id') as HTMLInputElement;
-//         const brandElement = document.getElementById('brand') as HTMLInputElement;
-//         const modelElement = document.getElementById('model') as HTMLInputElement;
-//         const yearElement = document.getElementById('year') as HTMLInputElement;
-
-//         const id = idElement?.value;
-//         const brand = brandElement?.value;
-//         const model = modelElement?.value;
-//         const year = yearElement?.value;
-
-//         if (!id || !brand || !model || !year) {
-//           Swal.showValidationMessage('Completa todos los campos');
-//           return null;
-//         }
-
-//         return { id, brand, model, year };
-//       }
-//     }).then((result) => {
-//       if (result.isConfirmed && result.value) {
-//         const vehiculo = {
-//           id: result.value.id,
-//           brand: result.value.brand,
-//           model: result.value.model,
-//           year: result.value.year,
-//           coordinates: {
-//             "latitude": -34.5347879,
-//             "longitude": -58.7133719
-//           },
-//         };
-
-//         createProveedor(proveedor);
-
-//         Swal.fire({
-//           title: "Vehículo agregado con éxito",
-//           text: "El nuevo vehículo ha sido creado y registrado correctamente.",
-//           icon: "success"
-//         });
-
-//       }
-//     });
-//   };
 
 const Proveedores = () => {
 
