@@ -78,6 +78,8 @@ const Stock = () => {
             <input type="text" id="telefono" class="swal2-input" placeholder="Teléfono">
           `,
             confirmButtonText: 'Agregar',
+            cancelButtonText: 'Cancelar',
+            showCancelButton: true,
             focusConfirm: false,
             preConfirm: () => {
                 const idElement = document.getElementById('id') as HTMLInputElement;
