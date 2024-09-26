@@ -1,14 +1,15 @@
 // src/app/providers.tsx
-import React from 'react';
-import { VehiculoProvider } from './context/VehiculoContext';
-import { ProveedorProvider } from './context/ProveedorContext';
+import React from "react";
+import { VehiculoProvider } from "./context/VehiculoContext";
+import { ProveedorProvider } from "./context/ProveedorContext";
+import { ProductoProvider } from "./context/ProductoContext";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
-    return (
-        <ProveedorProvider>
-            <VehiculoProvider>
-                {children}
-            </VehiculoProvider>
-        </ProveedorProvider>
-    );
+  return (
+    <ProductoProvider>
+      <ProveedorProvider>
+        <VehiculoProvider>{children}</VehiculoProvider>
+      </ProveedorProvider>
+    </ProductoProvider>
+  );
 };
