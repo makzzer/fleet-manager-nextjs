@@ -1,6 +1,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { useVehiculo, VehiculoProvider } from "@/app/context/VehiculoContext";
 
 interface Coordinates {
   latitude: number;
@@ -23,6 +24,7 @@ interface VehiculoCardProps {
 
 const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const router = useRouter();
+  const { modifyVehiculo } = useVehiculo();
 
   const handleViewVehiculo = (id: string) => {
     router.push(`/vehiculos/${id}`);
@@ -84,7 +86,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
       confirmButtonText: "Guardar",
       showLoaderOnConfirm: true,
 
-      //Resetear el mensaje de error al reescribir en el input de "año"
+      //Resetear el mensaje de error al reescribir en cualquier input
       didOpen: () => {
         const modelInput = document.getElementById(
           "edit-vehicle-model"
@@ -120,6 +122,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
             .value
         );
 
+        //Validar que haya modificado algún campo
         if (
           vehiculo.model === model &&
           vehiculo.brand === brand &&
@@ -129,11 +132,13 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           return false;
         }
 
+        //Validar de que el campo del modelo y la marca no estén vacios
         if (!model || !brand) {
           Swal.showValidationMessage("Complete todos los campos");
           return false;
         }
 
+        //Validar de que el año ingresado esté entre 1900 y el año actual.
         if (year < 1900 || year > new Date().getFullYear()) {
           Swal.showValidationMessage(
             `El año debe estar entre 1900 y ${new Date().getFullYear()}`
@@ -141,6 +146,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           return false;
         }
 
+        //Retorna los datos modificados del vehiculo si todo está bien
         return {
           ...vehiculo,
           model,
@@ -152,16 +158,15 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        /*
-        const { model, brand, year } = result.value
+        const { id, model, brand, year } = result.value;
         const vehiculoEdit = {
+          id,
           model,
           brand,
           year,
-        }
+        };
 
-        modifyVehiculo(vehiculoEdit)
-        */
+        modifyVehiculo(vehiculoEdit);
 
         Swal.fire({
           title: "Actualizado!",
