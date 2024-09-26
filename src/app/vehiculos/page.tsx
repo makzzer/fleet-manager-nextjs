@@ -35,12 +35,12 @@ const Vehiculos = () => {
     );
     setFilteredVehiculos(filtered);
   };
-
+ 
   const handleAgregarVehiculo = () => {
     Swal.fire({
       title: 'Agregar Vehículo',
       html: `
-        <input type="text" id="id" class="swal2-input" placeholder="Patente">
+        <input type="text" id="id" class="swal2-input" placeholder="Patente" oninput="this.value = formatPatente(this.value)">
         <input type="text" id="brand" class="swal2-input" placeholder="Marca">
         <input type="text" id="model" class="swal2-input" placeholder="Modelo">
         <input type="number" id="year" class="swal2-input" placeholder="Año">
@@ -60,8 +60,19 @@ const Vehiculos = () => {
         const model = modelElement?.value;
         const year = yearElement?.value;
 
+         // Validación de la patente
+        const validarPatente = (patente: string) => {
+          const regex = /^(?:[A-Z]{3}-\d{3}|[A-Z]{2}-\d{3}-[A-Z]{2})$/;
+        return regex.test(patente);
+        }
+
         if (!id || !brand || !model || !year) {
           Swal.showValidationMessage('Completa todos los campos');
+          return null;
+        }
+
+        if (!validarPatente(id)) {
+          Swal.showValidationMessage('La patente no es válida');
           return null;
         }
 
@@ -81,7 +92,6 @@ const Vehiculos = () => {
         };
 
         createVehiculo(vehiculo);
-
 
         Swal.fire({
           title: "Vehículo agregado con éxito",

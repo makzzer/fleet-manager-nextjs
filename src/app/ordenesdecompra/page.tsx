@@ -7,6 +7,7 @@ import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
+import OrdenCompraForm from './OrdenCompraForm';
 
 const apiActualizarOrden = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras`;
 
@@ -294,6 +295,7 @@ const OrdenesDeCompra = () => {
           </tbody>
         </table>
       </div>
+      <OrdenCompraForm onSubmit={(data) => console.log('Datos del formulario', data)} />
     </div>
   );
 };
