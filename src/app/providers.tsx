@@ -8,7 +8,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <ProductoProvider>
       <ProveedorProvider>
-        <VehiculoProvider>{children}</VehiculoProvider>
+        <VehiculoProvider>
+          {children}
+        </VehiculoProvider>
       </ProveedorProvider>
     </ProductoProvider>
   );

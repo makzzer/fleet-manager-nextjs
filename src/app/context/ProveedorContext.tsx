@@ -34,21 +34,21 @@ export const useProveedor = () => {
 const proveedoresLocales: Proveedor[] = [
   {
     id: "1",
-    name: "Productor 1",
+    name: "Proveedor 1",
     cuit: "2022",
     direccion: 'calle 1',
     telefono: '100',
   },
   {
     id: "2",
-    name: "Productor 2",
+    name: "Proveedor 2",
     cuit: "2023",
     direccion: "calle 2",
     telefono: "200",
   },
   {
     id: "3",
-    name: "Productor 3",
+    name: "Proveedor 3",
     cuit: "2024",
     direccion: "calle 3",
     telefono: "300",

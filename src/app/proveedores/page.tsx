@@ -10,73 +10,121 @@ import Swal from "sweetalert2";
 import ProveedorCard from "../components/Cards/ProveedorCards";
 import { useProveedor } from "../context/ProveedorContext";
 
+interface Proveedor {
+  id: string;
+  name: string;
+  cuit: string;
+  direccion: string;
+  telefono: string;
+}
+
 const Proveedores = () => {
   const { proveedores, fetchProveedores, createProveedor } = useProveedor();
   const [isLoading, setIsLoading] = useState(true);
-const [filteredProveedores, setFilteredProveedores] = useState(proveedores);
+  const [filteredProveedores, setFilteredProveedores] = useState(proveedores);
 
-useEffect(() => {
-  const loadProveedores = async () => {
-    setIsLoading(true);
-    await fetchProveedores();
-    setIsLoading(false);
-  };
-  loadProveedores();
-}, [fetchProveedores]);
+  const [proveedoresLocales, setLocalProveedores] = useState(proveedores);
 
-useEffect(() => {
-  setFilteredProveedores(proveedores);
-}, [proveedores]);
+  const [searchTerm, setSearchTerm] = useState(''); // Estado para el filtro de búsqueda
 
-//el query va a ser lo que voy escribiendo en el input de la bar
-const handleSearch = (query: string) => {
-  const filtered = proveedores.filter(
-    proveedor =>
-      proveedor.name.toLowerCase().includes(query.toLowerCase()) ||
-      proveedor.cuit.toLowerCase().includes(query.toLowerCase()) ||
-      proveedor.direccion.toLowerCase().includes(query.toLowerCase()) ||
-      proveedor.telefono.toLowerCase().includes(query.toLowerCase())
-  );
-  setFilteredProveedores(filtered);
-};
+  useEffect(() => {
+    const loadProveedores = async () => {
+      setIsLoading(true);
+      await fetchProveedores();
+      setIsLoading(false);
+    };
+    loadProveedores();
+  }, [fetchProveedores]);
 
-const handleAgregarProveedor = () => {
-  Swal.fire({
-    title: "Agregar Proveedor",
-    html: `
+  useEffect(() => {
+    setFilteredProveedores(proveedores);
+  }, [proveedores]);
+
+  // Filtra los productos según el término de búsqueda
+  useEffect(() => {
+    if (searchTerm === '') {
+      setLocalProveedores(proveedores);
+    } else {
+      setLocalProveedores(
+        proveedores.filter((proveedor) =>
+          proveedor.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+  }, [searchTerm, proveedores]);
+
+  //el query va a ser lo que voy escribiendo en el input de la bar
+  // const handleSearch = (query: string) => {
+  //   const filtered = proveedores.filter(
+  //     proveedor =>
+  //       proveedor.name.toLowerCase().includes(query.toLowerCase()) ||
+  //       proveedor.cuit.toLowerCase().includes(query.toLowerCase()) ||
+  //       proveedor.direccion.toLowerCase().includes(query.toLowerCase()) ||
+  //       proveedor.telefono.toLowerCase().includes(query.toLowerCase())
+  //   );
+  //   setFilteredProveedores(filtered);
+  // };
+
+  // futuro buscador local
+  // const handleFilter = (filters: { searchTerm: string; selectedProveedor: string }) => {
+  //   const { searchTerm } = filters;
+  //   if (searchTerm === '') {
+  //     setLocalProveedores(proveedores); // Muestra todos los productos si no hay búsqueda
+  //   } else {
+  //     setLocalProveedores(
+  //       proveedores.filter((proveedor) =>
+  //         // solo filtro por nombre.
+  //         proveedor.name.toLowerCase().includes(searchTerm.toLowerCase())
+  //       )
+  //     );
+  //   }
+  // };
+
+  const handleAgregarProveedor = () => {
+    Swal.fire({
+      title: "Agregar Proveedor",
+      html: `
+      <input type="text" id="id" class="swal2-input" placeholder="ID">
       <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
       <input type="text" id="cuit" class="swal2-input" placeholder="CUIT">
       <input type="text" id="direccion" class="swal2-input" placeholder="Dirección">
       <input type="text" id="telefono" class="swal2-input" placeholder="Teléfono">
     `,
-    confirmButtonText: "Agregar",
-    showCancelButton: true,
-    preConfirm: () => {
-      const nombre = document.getElementById('nombre') as HTMLInputElement;
-      const cuit = document.getElementById('cuit') as HTMLInputElement;
-      const direccion = document.getElementById('direccion') as HTMLInputElement;
-      const telefono = document.getElementById('telefono') as HTMLInputElement;
+      confirmButtonText: "Agregar",
+      showCancelButton: true,
+      preConfirm: () => {
+        const id = document.getElementById('ID') as HTMLInputElement;
+        const nombre = document.getElementById('nombre') as HTMLInputElement;
+        const cuit = document.getElementById('cuit') as HTMLInputElement;
+        const direccion = document.getElementById('direccion') as HTMLInputElement;
+        const telefono = document.getElementById('telefono') as HTMLInputElement;
 
-      if (!nombre || !cuit || !direccion || !telefono) {
-        Swal.showValidationMessage("Completa todos los campos");
-        return null;
+        if (!nombre || !cuit || !direccion || !telefono) {
+          Swal.showValidationMessage("Completa todos los campos");
+          return null;
+        }
+
+        return { id, nombre, cuit, direccion, telefono };
       }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const proveedor: Proveedor = {
+          id: result.value.id,
+          name: result.value.name,
+          cuit: result.value.cuit,
+          direccion: result.value.direccion,
+          telefono: result.value.telefono,
+        };
 
-      return { nombre, cuit, direccion, telefono };
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const proveedor = result.value;
+        createProveedor(proveedor);
 
-      createProveedor(proveedor);
-
-      Swal.fire({
-        title: "Proveedor agregado con éxito",
-        icon: "success",
-      });
-    }
-  });
-};
+        Swal.fire({
+          title: "Proveedor agregado con éxito",
+          icon: "success",
+        });
+      }
+    });
+  };
 
 
   return (
@@ -122,26 +170,33 @@ const handleAgregarProveedor = () => {
 
       {/* Renderizado de los skeleton loaders o las cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-  {isLoading ? (
-    Array(6).fill(0).map((_, index) => (
-      <div key={index} className="p-4 bg-gray-800 rounded-lg">
-        <Skeleton height={200} baseColor="#2d3748" highlightColor="#4a5568" />
-        <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
-        <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
-        <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
+        {isLoading ? (
+          Array(6).fill(0).map((_, index) => (
+            <div key={index} className="p-4 bg-gray-800 rounded-lg">
+              <Skeleton height={200} baseColor="#2d3748" highlightColor="#4a5568" />
+              <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
+              <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
+              <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
+            </div>
+          ))
+        ) : proveedoresLocales.length > 0 ? (
+          proveedoresLocales.map((proveedor, index) => (
+            <ProveedorCard key={index} proveedor={proveedor} />
+          ))
+        ) : (
+          <p className="text-center col-span-3 text-blue-300">No se encontraron proveedores</p>
+        )}
       </div>
-    ))
-  ) : filteredProveedores.length > 0 ? (
-    filteredProveedores.map((proveedor, index) => (
-      <ProveedorCard key={index} proveedor={proveedor} />
-    ))
-  ) : (
-    <p className="text-center col-span-3 text-blue-300">No se encontraron proveedores</p>
-  )}
-</div>
 
     </div>
   );
 };
 
 export default Proveedores;
+
+// reemplazo de proveedores locales.
+// : filteredProveedores.length > 0 ? (
+//   filteredProveedores.map((proveedor, index) => (
+//     <ProveedorCard key={index} proveedor={proveedor} />
+//   ))
+// )
