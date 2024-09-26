@@ -75,9 +75,12 @@ const ProveedorCard = ({ proveedor }: ProveedorCardProps) => {
   return (
     <div className="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-lg text-white hover:bg-gray-900 transition duration-300 ease-in-out">
       <h2 className="text-2xl font-bold mb-3">
-        {proveedor.name} {proveedor.cuit} - {proveedor.direccion} {proveedor.telefono}
+        {proveedor.name} 
       </h2>
       <p className="text-lg text-gray-300">ID: {proveedor.id}</p>
+      <p className="text-lg text-gray-300">CUIT: {proveedor.cuit}</p>
+      <p className="text-lg text-gray-300">Direccion: {proveedor.direccion}</p>
+      <p className="text-lg text-gray-300">Telefono: {proveedor.telefono}</p>
 
       <div className="flex justify-center mt-6">
 
