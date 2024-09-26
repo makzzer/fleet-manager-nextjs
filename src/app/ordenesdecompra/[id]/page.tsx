@@ -5,8 +5,8 @@ import { useParams } from "next/navigation";
 
 //import { useOrdenesDeCompra } from '@/app/context/ordenesCompraContext';
 
-import OCDetails from "@/app/components/OrdenesDeCompra/OCDetails";
-import OCDetails2 from "@/app/components/OrdenesDeCompra/OCDetails2";
+// import OCDetails from "@/app/components/OrdenesDeCompra/OCDetails";
+import OCDetailsV2 from "@/app/components/OrdenesDeCompra/OCDetailsV2";
 
 interface Proveedor {
   id: number;
@@ -174,7 +174,7 @@ React.useEffect(() => {
       <h1 className="text-3xl font-bold mb-6 text-blue-400">
         Detalles de la Orden de Compra
       </h1>
-      <OCDetails orden={orden} />
+      <OCDetailsV2 orden={orden} />
     </div>
   );
 };
