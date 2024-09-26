@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 //import { useOrdenesDeCompra } from '@/app/context/ordenesCompraContext';
 
 import OCDetails from "@/app/components/OrdenesDeCompra/OCDetails";
+import OCDetails2 from "@/app/components/OrdenesDeCompra/OCDetails2";
 
 interface Proveedor {
   id: number;
@@ -160,7 +161,7 @@ React.useEffect(() => {
 
   if (!orden) {
     return (
-      <div className="min-h-screen bg-gray-800 p-8 text-center">
+      <div className="min-h-screen bg-gray-900 p-8 text-center">
         <h1 className="text-3xl font-bold mb-6 text-blue-400">
           Orden de compra no encontrada
         </h1>
@@ -169,7 +170,7 @@ React.useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-700 p-8 text-center">
+    <div className="min-h-screen bg-gray-900 p-8 text-center">
       <h1 className="text-3xl font-bold mb-6 text-blue-400">
         Detalles de la Orden de Compra
       </h1>
