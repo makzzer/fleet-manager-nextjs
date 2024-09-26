@@ -84,13 +84,20 @@ const Stock = () => {
   //   setFilteredProductos(filtered);
   // };
 
-  const handleFilter = (filters: {
-    searchTerm: string;
-    selectedProveedor: string;
-  }) => {
-    // Por ahora, simplemente mostramos los productos de ejemplo sin filtrado
-    console.log(filters);
+  const handleFilter = (filters: { searchTerm: string; selectedProveedor: string }) => {
+    const { searchTerm } = filters;
+    if (searchTerm === '') {
+      setLocalProducts(productos); // Muestra todos los productos si no hay búsqueda
+    } else {
+      setLocalProducts(
+        productos.filter((producto) =>
+          // solo filtro por nombre.
+          producto.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
   };
+  
 
   const handleScanQRClick = () => {
     Swal.fire({
@@ -216,34 +223,7 @@ const Stock = () => {
         </div>
       </div>
 
-      {/* Campo de búsqueda */}
-      <div className="mb-6">
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Buscar productos..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '20px', // Bordes redondeados
-              backgroundColor: 'white',
-              boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.2)', // Sombra para darle efecto de elevación
-            },
-            '& .MuiOutlinedInput-input': {
-              padding: '10px 14px',
-            },
-          }}
-        />
-      </div>
-
+      {/* Barras de busqueda */}
       <FiltrosProducto onFilter={handleFilter} />
 
       {localProducts && localProducts.length > 0 ? (
