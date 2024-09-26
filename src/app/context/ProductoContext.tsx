@@ -54,6 +54,13 @@ const productosPrueba: Producto[] = [
     category: "Categoría 2",
     purchaseDate: "2023-09-15",
   },
+  {
+    id: "3",
+    name: "Producto C",
+    brand: "Marca Y",
+    category: "Categoría 3",
+    purchaseDate: "2024-9-12",
+  }
 ];
 
 export const ProductoProvider = ({ children }: { children: ReactNode }) => {

@@ -15,6 +15,10 @@ import FiltrosProducto from "../components/Stock/FiltrosProducto";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useProducto } from "../context/ProductoContext";
+import SearchBar from "../components/SearchBar/SearchBar";
+
+import { TextField, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface Producto {
   id: string;
@@ -26,43 +30,14 @@ interface Producto {
 
 const Stock = () => {
   const router = useRouter();
-  //const [productosStockBajo, setProductosStockBajo] = useState(5)
   const { productos, fetchProductos, createProducto } = useProducto();
   const [productosStockBajo] = useState(5);
   //  const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
-  const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar vehículos por la barra
+  const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
 
-  /*
-  const productosEjemplo = [
-    {
-      id: 1,
-      name: "Producto A",
-      price: 100,
-      stock: 5,
-      qr: null,
-      activo: true,
-      hot: false,
-    },
-    {
-      id: 2,
-      name: "Producto B",
-      price: 150,
-      stock: 2,
-      qr: null,
-      activo: true,
-      hot: true,
-    },
-    {
-      id: 3,
-      name: "Producto C",
-      price: 200,
-      stock: 0,
-      qr: null,
-      activo: false,
-      hot: false,
-    },
-  ];
-  */
+  const [localProducts, setLocalProducts] = useState(productos);
+
+  const [searchTerm, setSearchTerm] = useState(''); // Estado para el filtro de búsqueda
 
   useEffect(() => {
     const loadProductos = () => {
@@ -84,19 +59,30 @@ const Stock = () => {
     setFilteredProductos(productos);
   }, [productos]);
 
-  /*
-  //el query va a ser lo que voy escribiendo en el input de la bar
-  const handleSearch = (query: string) => {
-    const filtered = productos.filter(
-      (producto) =>
-        producto.name.toLowerCase().includes(query.toLowerCase()) ||
-        producto.brand.toLowerCase().includes(query.toLowerCase()) ||
-        producto.category.toLowerCase().includes(query.toLowerCase()) ||
-        producto.id.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredProductos(filtered);
-  };
-  */
+  // Filtra los productos según el término de búsqueda
+  useEffect(() => {
+    if (searchTerm === '') {
+      setLocalProducts(productos);
+    } else {
+      setLocalProducts(
+        productos.filter((producto) =>
+          producto.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+  }, [searchTerm, productos]);
+
+  // // el query va a ser lo que voy escribiendo en el input de la bar
+  // const handleSearch = (query: string) => {
+  //   const filtered = productos.filter(
+  //     (producto) =>
+  //       producto.name.toLowerCase().includes(query.toLowerCase()) ||
+  //       producto.brand.toLowerCase().includes(query.toLowerCase()) ||
+  //       producto.category.toLowerCase().includes(query.toLowerCase()) ||
+  //       producto.id.toLowerCase().includes(query.toLowerCase())
+  //   );
+  //   setFilteredProductos(filtered);
+  // };
 
   const handleFilter = (filters: {
     searchTerm: string;
@@ -186,72 +172,6 @@ const Stock = () => {
     });
   };
 
-  /*
-  const handleAgregarProducto = () => {
-    Swal.fire({
-      title: "Agregar Producto",
-      html: `
-            <input type="text" id="id" class="swal2-input" placeholder="Id">
-            <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
-            <input type="text" id="cuit" class="swal2-input" placeholder="CUIT">
-            <input type="text" id="direccion" class="swal2-input" placeholder="Dirección">
-            <input type="text" id="telefono" class="swal2-input" placeholder="Teléfono">
-          `,
-      confirmButtonText: "Agregar",
-      cancelButtonText: "Cancelar",
-      showCancelButton: true,
-      focusConfirm: false,
-      preConfirm: () => {
-        const idElement = document.getElementById("id") as HTMLInputElement;
-        const nombreElement = document.getElementById(
-          "nombre"
-        ) as HTMLInputElement;
-        const cuitElement = document.getElementById("cuit") as HTMLInputElement;
-        const direccionElement = document.getElementById(
-          "direccion"
-        ) as HTMLInputElement;
-        const telefonoElement = document.getElementById(
-          "telefono"
-        ) as HTMLInputElement;
-
-        const id = idElement?.value;
-        const nombre = nombreElement?.value;
-        const cuit = cuitElement?.value;
-        const direccion = direccionElement?.value;
-        const telefono = telefonoElement?.value;
-
-        if (!id || !nombre || !cuit || !direccion || !telefono) {
-          Swal.showValidationMessage("Completa todos los campos");
-          return null;
-        }
-
-        return { id, nombre, cuit, direccion, telefono };
-      },
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        //Fix para deploy
-        
-                const proveedor = {
-                    id: result.value.id,
-                    nombre: result.value.nombre,
-                    cuit: result.value.cuit,
-                    direccion: result.value.direccion,
-                    telefono: result.value.telefono,
-                };
-                
-
-        //   createProducto(producto);
-
-        Swal.fire({
-          title: "Vehículo agregado con éxito",
-          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
-          icon: "success",
-        });
-      }
-    });
-  };
-  */
-
   // Dashboard Component
   return (
     <div className="p-6 bg-gray-900 min-h-screen rounded-lg text-white">
@@ -296,16 +216,45 @@ const Stock = () => {
         </div>
       </div>
 
+      {/* Campo de búsqueda */}
+      <div className="mb-6">
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Buscar productos..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '20px', // Bordes redondeados
+              backgroundColor: 'white',
+              boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.2)', // Sombra para darle efecto de elevación
+            },
+            '& .MuiOutlinedInput-input': {
+              padding: '10px 14px',
+            },
+          }}
+        />
+      </div>
+
       <FiltrosProducto onFilter={handleFilter} />
 
-      {productos.length > 0 ? (
-        <ProductTable products={productos} />
+      {localProducts && localProducts.length > 0 ? (
+        // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
+        <ProductTable products={localProducts} />
       ) : (
-        <div className="flex flex-col items-center justify-center mt-8 p-6 bg-gray-800 border border-gray-700 rounded-lg">
-          <p className="text-lg font-semibold text-white">
+        <div className="flex flex-col items-center justify-center mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-lg font-semibold text-gray-800">
             No hay productos disponibles
           </p>
-          <p className="text-sm font-semibold text-gray-400 mt-2">
+          <p className="text-sm font-semibold text-gray-600 mt-2">
             Por favor, añade algunos productos para empezar.
           </p>
         </div>
