@@ -18,7 +18,8 @@ interface Proveedor {
 interface ProveedorContextProps {
   proveedores: Proveedor[];
   fetchProveedores: () => void;
-  createProveedor: (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => Promise<void>;
+  // createProveedor: (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => Promise<void>;
+  createProveedor: (proveedor: Proveedor) => Promise<void>;
 }
 
 const ProveedorContext = createContext<ProveedorContextProps | undefined>(undefined);
@@ -80,13 +81,20 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
     setProveedores(proveedoresLocales);
   }, []);
 
-  const createProveedor = async (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => {
-    try {
-      await axios.post(apiProveedoresBackend, proveedor);
-      fetchProveedores();
-    } catch (error) {
-      console.error('Error al crear proveedor:', error);
-    }
+  // const createProveedor = async (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => {
+  //   try {
+  //     await axios.post(apiProveedoresBackend, proveedor);
+  //     fetchProveedores();
+  //   } catch (error) {
+  //     console.error('Error al crear proveedor:', error);
+  //   }
+  // };
+
+  const createProveedor = async (proveedor: Proveedor) => {
+    setProveedores((proveedoresLocales) => [
+      ...proveedoresLocales,
+      { ...proveedor, id: (proveedoresLocales.length + 1).toString() },
+    ]);
   };
 
   useEffect(() => {

@@ -93,11 +93,17 @@ const Proveedores = () => {
       confirmButtonText: "Agregar",
       showCancelButton: true,
       preConfirm: () => {
-        const id = document.getElementById('ID') as HTMLInputElement;
-        const nombre = document.getElementById('nombre') as HTMLInputElement;
-        const cuit = document.getElementById('cuit') as HTMLInputElement;
-        const direccion = document.getElementById('direccion') as HTMLInputElement;
-        const telefono = document.getElementById('telefono') as HTMLInputElement;
+        const idElement = document.getElementById('ID') as HTMLInputElement;
+        const nombreElement = document.getElementById('nombre') as HTMLInputElement;
+        const cuitElement = document.getElementById('cuit') as HTMLInputElement;
+        const direccionElement = document.getElementById('direccion') as HTMLInputElement;
+        const telefonoElement = document.getElementById('telefono') as HTMLInputElement;
+
+        const id = idElement?.value;
+        const nombre = nombreElement?.value;
+        const cuit = cuitElement?.value;
+        const direccion = direccionElement?.value;
+        const telefono = telefonoElement?.value;
 
         if (!nombre || !cuit || !direccion || !telefono) {
           Swal.showValidationMessage("Completa todos los campos");
