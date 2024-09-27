@@ -2,6 +2,9 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useVehiculo, VehiculoProvider } from "@/app/context/VehiculoContext";
+import axios from "axios";
+
+const apiVehiculosBackend = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
 
 interface Coordinates {
   latitude: number;
@@ -16,13 +19,15 @@ interface Vehiculo {
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
+  activo: boolean;
 }
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
+  onVehicleUpdated: (VehiculoID: Vehiculo) => void;
 }
 
-const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
+const VehiculoCard = ({ vehiculo, onVehicleUpdated }: VehiculoCardProps) => {
   const router = useRouter();
   const { modifyVehiculo } = useVehiculo();
 
@@ -56,117 +61,122 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   */
   }
 
+  // const handleDisableVehicle = async () => {
+  //   const updateUrl = `${apiVehiculosBackend}/${vehiculo.id}`;
+  //   const newStatus = !vehiculo.activo;
+
+  //   try {
+  //     const response = await axios.put(updateUrl, {
+  //       data: { activo: newStatus },
+  //     });
+
+  //     const updatedVehiculo = { ...vehiculo, activo: newStatus };
+  //     onVehicleUpdated(updatedVehiculo);
+
+  //     Swal.fire({
+  //       title: `Vehículo ${newStatus ? "habilitado" : "deshabilitado"}`,
+  //       text: `El vehículo ha sido ${newStatus ? "habilitado" : "deshabilitado"} correctamente.`,
+  //       icon: "success",
+  //       confirmButtonColor: "#3085d6",
+  //     });
+  //   } catch (error) {
+  //     Swal.fire({
+  //       title: "Error",
+  //       text: "Hubo un problema al cambiar el estado del vehículo. Por favor, intenta de nuevo.",
+  //       icon: "error",
+  //       confirmButtonColor: "#d33",
+  //     });
+  //   }
+  // };
+
+  const handleDisableVehicle = async (vehiculo: Vehiculo) => {
+    const updateUrl = `${apiVehiculosBackend}${vehiculo.id}`;
+
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: `El vehículo será ${vehiculo.activo ? 'deshabilitado' : 'habilitado'} y su estado cambiará a ${vehiculo.activo ? 'inactivo' : 'activo'}.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: vehiculo.activo ? 'Deshabilitar' : 'Habilitar',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                // Hacer la solicitud PUT para actualizar el estado del vehículo
+                await axios.put(updateUrl, {
+                    data: { activo: !vehiculo.activo }
+                });
+
+                Swal.fire({
+                    title: `Vehículo ${vehiculo.activo ? 'deshabilitado' : 'habilitado'}`,
+                    text: `El vehículo ha sido ${vehiculo.activo ? 'deshabilitado' : 'habilitado'} correctamente.`,
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6'
+                });
+
+                // Llamar a la función para actualizar el estado del vehículo en la tabla
+                onVehicleUpdated({ ...vehiculo, activo: !vehiculo.activo });
+
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al cambiar el estado del vehículo. Por favor, intenta de nuevo.',
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
+            }
+        }
+    });
+};
+
   const handleEdit = () => {
-    // Aquí va la lógica para editar el vehículo
     Swal.fire({
       title: "Editar vehículo",
       html: `
-      <div class="flex flex-col space-y-4">
-        <div class="flex flex-col">
-          <label for="edit-vehicle-model" class="text-left text-gray-700 font-medium">Modelo</label>
-          <input id="edit-vehicle-model" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${
-            vehiculo.model
-          }">
+        <div class="flex flex-col space-y-4">
+          <div class="flex flex-col">
+            <label for="edit-vehicle-model" class="text-left text-gray-700 font-medium">Modelo</label>
+            <input id="edit-vehicle-model" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.model}">
+          </div>
+          <div class="flex flex-col">
+            <label for="edit-vehicle-brand" class="text-left text-gray-700 font-medium">Marca</label>
+            <input id="edit-vehicle-brand" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.brand}">
+          </div>
+          <div class="flex flex-col">
+            <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
+            <input id="edit-vehicle-year" type="number" min="1900" max="${new Date().getFullYear()}" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.year}">
+          </div>
+          <div class="flex flex-col">
+            <label for="edit-vehicle-activo" class="text-left text-gray-700 font-medium">Activo</label>
+            <input id="edit-vehicle-activo" type="checkbox" ${vehiculo.activo ? 'checked' : ''}>
+          </div>
         </div>
-        <div class="flex flex-col">
-          <label for="edit-vehicle-brand" class="text-left text-gray-700 font-medium">Marca</label>
-          <input id="edit-vehicle-brand" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${
-            vehiculo.brand
-          }">
-        </div>
-        <div class="flex flex-col">
-          <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
-          <input id="edit-vehicle-year" type="number" min="1900" max="${new Date().getFullYear()}" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${
-        vehiculo.year
-      }">
-        </div>
-      </div>
-    `,
+      `,
       showCancelButton: true,
       confirmButtonText: "Guardar",
       showLoaderOnConfirm: true,
-
-      //Resetear el mensaje de error al reescribir en cualquier input
-      didOpen: () => {
-        const modelInput = document.getElementById(
-          "edit-vehicle-model"
-        ) as HTMLInputElement;
-        modelInput?.addEventListener("input", () => {
-          Swal.resetValidationMessage();
-        });
-
-        const brandInput = document.getElementById(
-          "edit-vehicle-brand"
-        ) as HTMLInputElement;
-        brandInput?.addEventListener("input", () => {
-          Swal.resetValidationMessage();
-        });
-
-        const yearInput = document.getElementById(
-          "edit-vehicle-year"
-        ) as HTMLInputElement;
-        yearInput?.addEventListener("input", () => {
-          Swal.resetValidationMessage();
-        });
-      },
-
       preConfirm: () => {
-        const model = (
-          document.getElementById("edit-vehicle-model") as HTMLInputElement
-        ).value;
-        const brand = (
-          document.getElementById("edit-vehicle-brand") as HTMLInputElement
-        ).value;
-        const year = parseInt(
-          (document.getElementById("edit-vehicle-year") as HTMLInputElement)
-            .value
-        );
+        const model = (document.getElementById("edit-vehicle-model") as HTMLInputElement).value;
+        const brand = (document.getElementById("edit-vehicle-brand") as HTMLInputElement).value;
+        const year = parseInt((document.getElementById("edit-vehicle-year") as HTMLInputElement).value);
+        const activo = (document.getElementById("edit-vehicle-activo") as HTMLInputElement).checked;
 
-        //Validar que haya modificado algún campo
-        if (
-          vehiculo.model === model &&
-          vehiculo.brand === brand &&
-          vehiculo.year === year
-        ) {
-          Swal.showValidationMessage("No ha hecho ninguna modificación");
+        if (!model || !brand || year < 1900 || year > new Date().getFullYear()) {
+          Swal.showValidationMessage("Por favor, complete todos los campos correctamente.");
           return false;
         }
 
-        //Validar de que el campo del modelo y la marca no estén vacios
-        if (!model || !brand) {
-          Swal.showValidationMessage("Complete todos los campos");
-          return false;
-        }
-
-        //Validar de que el año ingresado esté entre 1900 y el año actual.
-        if (year < 1900 || year > new Date().getFullYear()) {
-          Swal.showValidationMessage(
-            `El año debe estar entre 1900 y ${new Date().getFullYear()}`
-          );
-          return false;
-        }
-
-        //Retorna los datos modificados del vehiculo si todo está bien
-        return {
-          ...vehiculo,
-          model,
-          brand,
-          year,
-        };
+        return { model, brand, year, activo };
       },
-
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        const { id, model, brand, year } = result.value;
-        const vehiculoEdit = {
-          id,
-          model,
-          brand,
-          year,
-        };
+        const { model, brand, year, activo } = result.value;
+        const updatedVehiculo = { ...vehiculo, model, brand, year, activo };
 
-        modifyVehiculo(vehiculoEdit);
+        modifyVehiculo(updatedVehiculo);
 
         Swal.fire({
           title: "Actualizado!",
@@ -178,7 +188,12 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   };
 
   return (
-    <div className="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-lg text-white hover:bg-gray-900 transition duration-300 ease-in-out">
+    <div
+      className={`p-6 rounded-lg shadow-lg text-white transition duration-300 ease-in-out ${vehiculo.activo
+        ? "bg-gray-800 hover:bg-gray-900"
+        : "bg-gray-800 opacity-50"
+        }`}
+    >
       <h2 className="text-2xl font-bold mb-3">
         {vehiculo.brand} {vehiculo.model} - {vehiculo.year}
       </h2>
@@ -215,13 +230,16 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         >
           Editar
         </button>
-        {/*
+
         <button
-          onClick={handleDelete}
-          className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-          Eliminar
+          onClick={() => handleDisableVehicle(vehiculo)}
+          className={`font-bold py-2 px-4 rounded ${vehiculo.activo
+            ? "bg-red-500 hover:bg-red-600"
+            : "bg-blue-500 hover:bg-blue-600"
+            }`}
+        >
+          {vehiculo.activo ? "Deshabilitar" : "Habilitar"}
         </button>
-        */}
       </div>
     </div>
   );

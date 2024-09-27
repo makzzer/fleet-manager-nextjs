@@ -25,6 +25,7 @@ interface Vehiculo {
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
+  activo: boolean;
 }
 
 interface VehiculoContextProps {
@@ -76,6 +77,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
             },
             date_created: item.date_created,
             date_updated: item.date_updated,
+            activo: item.activo,
           })
         );
 
