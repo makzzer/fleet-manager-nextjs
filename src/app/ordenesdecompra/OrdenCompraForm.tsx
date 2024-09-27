@@ -2,6 +2,37 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useOC } from '../context/OrdenesCompraContext';
+
+interface Proveedor {
+    id: number;
+    name: string;
+    mail: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface Producto {
+    id: number;
+    name: string;
+    stock: number;
+    stock_minimo: number;
+    min_price_compra_stock: number | null;
+    precio: number;
+    cantidad: number;
+}
+
+interface OrdenDeCompra {
+    id: number;
+    total_compra: number;
+    createdAt: string;
+    updatedAt: string;
+    estado: string;
+    fecha_de_creacion: string;
+    proveedor: Proveedor;
+    productos: Producto[];
+}
+
 
 interface OrdenCompraFormProps {
     onSubmit: (data: any) => void; // Define correctamente el tipo de datos que enviarás en el formulario
@@ -15,6 +46,8 @@ const OrdenCompraForm: React.FC<OrdenCompraFormProps> = ({ onSubmit }) => {
         total_compra: ''
     });
 
+    //const [createOrdenDeCompra] = useOC();
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -22,6 +55,7 @@ const OrdenCompraForm: React.FC<OrdenCompraFormProps> = ({ onSubmit }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+       // createOrdenDeCompra;
         onSubmit(formData);
     };
 
