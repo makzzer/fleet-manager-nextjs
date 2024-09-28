@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
-
 // import Link from "next/link";
 // import { FaUserTie, FaEnvelope, FaPhone, FaEnvelopeSquare } from 'react-icons/fa';
 import Swal from "sweetalert2";
@@ -22,12 +21,12 @@ interface Proveedor {
 const Proveedores = () => {
   const { proveedores, fetchProveedores, createProveedor } = useProveedor();
   const [isLoading, setIsLoading] = useState(true);
-  const [filteredProveedores, setFilteredProveedores] = useState(proveedores);
+  //  const [filteredProveedores, setFilteredProveedores] = useState(proveedores);
 
   const [proveedoresLocales, setLocalProveedores] = useState(proveedores);
-
-  const [searchTerm, setSearchTerm] = useState(''); // Estado para el filtro de búsqueda
-
+  /*
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
+*/
   useEffect(() => {
     const loadProveedores = async () => {
       setIsLoading(true);
@@ -38,12 +37,17 @@ const Proveedores = () => {
   }, [fetchProveedores]);
 
   useEffect(() => {
+    setLocalProveedores(proveedores);
+  }, [proveedores]);
+  /*
+  useEffect(() => {
     setFilteredProveedores(proveedores);
   }, [proveedores]);
-
+*/
   // Filtra los productos según el término de búsqueda
+  /*
   useEffect(() => {
-    if (searchTerm === '') {
+    if (searchTerm === "") {
       setLocalProveedores(proveedores);
     } else {
       setLocalProveedores(
@@ -53,6 +57,7 @@ const Proveedores = () => {
       );
     }
   }, [searchTerm, proveedores]);
+  */
 
   //el query va a ser lo que voy escribiendo en el input de la bar
   // const handleSearch = (query: string) => {
@@ -94,11 +99,17 @@ const Proveedores = () => {
       confirmButtonText: "Agregar",
       showCancelButton: true,
       preConfirm: () => {
-        const idElement = document.getElementById('ID') as HTMLInputElement;
-        const nombreElement = document.getElementById('nombre') as HTMLInputElement;
-        const cuitElement = document.getElementById('cuit') as HTMLInputElement;
-        const direccionElement = document.getElementById('direccion') as HTMLInputElement;
-        const telefonoElement = document.getElementById('telefono') as HTMLInputElement;
+        const idElement = document.getElementById("ID") as HTMLInputElement;
+        const nombreElement = document.getElementById(
+          "nombre"
+        ) as HTMLInputElement;
+        const cuitElement = document.getElementById("cuit") as HTMLInputElement;
+        const direccionElement = document.getElementById(
+          "direccion"
+        ) as HTMLInputElement;
+        const telefonoElement = document.getElementById(
+          "telefono"
+        ) as HTMLInputElement;
 
         const id = idElement?.value;
         const nombre = nombreElement?.value;
@@ -112,7 +123,7 @@ const Proveedores = () => {
         }
 
         return { id, nombre, cuit, direccion, telefono };
-      }
+      },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         const proveedor: Proveedor = {
@@ -133,24 +144,23 @@ const Proveedores = () => {
     });
   };
 
-
   return (
     <ProtectedRoute>
-    <div className="p-6 min-h-screen bg-gray-900 text-white">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-        <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
-          Gestión de Proveedores
-        </h1>
-        <button
-          onClick={handleAgregarProveedor}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Agregar Proveedor
-        </button>
-      </div>
+      <div className="p-6 min-h-screen bg-gray-900 text-white">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
+            Gestión de Proveedores
+          </h1>
+          <button
+            onClick={handleAgregarProveedor}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Agregar Proveedor
+          </button>
+        </div>
 
-      {/* Renderizado de los skeleton loaders o las cards */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {/* Renderizado de los skeleton loaders o las cards */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {isLoading ? (
                     Array(6).fill(0).map((_, index) => (
                         <div key={index} className="p-4 bg-gray-800 rounded-lg">
@@ -176,26 +186,52 @@ const Proveedores = () => {
                 )}
             </div> */}
 
-      {/* Renderizado de los skeleton loaders o las cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {isLoading ? (
-          Array(6).fill(0).map((_, index) => (
-            <div key={index} className="p-4 bg-gray-800 rounded-lg">
-              <Skeleton height={200} baseColor="#2d3748" highlightColor="#4a5568" />
-              <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
-              <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
-              <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
-            </div>
-          ))
-        ) : proveedoresLocales.length > 0 ? (
-          proveedoresLocales.map((proveedor, index) => (
-            <ProveedorCard key={index} proveedor={proveedor} />
-          ))
-        ) : (
-          <p className="text-center col-span-3 text-blue-300">No se encontraron proveedores</p>
-        )}
+        {/* Renderizado de los skeleton loaders o las cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {isLoading ? (
+            Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <div key={index} className="p-4 bg-gray-800 rounded-lg">
+                  <Skeleton
+                    height={200}
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                  <Skeleton
+                    width={`80%`}
+                    height={20}
+                    style={{ marginTop: 10 }}
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                  <Skeleton
+                    width={`60%`}
+                    height={20}
+                    style={{ marginTop: 10 }}
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                  <Skeleton
+                    width={`50%`}
+                    height={20}
+                    style={{ marginTop: 10 }}
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                </div>
+              ))
+          ) : proveedoresLocales.length > 0 ? (
+            proveedoresLocales.map((proveedor, index) => (
+              <ProveedorCard key={index} proveedor={proveedor} />
+            ))
+          ) : (
+            <p className="text-center col-span-3 text-blue-300">
+              No se encontraron proveedores
+            </p>
+          )}
+        </div>
       </div>
-    </div>
     </ProtectedRoute>
   );
 };

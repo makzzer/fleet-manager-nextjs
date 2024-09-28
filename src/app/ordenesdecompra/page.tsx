@@ -121,16 +121,16 @@ const OrdenesDeCompra = () => {
   };
 
   const onCreateSubmit = async (formData: {
-    proveedor: any;
-    fecha_de_creacion: any;
-    total_compra: any;
-    estado: any;
+    proveedor: string;
+    fecha_de_creacion: string;
+    total_compra: string;
+    estado: string;
   }) => {
     const nuevaOrden: OrdenDeCompra = {
       id: "0",
       provider: {
         id: "1",
-        name: "Proveedor D",
+        name: formData.proveedor,
         email: "contacto@proveedord.com",
         cuit: "30-12345623-9",
         phone_number: "11-1133-5678",
@@ -144,10 +144,10 @@ const OrdenesDeCompra = () => {
         purchase_date: "2024-01-06",
       },
       quantity: 3,
-      amount: 1500,
-      date_created: "2024-01-06",
-      date_updated: "2024-01-07",
-      status: "pendiente",
+      amount: parseInt(formData.total_compra),
+      date_created: formData.fecha_de_creacion,
+      date_updated: formData.fecha_de_creacion,
+      status: formData.estado,
     };
     /*
     {
