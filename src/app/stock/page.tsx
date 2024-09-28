@@ -20,6 +20,8 @@ import SearchBar from "../components/SearchBar/SearchBar";
 import { TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
+import ProtectedRoute from "../components/Routes/ProtectedRoutes";
+
 interface Producto {
   id: string;
   name: string;
@@ -181,6 +183,7 @@ const Stock = () => {
 
   // Dashboard Component
   return (
+    <ProtectedRoute>
     <div className="p-6 bg-gray-900 min-h-screen rounded-lg text-white">
       <div className="flex justify-between items-center mb-6">
         <h1 className="md:text-4xl text-3xl font-bold text-blue-400">
@@ -240,6 +243,7 @@ const Stock = () => {
         </div>
       )}
     </div>
+    </ProtectedRoute>
   );
 };
 

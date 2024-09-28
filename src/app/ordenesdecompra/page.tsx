@@ -9,6 +9,9 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import OrdenCompraForm from './OrdenCompraForm';
 
+//ruta protegida
+import ProtectedRoute from "../components/Routes/ProtectedRoutes";
+
 const apiActualizarOrden = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras`;
 
 interface Proveedor {
@@ -139,6 +142,8 @@ const OrdenesDeCompra = () => {
   }
 
   return (
+
+    <ProtectedRoute>
     <div className="min-h-screen bg-gray-900 p-8">
       <h1 className="text-3xl font-bold mb-6 text-blue-400">
         Órdenes de compra
@@ -220,6 +225,7 @@ const OrdenesDeCompra = () => {
       </div>
       <OrdenCompraForm onSubmit={onCreateSubmit} />
     </div>
+    </ProtectedRoute>
   );
 };
 

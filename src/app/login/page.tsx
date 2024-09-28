@@ -13,6 +13,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useUser } from '../context/UserContext'; 
+import { useRouter } from 'next/navigation';
 
 // Definimos el tema oscuro con Material UI
 const theme = createTheme({
@@ -35,6 +36,7 @@ const theme = createTheme({
 });
 
 const Login: React.FC = () => {
+  const router = useRouter()
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -65,6 +67,7 @@ const Login: React.FC = () => {
       console.log('Error:', error); // Debug por consola
     } else if (user) {
       setErrorMessage(''); // Limpiamos los errores si autenticamos correctamente
+      router.push("/dashboard")
       console.log('Usuario autenticado:', user); // Debug del usuario autenticado
     }
   };

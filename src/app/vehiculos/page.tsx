@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import SearchBar from "../../app/components/SearchBar/SearchBar";
+import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
 const Vehiculos = () => {
   const { vehiculos, fetchVehiculos, createVehiculo } = useVehiculo();
@@ -104,6 +105,7 @@ const Vehiculos = () => {
   };
 
   return (
+    <ProtectedRoute>
     <div className="p-6 bg-gray-900 min-h-screen text-white">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
         <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">Gestión de Vehículos</h1>
@@ -144,6 +146,7 @@ const Vehiculos = () => {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

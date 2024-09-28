@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
+import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
 
 // import Link from "next/link";
@@ -134,6 +135,7 @@ const Proveedores = () => {
 
 
   return (
+    <ProtectedRoute>
     <div className="p-6 min-h-screen bg-gray-900 text-white">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
         <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
@@ -193,8 +195,8 @@ const Proveedores = () => {
           <p className="text-center col-span-3 text-blue-300">No se encontraron proveedores</p>
         )}
       </div>
-
     </div>
+    </ProtectedRoute>
   );
 };
 
