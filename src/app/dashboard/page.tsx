@@ -5,6 +5,9 @@ import { Line, Bar } from 'react-chartjs-2';
 import { useVehiculo } from '../context/VehiculoContext';
 import Link from 'next/link';
 
+//componente ruta protegida con nextjs
+import ProtectedRoute from '../components/Routes/ProtectedRoutes';
+
 // Registrar las escalas y los elementos que vas a utilizar
 ChartJS.register(
     CategoryScale,
@@ -49,6 +52,7 @@ const Dashboard = () => {
     };
 
     return (
+        <ProtectedRoute>
         <div className="p-6 bg-gray-900 min-h-screen text-white">
             <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">Dashboard General</h1>
 
@@ -80,7 +84,8 @@ const Dashboard = () => {
                     </Link>
                 </div>
             </div>
-        </div>
+        </div>      
+        </ProtectedRoute>
     );
 };
 

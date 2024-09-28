@@ -1,8 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useUser } from "../context/UserContext"; // Importa el contexto de usuario
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { authenticatedUser, logoutUser } = useUser(); // Usamos el contexto para saber si el usuario está autenticado
+  const router = useRouter();
 
   // Función para cerrar el menú al hacer clic fuera de él
   useEffect(() => {
@@ -23,15 +27,21 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  // Función para manejar el cierre de sesión
+  const handleLogout = () => {
+    logoutUser(); // Cerrar sesión
+    router.push("/login"); // Redirigir al login
+  };
+
   return (
     <nav className="bg-gray-900 text-white p-4 fixed top-0 left-0 w-full z-50 navbar">
       <div className="container mx-auto flex justify-between items-center">
-        {/*Logo*/}
+        {/* Logo */}
         <a href="/">
           <div className="text-2xl font-bold">Fleet Manager</div>
         </a>
 
-        {/*Hamburguesa para pantallas pequeñas*/}
+        {/* Hamburguesa para pantallas pequeñas */}
         <div className="md:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -54,41 +64,56 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/*Links en dispositivos grandes*/}
+        {/* Links en dispositivos grandes */}
         <ul className="hidden md:flex space-x-4">
-          <li>
-            <a href="/dashboard" className="hover:text-gray-400">
-              Dashboard
-            </a>
-          </li>
-          <li>
-            <a href="/vehiculos" className="hover:text-gray-400">
-              Vehículos
-            </a>
-          </li>
-          <li>
-            <a href="/stock" className="hover:text-gray-400">
-              Stock
-            </a>
-          </li>
-          <li>
-            <a href="/proveedores" className="hover:text-gray-400">
-              Proveedores
-            </a>
-          </li>
-          <li>
-            <a href="/ordenesdecompra" className="hover:text-gray-400">
-              OC
-            </a>
-          </li>
-          <li>
-            <a href="/login" className="hover:text-gray-400">
-              Ingresar
-            </a>
-          </li>
+          {/* Solo mostrar estas rutas si el usuario está autenticado */}
+          {authenticatedUser && (
+            <>
+              <li>
+                <a href="/dashboard" className="hover:text-gray-400">
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a href="/vehiculos" className="hover:text-gray-400">
+                  Vehículos
+                </a>
+              </li>
+              <li>
+                <a href="/stock" className="hover:text-gray-400">
+                  Stock
+                </a>
+              </li>
+              <li>
+                <a href="/proveedores" className="hover:text-gray-400">
+                  Proveedores
+                </a>
+              </li>
+              <li>
+                <a href="/ordenesdecompra" className="hover:text-gray-400">
+                  OC
+                </a>
+              </li>
+              {/* Botón para cerrar sesión */}
+              <li>
+                <button onClick={handleLogout} className="hover:text-gray-400">
+                  Cerrar sesión
+                </button>
+              </li>
+            </>
+          )}
+
+          {/* Mostrar el login solo si no está autenticado */}
+          {!authenticatedUser && (
+            <li>
+              <a href="/login" className="hover:text-gray-400">
+                Ingresar
+              </a>
+            </li>
+          )}
         </ul>
 
-        {/*Menú desplegable en dispositivos pequeños*/}
+        {/* Menú desplegable en dispositivos pequeños */}
         <div
           className={`${
             isOpen ? "block" : "hidden"
@@ -117,60 +142,81 @@ const Navbar = () => {
             </button>
           </div>
           <ul className="flex flex-col items-center space-y-4 mt-8">
-            <li>
-              <a
-                href="/dashboard"
-                className="hover:text-gray-400"
-                onClick={() => setIsOpen(false)}
-              >
-                Dashboard
-              </a>
-            </li>
-            <li>
-              <a
-                href="/vehiculos"
-                className="hover:text-gray-400"
-                onClick={() => setIsOpen(false)}
-              >
-                Vehículos
-              </a>
-            </li>
-            <li>
-              <a
-                href="/stock"
-                className="hover:text-gray-400"
-                onClick={() => setIsOpen(false)}
-              >
-                Stock
-              </a>
-            </li>
-            <li>
-              <a
-                href="/proveedores"
-                className="hover:text-gray-400"
-                onClick={() => setIsOpen(false)}
-              >
-                Proveedores
-              </a>
-            </li>
-            <li>
-              <a
-                href="/ordenesdecompra"
-                className="hover:text-gray-400"
-                onClick={() => setIsOpen(false)}
-              >
-                OC
-              </a>
-            </li>
-            <li>
-              <a
-                href="/login"
-                className="hover:text-gray-400"
-                onClick={() => setIsOpen(false)}
-              >
-                Ingresar
-              </a>
-            </li>
+            {/* Solo mostrar estas rutas si el usuario está autenticado */}
+            {authenticatedUser && (
+              <>
+                <li>
+                  <a
+                    href="/dashboard"
+                    className="hover:text-gray-400"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Dashboard
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/vehiculos"
+                    className="hover:text-gray-400"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Vehículos
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/stock"
+                    className="hover:text-gray-400"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Stock
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/proveedores"
+                    className="hover:text-gray-400"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Proveedores
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/ordenesdecompra"
+                    className="hover:text-gray-400"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    OC
+                  </a>
+                </li>
+                {/* Botón para cerrar sesión */}
+                <li>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="hover:text-gray-400"
+                  >
+                    Cerrar sesión
+                  </button>
+                </li>
+              </>
+            )}
+
+            {/* Mostrar el login solo si no está autenticado */}
+            {!authenticatedUser && (
+              <li>
+                <a
+                  href="/login"
+                  className="hover:text-gray-400"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Ingresar
+                </a>
+              </li>
+            )}
           </ul>
         </div>
       </div>
