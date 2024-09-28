@@ -94,6 +94,11 @@ const Navbar = () => {
                   OC
                 </a>
               </li>
+              <li>
+                <a href="/usuarios" className="hover:text-gray-400">
+                  Usuarios
+                </a>
+              </li>
               {/* Botón para cerrar sesión */}
               <li>
                 <button onClick={handleLogout} className="hover:text-gray-400">
