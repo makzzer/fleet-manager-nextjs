@@ -2,19 +2,17 @@ import React from "react";
 import type { Metadata } from "next";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import './globals.css';
+import "./globals.css";
 
 //importo el vehiculoProvider acá
-import { VehiculoProvider } from "./context/VehiculoContext";
+//import { VehiculoProvider } from "./context/VehiculoContext";
 
 import { Providers } from "../app/providers";
-
 
 export const metadata: Metadata = {
   title: "Fleet Manager",
   description: "Aplicacion gestion de vehiculos",
 };
-
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -29,8 +27,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </Providers>
       </body>
     </html>
-  )
-}
+  );
+};
 
 export default Layout;
-

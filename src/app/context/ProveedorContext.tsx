@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import axios from 'axios';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+} from "react";
+//import axios from 'axios';
 
-const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
+//const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
 
 interface Proveedor {
   id: string;
@@ -22,12 +29,14 @@ interface ProveedorContextProps {
   createProveedor: (proveedor: Proveedor) => Promise<void>;
 }
 
-const ProveedorContext = createContext<ProveedorContextProps | undefined>(undefined);
+const ProveedorContext = createContext<ProveedorContextProps | undefined>(
+  undefined
+);
 
 export const useProveedor = () => {
   const context = useContext(ProveedorContext);
   if (!context) {
-    throw new Error('useProveedor debe ser usado dentro de ProveedorProvider');
+    throw new Error("useProveedor debe ser usado dentro de ProveedorProvider");
   }
   return context;
 };
@@ -37,8 +46,8 @@ const proveedoresLocales: Proveedor[] = [
     id: "1",
     name: "Proveedor 1",
     cuit: "2022",
-    direccion: 'calle 1',
-    telefono: '100',
+    direccion: "calle 1",
+    telefono: "100",
   },
   {
     id: "2",
@@ -53,8 +62,8 @@ const proveedoresLocales: Proveedor[] = [
     cuit: "2024",
     direccion: "calle 3",
     telefono: "300",
-  }
-]
+  },
+];
 
 export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
   // proveedores de api
@@ -102,7 +111,9 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchProveedores]);
 
   return (
-    <ProveedorContext.Provider value={{ proveedores, fetchProveedores, createProveedor }}>
+    <ProveedorContext.Provider
+      value={{ proveedores, fetchProveedores, createProveedor }}
+    >
       {children}
     </ProveedorContext.Provider>
   );

@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
 
-import { useOrdenesDeCompra } from '../context/OrdenesCompraContext';
+import { useOrdenesDeCompra } from "../context/OrdenesCompraContext";
 
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
-import OrdenCompraForm from './OrdenCompraForm';
+import OrdenCompraForm from "./OrdenCompraForm";
 
 //ruta protegida
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
@@ -15,36 +15,36 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 const apiActualizarOrden = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras`;
 
 interface Proveedor {
-  id: number;
+  id: string;
   name: string;
-  mail: string;
-  createdAt: string;
-  updatedAt: string;
+  email: string;
+  cuit: string;
+  phone_number: string;
+  address: string;
 }
 
 interface Producto {
-  id: number;
+  id: string;
   name: string;
-  stock: number;
-  stock_minimo: number;
-  min_price_compra_stock: number | null;
-  precio: number;
-  cantidad: number;
+  brand: string;
+  category: string;
+  purchase_date: string;
 }
 
 interface OrdenDeCompra {
-  id: number;
-  total_compra: number;
-  createdAt: string;
-  updatedAt: string;
-  estado: string;
-  fecha_de_creacion: string;
-  proveedor: Proveedor;
-  productos: Producto[];
+  id: string;
+  provider: Proveedor;
+  product: Producto;
+  quantity: number;
+  amount: number;
+  date_created: string;
+  date_updated: string;
+  status: string;
 }
 
 const OrdenesDeCompra = () => {
-  const { ordenesDeCompra, fetchOrdenesDeCompra, createOrdenDeCompra } = useOrdenesDeCompra();
+  const { ordenesDeCompra, fetchOrdenesDeCompra, createOrdenDeCompra } =
+    useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -57,15 +57,15 @@ const OrdenesDeCompra = () => {
     loadOrdenesDeCompra();
   }, [fetchOrdenesDeCompra]);
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     console.log(`Eliminar orden con ID: ${id}`);
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     console.log(`Editar orden con ID: ${id}`);
   };
 
-  const handleView = (id: number) => {
+  const handleView = (id: string) => {
     router.push(`/ordenesdecompra/${id}`);
   };
 
@@ -83,19 +83,20 @@ const OrdenesDeCompra = () => {
       });
 
       // Actualizar el stock de los productos en la orden, pero sin eliminarlos de la orden de compra
-      const productosOrden = orden.productos;
-      for (const producto of productosOrden) {
-        const productoActualizado = {
-          stock: producto.stock + producto.cantidad,
-        };
 
-        await axios.put(
-          `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/productos/${producto.id}`,
-          {
-            data: productoActualizado,
-          }
-        );
-      }
+      // const productosOrden = orden.productos;
+      // for (const producto of productosOrden) {
+      //   const productoActualizado = {
+      //     stock: producto.stock + producto.cantidad,
+      //   };
+
+      //   await axios.put(
+      //     `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/productos/${producto.id}`,
+      //     {
+      //       data: productoActualizado,
+      //     }
+      //   );
+      // }
 
       // Refrescar la lista de órdenes de compra
       //      fetchOrdenesDeCompra();
@@ -119,10 +120,38 @@ const OrdenesDeCompra = () => {
     }
   };
 
-  const onCreateSubmit = async (formData: { proveedor: any; fecha_de_creacion: any; total_compra: any; estado: any; }) => {
-
-    const nuevaOrden : OrdenDeCompra = {
-      id: 0,
+  const onCreateSubmit = async (formData: {
+    proveedor: any;
+    fecha_de_creacion: any;
+    total_compra: any;
+    estado: any;
+  }) => {
+    const nuevaOrden: OrdenDeCompra = {
+      id: "0",
+      provider: {
+        id: "1",
+        name: "Proveedor D",
+        email: "contacto@proveedord.com",
+        cuit: "30-12345623-9",
+        phone_number: "11-1133-5678",
+        address: "Calle Falsa 019, Buenos Aires",
+      },
+      product: {
+        id: "401",
+        name: "Producto 4",
+        brand: "Marca 4",
+        category: "Categoría D",
+        purchase_date: "2024-01-06",
+      },
+      quantity: 3,
+      amount: 1500,
+      date_created: "2024-01-06",
+      date_updated: "2024-01-07",
+      status: "pendiente",
+    };
+    /*
+    {
+      id: "0",
       total_compra: formData.total_compra,
       createdAt: "2024-09-27T08:00:00Z",
       updatedAt: "2024-09-27T10:00:00Z",
@@ -137,94 +166,93 @@ const OrdenesDeCompra = () => {
       },
       productos: [],
     };
-
+    */
     createOrdenDeCompra(nuevaOrden);
-  }
+  };
 
   return (
-
     <ProtectedRoute>
-    <div className="min-h-screen bg-gray-900 p-8">
-      <h1 className="text-3xl font-bold mb-6 text-blue-400">
-        Órdenes de compra
-      </h1>
+      <div className="min-h-screen bg-gray-900 p-8">
+        <h1 className="text-3xl font-bold mb-6 text-blue-400">
+          Órdenes de compra
+        </h1>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden">
-          <thead>
-            <tr className="bg-gray-800 text-gray-200 text-left text-sm uppercase font-semibold border-b border-gray-700">
-              <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Proveedor</th>
-              <th className="px-6 py-3">Fecha</th>
-              <th className="px-6 py-3">Estado</th>
-              <th className="px-6 py-3">Total</th>
-              <th className="px-6 py-3 text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="bg-gray-800 text-gray-200">
-            {ordenesDeCompra.map((orden) => ( 
-              <tr key={orden.id} className="border-b border-gray-700">
-                <td className="px-6 py-4 whitespace-nowrap">{orden.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {orden.proveedor.name}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {orden.fecha_de_creacion}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${
-                      orden.estado === "completado"
-                        ? "text-green-300 border-green-500"
-                        : orden.estado === "pendiente"
-                        ? "text-yellow-300 border-yellow-500"
-                        : "text-red-300 border-red-500"
-                    }`}
-                  >
-                    {orden.estado}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  ${orden.total_compra}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex justify-end items-center space-x-4">
-                    <button
-                      onClick={() => handleView(orden.id)}
-                      className="text-green-600 hover:text-green-800 p-1"
-                    >
-                      <FaEye className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleEdit(orden.id)}
-                      className="text-blue-600 hover:text-blue-800 p-1"
-                    >
-                      <FaEdit className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(orden.id)}
-                      className="text-red-600 hover:text-red-800 p-1"
-                    >
-                      <FaTrashAlt className="w-5 h-5" />
-                    </button>
-                    {orden.estado !== "completado" && (
-                      <button
-                        onClick={() => handleComplete(orden)}
-                        className="text-green-600 hover:text-green-800 p-1"
-                        disabled={loading}
-                      >
-                        <FaCheck className="w-5 h-5" />
-                      </button>
-                    )}
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden">
+            <thead>
+              <tr className="bg-gray-800 text-gray-200 text-left text-sm uppercase font-semibold border-b border-gray-700">
+                <th className="px-6 py-3">ID</th>
+                <th className="px-6 py-3">Proveedor</th>
+                <th className="px-6 py-3">Fecha</th>
+                <th className="px-6 py-3">Estado</th>
+                <th className="px-6 py-3">Total</th>
+                <th className="px-6 py-3 text-right">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-gray-800 text-gray-200">
+              {ordenesDeCompra.map((orden) => (
+                <tr key={orden.id} className="border-b border-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap">{orden.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {orden.provider.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {orden.date_created}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${
+                        orden.status === "completado"
+                          ? "text-green-300 border-green-500"
+                          : orden.status === "pendiente"
+                          ? "text-yellow-300 border-yellow-500"
+                          : "text-red-300 border-red-500"
+                      }`}
+                    >
+                      {orden.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    ${orden.amount}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex justify-end items-center space-x-4">
+                      <button
+                        onClick={() => handleView(orden.id)}
+                        className="text-green-600 hover:text-green-800 p-1"
+                      >
+                        <FaEye className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleEdit(orden.id)}
+                        className="text-blue-600 hover:text-blue-800 p-1"
+                      >
+                        <FaEdit className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(orden.id)}
+                        className="text-red-600 hover:text-red-800 p-1"
+                      >
+                        <FaTrashAlt className="w-5 h-5" />
+                      </button>
+                      {orden.status !== "completado" && (
+                        <button
+                          onClick={() => handleComplete(orden)}
+                          className="text-green-600 hover:text-green-800 p-1"
+                          disabled={loading}
+                        >
+                          <FaCheck className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <OrdenCompraForm onSubmit={onCreateSubmit} />
       </div>
-      <OrdenCompraForm onSubmit={onCreateSubmit} />
-    </div>
     </ProtectedRoute>
   );
 };

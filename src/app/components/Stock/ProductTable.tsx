@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IconButton } from "@mui/material";
-import { FaCheck, FaFire } from "react-icons/fa";
+//import { FaCheck, FaFire } from "react-icons/fa";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+//import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import Image from "next/image";
+//import Image from "next/image";
 
 /*
 interface Product {

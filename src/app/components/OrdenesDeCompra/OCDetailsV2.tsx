@@ -6,26 +6,32 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import Link from "next/link";
 
-interface Producto {
-  id: number;
+interface Proveedor {
+  id: string;
   name: string;
-  cantidad: number;
-  precio: number;
+  email: string;
+  cuit: string;
+  phone_number: string;
+  address: string;
 }
 
-interface Proveedor {
-  id: number;
+interface Producto {
+  id: string;
   name: string;
-  mail: string;
+  brand: string;
+  category: string;
+  purchase_date: string;
 }
 
 interface OrdenDeCompra {
-  id: number;
-  total_compra: number;
-  estado: string;
-  fecha_de_creacion: string;
-  proveedor: Proveedor;
-  productos: Producto[];
+  id: string;
+  provider: Proveedor;
+  product: Producto;
+  quantity: number;
+  amount: number;
+  date_created: string;
+  date_updated: string;
+  status: string;
 }
 
 interface OCDetailsProps {
@@ -50,7 +56,7 @@ export default function OCDetails({ orden }: OCDetailsProps) {
       <div className="bg-gray-900 rounded-lg shadow-lg overflow-hidden w-full max-w-lg">
         <div className="p-6">
           <div className="flex flex-col items-center text-center">
-            {orden.estado === "completado" ? (
+            {orden.status === "completado" ? (
               <>
                 <CheckCircleIcon className="w-12 h-12 text-green-500 mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">
@@ -60,7 +66,7 @@ export default function OCDetails({ orden }: OCDetailsProps) {
                   Tu orden ha sido completada
                 </p>
               </>
-            ) : orden.estado === "pendiente" ? (
+            ) : orden.status === "pendiente" ? (
               <>
                 <TimerIcon className="w-12 h-12 text-yellow-500 mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">
@@ -79,27 +85,25 @@ export default function OCDetails({ orden }: OCDetailsProps) {
             )}
 
             <h3 className="text-3xl font-bold text-white mb-6">
-              ${orden.total_compra.toLocaleString()}
+              ${orden.amount.toLocaleString()}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div className="bg-gray-800 p-3 rounded">
                 <p className="text-gray-400 text-sm">Nombre del proveedor</p>
                 <p className="text-white font-semibold">
-                  {orden.proveedor.name || "N/A"}
+                  {orden.provider.name || "N/A"}
                 </p>
               </div>
               <div className="bg-gray-800 p-3 rounded">
                 <p className="text-gray-400 text-sm">Fecha de creación</p>
-                <p className="text-white font-semibold">
-                  {orden.fecha_de_creacion}
-                </p>
+                <p className="text-white font-semibold">{orden.date_created}</p>
               </div>
               {/* El tercer elemento ocupa 2 columnas en pantallas medianas o grandes */}
               <div className="bg-gray-800 p-3 rounded md:col-span-2">
                 <p className="text-gray-400 text-sm">Mail del proveedor</p>
                 <p className="text-white font-semibold">
-                  {orden.proveedor.mail}
+                  {orden.provider.email}
                 </p>
               </div>
             </div>
@@ -128,12 +132,19 @@ export default function OCDetails({ orden }: OCDetailsProps) {
           <div className="px-6 py-4 bg-gray-900">
             <h3 className="text-xl font-bold text-white mb-4">Productos</h3>
             <ul className="space-y-2">
-              {orden.productos.map((producto) => (
+              {/*
+              orden.products.map((producto) => (
                 <li key={producto.id} className="text-gray-300">
                   <strong>{producto.name}</strong> - Cantidad:{" "}
                   {producto.cantidad} - Precio: ${producto.precio}
                 </li>
-              ))}
+              ))*/}
+              {
+                <li key={orden.product.id} className="text-gray-300">
+                  <strong>{orden.product.name}</strong> - Cantidad:{" "}
+                  {orden.quantity} - Precio: ${orden.amount / orden.quantity}
+                </li>
+              }
             </ul>
           </div>
         )}
