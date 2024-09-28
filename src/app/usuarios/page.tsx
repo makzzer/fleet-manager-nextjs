@@ -68,16 +68,6 @@ const UsersPruebas: User[] = [
   },
 ];
 
-const allRoles = [
-  "manager",
-  "supervisor",
-  "admin",
-  "operator",
-  "client",
-  "developer",
-  "customer",
-];
-
 //Colores por rol
 const rolColors: { [key: string]: string } = {
   MANAGER: "bg-yellow-500",
@@ -182,22 +172,7 @@ const ListaUsuarios = () => {
           <div class="flex flex-col">
             <input id="add-user-password" type="password" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Contraseña">
           </div>
-          <div class="flex flex-col">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
-            <div class="space-y-2">
-              ${allRoles
-                .map(
-                  (rol) =>
-                    `
-                  <label class="flex items-center">
-                    <input type="checkbox" name="roles" value="${rol}" class="form-checkbox h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800">
-                    <span class="ml-2 text-gray-900">${rol}</span>
-                  </label>
-                `
-                )
-                .join("")}
-            </div>
-        </div>
+      </div>
       `,
       showCancelButton: true,
       confirmButtonText: "Registrar",
@@ -217,9 +192,12 @@ const ListaUsuarios = () => {
         ).value;
 
         //Hace un array con el valor de todos los checkbox que fueron seleccionados
+        /*
         const roles = Array.from(
           document.querySelectorAll('input[name="roles"]:checked')
         ).map((el) => (el as HTMLInputElement).value);
+        */
+        const roles = "";
 
         if (
           !username ||
