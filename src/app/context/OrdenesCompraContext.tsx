@@ -174,7 +174,7 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
   const createOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
     setOrdenesDeCompra((prevOrdenesDeCompra) => [
       ...prevOrdenesDeCompra,
-      ordenDeCompra,
+      {...ordenDeCompra, id:(prevOrdenesDeCompra.length + 1) },
     ]);
   };
 

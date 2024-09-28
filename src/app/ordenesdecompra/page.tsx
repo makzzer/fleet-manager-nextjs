@@ -119,7 +119,7 @@ const OrdenesDeCompra = () => {
   const onCreateSubmit = async (formData: { proveedor: any; fecha_de_creacion: any; total_compra: any; estado: any; }) => {
 
     const nuevaOrden : OrdenDeCompra = {
-      id: 999,
+      id: 0,
       total_compra: formData.total_compra,
       createdAt: "2024-09-27T08:00:00Z",
       updatedAt: "2024-09-27T10:00:00Z",
