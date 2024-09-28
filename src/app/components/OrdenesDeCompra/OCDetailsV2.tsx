@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import TimerIcon from "@mui/icons-material/Timer";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -19,8 +19,9 @@ interface Producto {
   id: string;
   name: string;
   brand: string;
+  description: string;
   category: string;
-  purchase_date: string;
+  quantity: number;
 }
 
 interface OrdenDeCompra {
@@ -40,6 +41,17 @@ interface OCDetailsProps {
 
 export default function OCDetails({ orden }: OCDetailsProps) {
   const [showDetails, setShowDetails] = useState(false);
+
+  // Guarda un booleano en true si el mail del proveedor es muy largo
+  const [isLongMail, setIsLongMail] = useState(false);
+
+  // Si el mail del proveedor pasa los 23 caracteres, se setea el booleano en true
+  useEffect(() => {
+    const emailLimit = 23;
+    if (orden.provider.email.length > emailLimit) {
+      setIsLongMail(true);
+    }
+  }, [orden.provider.email]);
 
   if (!orden) {
     return (
@@ -89,6 +101,10 @@ export default function OCDetails({ orden }: OCDetailsProps) {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="bg-gray-800 p-3 rounded md:col-span-2">
+                <p className="text-gray-400 text-sm">Fecha de creación</p>
+                <p className="text-white font-semibold">{orden.date_created}</p>
+              </div>
               <div className="bg-gray-800 p-3 rounded">
                 <p className="text-gray-400 text-sm">Nombre del proveedor</p>
                 <p className="text-white font-semibold">
@@ -96,14 +112,38 @@ export default function OCDetails({ orden }: OCDetailsProps) {
                 </p>
               </div>
               <div className="bg-gray-800 p-3 rounded">
-                <p className="text-gray-400 text-sm">Fecha de creación</p>
-                <p className="text-white font-semibold">{orden.date_created}</p>
+                <p className="text-gray-400 text-sm">CUIT del proveedor</p>
+                <p className="text-white font-semibold">
+                  {orden.provider.cuit}
+                </p>
               </div>
-              {/* El tercer elemento ocupa 2 columnas en pantallas medianas o grandes */}
-              <div className="bg-gray-800 p-3 rounded md:col-span-2">
+              {/* Si el mail es largo, el campo de telefono pasa a ocupar 2 columnas */}
+              <div
+                className={`bg-gray-800 p-3 rounded ${
+                  isLongMail ? "md:col-span-2" : ""
+                }`}
+              >
+                <p className="text-gray-400 text-sm">Telefono del proveedor</p>
+                <p className="text-white font-semibold">
+                  {orden.provider.phone_number}
+                </p>
+              </div>
+              {/* Si el mail es largo, el campo de mail pasa a ocupar 2 columnas */}
+              <div
+                className={`bg-gray-800 p-3 rounded ${
+                  isLongMail ? "md:col-span-2" : ""
+                }`}
+              >
                 <p className="text-gray-400 text-sm">Mail del proveedor</p>
                 <p className="text-white font-semibold">
                   {orden.provider.email}
+                </p>
+              </div>
+              {/* El tercer elemento ocupa 2 columnas en pantallas medianas o grandes */}
+              <div className="bg-gray-800 p-3 rounded md:col-span-2">
+                <p className="text-gray-400 text-sm">Dirección del proveedor</p>
+                <p className="text-white font-semibold">
+                  {orden.provider.address}
                 </p>
               </div>
             </div>

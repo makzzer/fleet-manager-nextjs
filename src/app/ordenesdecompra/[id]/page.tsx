@@ -19,8 +19,9 @@ interface Producto {
   id: string;
   name: string;
   brand: string;
+  description: string;
   category: string;
-  purchase_date: string;
+  quantity: number;
 }
 
 interface OrdenDeCompra {

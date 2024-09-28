@@ -27,8 +27,9 @@ interface Producto {
   id: string;
   name: string;
   brand: string;
+  description: string;
   category: string;
-  purchase_date: string;
+  quantity: number;
 }
 
 interface OrdenDeCompra {
@@ -140,8 +141,9 @@ const OrdenesDeCompra = () => {
         id: "401",
         name: "Producto 4",
         brand: "Marca 4",
+        description: "Product...",
         category: "Categoría D",
-        purchase_date: "2024-01-06",
+        quantity: 3,
       },
       quantity: 3,
       amount: parseInt(formData.total_compra),

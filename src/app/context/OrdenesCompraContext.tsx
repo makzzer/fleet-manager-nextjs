@@ -7,11 +7,9 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
-//import axios from 'axios';
+import axios from "axios";
 
-//const apiOrdenesDeCompraNgrok = "https://frtcjlcx-1337.brs.devtunnels.ms/api/orden-compras?populate=*";
-
-//const apiOrdenesDeCompraDonweb = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras?populate=*`;
+const apiOrdenesDeCompraBackend = `https://fleet-manager-gzui.onrender.com/api/orders`;
 
 //-------DEFINO LAS INTERFACES------
 // interface Proveedor {
@@ -56,8 +54,9 @@ interface Producto {
   id: string;
   name: string;
   brand: string;
+  description: string;
   category: string;
-  purchase_date: string;
+  quantity: number;
 }
 
 interface OrdenDeCompra {
@@ -107,8 +106,9 @@ const ordenesDeCompraPrueba: OrdenDeCompra[] = [
       id: "101",
       name: "Producto 1",
       brand: "Marca 1",
+      description: "Product...",
       category: "Categoría A",
-      purchase_date: "2024-01-01",
+      quantity: 3,
     },
     quantity: 3,
     amount: 1500,
@@ -130,8 +130,9 @@ const ordenesDeCompraPrueba: OrdenDeCompra[] = [
       id: "201",
       name: "Producto 3",
       brand: "Marca 3",
+      description: "Product...",
       category: "Categoría B",
-      purchase_date: "2024-02-05",
+      quantity: 2,
     },
     quantity: 2,
     amount: 2300,
@@ -153,8 +154,9 @@ const ordenesDeCompraPrueba: OrdenDeCompra[] = [
       id: "301",
       name: "Producto 5",
       brand: "Marca 5",
+      description: "Product...",
       category: "Categoría C",
-      purchase_date: "2024-03-10",
+      quantity: 2,
     },
     quantity: 2,
     amount: 1800,
@@ -172,7 +174,22 @@ export const OrdenDeCompraProvider = ({
   const [ordenesDeCompra, setOrdenesDeCompra] = useState<OrdenDeCompra[]>([]);
 
   const fetchOrdenesDeCompra = useCallback(async () => {
-    setOrdenesDeCompra(ordenesDeCompraPrueba);
+    try {
+      const response = await axios.get(apiOrdenesDeCompraBackend);
+      const fetchedOrdenesDeCompra = response.data;
+
+      if (Array.isArray(fetchedOrdenesDeCompra)) {
+        setOrdenesDeCompra(fetchedOrdenesDeCompra);
+      } else {
+        console.error(
+          "Error: La respuesta de la API no es un array válido",
+          fetchedOrdenesDeCompra
+        );
+      }
+    } catch (error) {
+      console.error("Error al obtener las ordenes de compra:", error);
+      setOrdenesDeCompra(ordenesDeCompraPrueba);
+    }
   }, []);
 
   const createOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
