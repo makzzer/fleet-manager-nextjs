@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useUser } from '../context/UserContext'; 
 
 // Definimos el tema oscuro con Material UI
 const theme = createTheme({
@@ -34,9 +35,12 @@ const theme = createTheme({
 });
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(''); // Estado para manejar los mensajes de error
+
+  const { authenticateUser } = useUser(); // Traemos el método del contexto
 
   // Alternar visibilidad de la contraseña
   const handleTogglePassword = () => {
@@ -44,17 +48,31 @@ const Login: React.FC = () => {
   };
 
   // Controlar el envío del formulario
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Aquí podrías agregar lógica para autenticar al usuario
+
+    // Validación simple para campos vacíos
+    if (!username || !password) {
+      setErrorMessage('Por favor, completa todos los campos.');
+      return;
+    }
+
+    // Autenticar usuario
+    const { user, error } = await authenticateUser(username, password);
+
+    if (error) {
+      setErrorMessage(error); // Mostramos el error si la autenticación falla
+      console.log('Error:', error); // Debug por consola
+    } else if (user) {
+      setErrorMessage(''); // Limpiamos los errores si autenticamos correctamente
+      console.log('Usuario autenticado:', user); // Debug del usuario autenticado
+    }
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Container
-        maxWidth="xs" // Ajustamos el tamaño máximo a 'xs' para hacer el formulario más pequeño
+        maxWidth="xs"
         sx={{
           display: 'flex',
           height: '70vh',
@@ -65,13 +83,13 @@ const Login: React.FC = () => {
         <Paper
           elevation={10}
           sx={{
-            padding: 3, // Reducimos el padding
+            padding: 3,
             width: '100%',
             borderRadius: '12px',
           }}
         >
           <Typography
-            variant="h5" // Hacemos el título más pequeño
+            variant="h5"
             gutterBottom
             align="center"
             sx={{ fontWeight: 'bold' }}
@@ -85,16 +103,18 @@ const Login: React.FC = () => {
               type="text"
               fullWidth
               variant="outlined"
-              margin="dense" // Usamos 'dense' para hacer el campo más compacto
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              margin="dense"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               InputLabelProps={{
-                style: { color: '#fff' }, // Estilo del label en modo oscuro
+                style: { color: '#fff' },
               }}
               InputProps={{
-                style: { color: '#fff' }, // Estilo del input en modo oscuro
+                style: { color: '#fff' },
               }}
+              error={!!errorMessage && !username} // Mostrar error si no hay username
+              helperText={!!errorMessage && !username ? 'El campo de usuario es obligatorio' : ''}
             />
 
             <TextField
@@ -102,7 +122,7 @@ const Login: React.FC = () => {
               type={showPassword ? 'text' : 'password'}
               fullWidth
               variant="outlined"
-              margin="dense" // Compactamos también este input
+              margin="dense"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -123,7 +143,15 @@ const Login: React.FC = () => {
                   </InputAdornment>
                 ),
               }}
+              error={!!errorMessage && !password} // Mostrar error si no hay password
+              helperText={!!errorMessage && !password ? 'El campo de contraseña es obligatorio' : ''}
             />
+
+            {errorMessage && ( // Mostrar mensaje de error global
+              <Typography variant="body2" color="error" align="center" sx={{ mt: 1 }}>
+                {errorMessage}
+              </Typography>
+            )}
 
             <Button
               type="submit"
@@ -132,7 +160,7 @@ const Login: React.FC = () => {
               sx={{
                 mt: 2,
                 mb: 1,
-                padding: '10px', // Reducimos el padding del botón
+                padding: '10px',
                 backgroundColor: '#1a73e8',
                 '&:hover': {
                   backgroundColor: '#1765c0',

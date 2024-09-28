@@ -1,103 +1,99 @@
-'use client'
+'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, Children } from "react"
-import axios from "axios"
-import { error } from "console";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import axios from "axios";
 
-const apiUsersBackend = `https://fleet-manager-gzui.onrender.com/api/users`
+// API para autenticación de usuarios
+const apiAuthBackend = `https://fleet-manager-gzui.onrender.com/api/users/auths`;
 
 interface Permissions {
-    module: string;
-    operations: string[];
+  module: string;
+  operations: string[];
 }
-
 
 interface User {
-    id: string;
-    username: string;
-    full_name: string;
-    roles: string[];
-    permissions: Permissions[];
-    date_created: string;
-    date_updated: string;
+  id: string;
+  username: string;
+  full_name: string;
+  roles: string[];
+  permissions: Permissions[];
+  date_created: string;
+  date_updated: string;
 }
 
+interface AuthResponse {
+  user?: User;
+  error?: string;
+}
 
 interface UserContextProps {
-    users: User[];
-    fetchUsers: () => void;
-    //habilito acá el seteo para el user que voy a usar en todos los componentes
-    setUsers: (users: User[]) => void;
+  authenticatedUser: User | null;
+  authenticateUser: (username: string, password: string) => Promise<AuthResponse>;
+  logoutUser: () => void;
 }
 
-//defino el usuarioContext que me crea el context en relacion a las propiedades definidas en el userContextProps
-const UserContext = createContext<UserContextProps | undefined>(undefined)
+// Creamos el UserContext
+const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const useUser = () => {
-    //Creo el context con el hook useContext y le paso el usuarioContext que cree arriba
-    const context = useContext(UserContext)
-    if (!context) {
-        throw new Error('useUsuario debe ser usado dentro de userProvider');
-    }
-    return context;
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useUser debe ser usado dentro de UserProvider');
+  }
+  return context;
 };
 
-//Provider Para envolver la aplicación
+// Provider para envolver la aplicación
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-    const [users, setUsers] = useState<User[]>([])
+  const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
 
+  // Función para guardar el usuario en localStorage
+  const saveUserToLocalStorage = (user: User | null) => {
+    if (user) {
+      localStorage.setItem('authenticatedUser', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('authenticatedUser');
+    }
+  };
 
-    const fetchUsers = useCallback(async () => {
-        try {
-            const response = await axios.get(apiUsersBackend);
+  // Recuperar usuario desde localStorage si existe
+  useEffect(() => {
+    const storedUser = localStorage.getItem('authenticatedUser');
+    if (storedUser) {
+      setAuthenticatedUser(JSON.parse(storedUser));
+    }
+  }, []);
 
-            // Aquí accedemos directamente al array de usuarios
-            const fetchedUsersData = response.data;
+  // Función para autenticar al usuario
+  const authenticateUser = useCallback(async (username: string, password: string): Promise<AuthResponse> => {
+    try {
+      const response = await axios.post(apiAuthBackend, { username, password });
+      
+      const user = response.data; // Aquí recibes el objeto User si es exitoso
+      setAuthenticatedUser(user); // Guardamos el usuario autenticado en el estado
+      saveUserToLocalStorage(user); // Guardamos el usuario en localStorage
+      return { user }; // Devolvemos el usuario en caso de éxito
 
-            if (Array.isArray(fetchedUsersData)) {
-                const fetchedUsers: User[] = fetchedUsersData.map((item: User) => ({
+    } catch (error) {
+      // Manejar error (e.g., credenciales incorrectas)
+      console.error('Error authenticating user:', error);
+      return { error: 'Usuario o contraseña incorrectos' }; // Mensaje de error
+    }
+  }, []);
 
+  // Función para cerrar sesión
+  const logoutUser = useCallback(() => {
+    setAuthenticatedUser(null); // Reseteamos el usuario autenticado a null
+    saveUserToLocalStorage(null); // Eliminamos el usuario de localStorage
+  }, []);
 
-                    id: item.id,
-                    username: item.username,
-                    full_name: item.full_name,
-                    roles: item.roles,
-                    permissions: item.permissions.map((perm) =>({
-                        module: perm.module,
-                        operations: perm.operations,
-                    })),
-                    date_created: item.date_created,
-                    date_updated: item.date_updated,
-                }));
-
-                setUsers(fetchedUsers);
-
-            } else {
-                console.error('Error: La respuesta de la API no es un array válido', fetchedUsersData);
-            }
-        } catch (error) {
-            console.error('Error fetching Users:', error);
-        }
-    }, []);
-
-
-
-
-    //ejecuto autommm 
-    useEffect(() => {
-        fetchUsers();
-    }, [fetchUsers]);
-
-
-
-
-    return (
-        <UserContext.Provider value={{
-            users, setUsers, fetchUsers() {
-
-            },
-        }}>
-            {children}
-        </UserContext.Provider>
-    );
+  return (
+    <UserContext.Provider value={{
+      authenticatedUser,
+      authenticateUser,
+      logoutUser,
+    }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
