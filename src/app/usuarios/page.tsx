@@ -21,6 +21,13 @@ interface User {
   date_updated: string;
 }
 
+interface newUser {
+  username: string;
+  fullName: string;
+  roles: string[];
+  password: string;
+}
+
 // ¿Todo esto iria en un context nuevo?
 const apiUsuarios = "https://fleet-manager-gzui.onrender.com/api/users";
 
@@ -61,6 +68,16 @@ const UsersPruebas: User[] = [
   },
 ];
 
+const allRoles = [
+  "manager",
+  "supervisor",
+  "admin",
+  "operator",
+  "client",
+  "developer",
+  "customer",
+];
+
 //Colores por rol
 const rolColors: { [key: string]: string } = {
   MANAGER: "bg-yellow-500",
@@ -87,6 +104,15 @@ const ListaUsuarios = () => {
         error
       );
       setUsers(UsersPruebas); // En caso de error, usamos los datos de prueba
+    }
+  };
+
+  // Función para crear un nuevo usuario
+  const createUsers = async (newUsuario: newUser) => {
+    try {
+      console.log(newUsuario);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -138,11 +164,110 @@ const ListaUsuarios = () => {
     });
   };
 
+  // Formulario para agregar usuarios
+  const handleAddUser = () => {
+    Swal.fire({
+      title: `Agregar un usuario`,
+      html: `
+        <div class="flex flex-col space-y-4">
+          <div class="flex flex-col">
+            <input id="add-user-userName" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Nombre de usuario">
+          </div>
+          <div class="flex flex-col">
+            <input id="add-user-name" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Nombre/s">
+          </div>
+          <div class="flex flex-col">
+            <input id="add-user-lastName" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Apellido">
+          </div>
+          <div class="flex flex-col">
+            <input id="add-user-password" type="password" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Contraseña">
+          </div>
+          <div class="flex flex-col">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
+            <div class="space-y-2">
+              ${allRoles
+                .map(
+                  (rol) =>
+                    `
+                  <label class="flex items-center">
+                    <input type="checkbox" name="roles" value="${rol}" class="form-checkbox h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800">
+                    <span class="ml-2 text-gray-900">${rol}</span>
+                  </label>
+                `
+                )
+                .join("")}
+            </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Registrar",
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        const username = (
+          document.getElementById("add-user-userName") as HTMLInputElement
+        ).value;
+        const name = (
+          document.getElementById("add-user-name") as HTMLInputElement
+        ).value;
+        const lastName = (
+          document.getElementById("add-user-lastName") as HTMLInputElement
+        ).value;
+        const password = (
+          document.getElementById("add-user-password") as HTMLInputElement
+        ).value;
+
+        //Hace un array con el valor de todos los checkbox que fueron seleccionados
+        const roles = Array.from(
+          document.querySelectorAll('input[name="roles"]:checked')
+        ).map((el) => (el as HTMLInputElement).value);
+
+        if (
+          !username ||
+          !name ||
+          !lastName ||
+          !password ||
+          roles.length === 0
+        ) {
+          Swal.showValidationMessage(
+            "Por favor, complete todos los campos correctamente."
+          );
+          return false;
+        }
+
+        //Concatena el nombre con el apellido para crear el nombre completo
+        const fullName = name.concat(" ", lastName);
+
+        return { username, fullName, password, roles };
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { username, fullName, password, roles } = result.value;
+        const usuarioNuevo: newUser = { username, fullName, password, roles };
+
+        createUsers(usuarioNuevo);
+
+        Swal.fire({
+          title: "Agregado!",
+          text: "El usuario ha sido creado con exito.",
+          icon: "success",
+        });
+      }
+    });
+  };
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-900 p-8">
-        <h1 className="text-3xl font-bold mb-6 text-blue-400">Usuarios</h1>
-
+        <div className="flex justify-between mb-6">
+          <h1 className="text-3xl font-bold text-blue-400">Usuarios</h1>
+          <button
+            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            onClick={() => handleAddUser()}
+          >
+            Crear usuario
+          </button>
+        </div>
         <div className="hidden lg:block overflow-x-auto">
           <table className="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden">
             <thead>
