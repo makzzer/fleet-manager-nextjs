@@ -81,6 +81,27 @@ const rolColors: { [key: string]: string } = {
 
 const ListaUsuarios = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para la barra de busqueda
+  const [selectedRole, setSelectedRole] = useState<string>(""); // Estado para el filtro por rol
+
+  /* Filtra los usuarios según lo ingresado en la barra de busquedas y el rol seleccionado */
+  // Se usa filter para crear un array nuevo con los usuarios que cumplan las condiciones del return
+  const filteredUsers = users.filter((user) => {
+    // Verifica si el usuario coincide con el nombre completo, o el username ingresado en la barra de busqueda
+    const matchesSearchTerm =
+      // Verifica la coincidencia con el username
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      // Verifica la coincidencia con el nombre completo
+      user.full_name.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Verifica si el usuario coincide con el rol seleccionado
+    // Si no selecciona ningun rol para filtrar, siempre devuelve true
+    // Caso contrario, busca que el rol del usuario coincida con el elegido en el filtro
+    const matchesRole = selectedRole ? user.roles.includes(selectedRole) : true;
+
+    // Si el usuario coincide con el nombre/username y el rol, lo agrega a la nueva lista de usuarios filtrados coincidentes
+    return matchesSearchTerm && matchesRole;
+  });
 
   // Función para obtener los usuarios
   const fetchUsers = async () => {
@@ -246,6 +267,30 @@ const ListaUsuarios = () => {
             Crear usuario
           </button>
         </div>
+        <div className="flex flex-col lg:flex-row justify-between items-center mb-6 space-y-4 lg:space-y-0">
+          {/* Barra de busqueda */}
+          <input
+            type="text"
+            placeholder="Buscar por nombre o username"
+            className="w-full lg:w-1/2 px-4 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el término de búsqueda
+          />
+
+          {/* Filtro por roles */}
+          <select
+            className="w-full lg:w-1/4 px-4 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)} // Actualiza el rol seleccionado
+          >
+            <option value="">Todos los roles</option>
+            {Object.keys(rolColors).map((rol) => (
+              <option key={rol} value={rol}>
+                {rol}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="hidden lg:block overflow-x-auto">
           <table className="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden">
             <thead>
@@ -259,7 +304,7 @@ const ListaUsuarios = () => {
               </tr>
             </thead>
             <tbody className="bg-gray-800 text-gray-200">
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id} className="border-b border-gray-700">
                   <td className="px-6 py-4">{user.username}</td>
                   <td className="px-6 py-4">{user.full_name}</td>
@@ -297,7 +342,7 @@ const ListaUsuarios = () => {
 
         {/* Vista tipo card para pantallas pequeñas */}
         <div className="lg:hidden grid grid-cols-1 gap-4 mt-6">
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <UserCard
               key={user.id}
               user={user}
