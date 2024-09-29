@@ -19,13 +19,13 @@ interface Coordinates {
 
 interface Vehiculo {
   id: string;
+  status: boolean;
   model: string;
   brand: string;
   year: number;
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
-  activo: boolean;
 }
 
 interface VehiculoContextProps {
@@ -38,6 +38,12 @@ interface VehiculoContextProps {
     vehiculoEditado: Omit<
       Vehiculo,
       "coordinates" | "date_created" | "date_updated"
+    >
+  ) => Promise<void>;
+  updateVehiculo: (
+    vehiculoActualizado: Omit<
+      Vehiculo,
+      "Coordinates" | "date_created" | "date_updated"
     >
   ) => Promise<void>;
 }
@@ -68,6 +74,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
         const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map(
           (item: Vehiculo) => ({
             id: item.id,
+            status: item.status,
             model: item.model,
             brand: item.brand,
             year: item.year,
@@ -77,7 +84,6 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
             },
             date_created: item.date_created,
             date_updated: item.date_updated,
-            activo: item.activo,
           })
         );
 
@@ -105,40 +111,46 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const modifyVehiculo = async (
-    vehiculoEditado: Omit<
-      Vehiculo,
-      "coordinates" | "date_created" | "date_updated"
-    >
+    vehiculoEditado: Omit<Vehiculo, "coordinates" | "date_created" | "date_updated">
   ) => {
-    //Setea localmente los vehiculos modificados, hasta que esté el back
     try {
+      // Realiza la solicitud PUT para modificar el vehículo en el backend
+      await axios.put(`${apiVehiculosBackend}/${vehiculoEditado.id}`, vehiculoEditado);
+  
+      // Actualiza localmente los datos si la respuesta es exitosa
       setVehiculos((prevVehiculos) =>
         prevVehiculos.map((vehiculo) =>
           vehiculo.id === vehiculoEditado.id
-            ? {
-                // Modifica internamente el vehiculo sobreescribiendo SOLO los datos
-                // que se modificaron
-                ...vehiculo,
-                ...vehiculoEditado,
-              }
+            ? { ...vehiculo, ...vehiculoEditado }
             : vehiculo
         )
       );
-      console.log(
-        `El Vehiculo con ID ${vehiculoEditado.id} ha sido editado localmente.`
-      );
+  
+      console.log(`El Vehículo con ID ${vehiculoEditado.id} ha sido editado en el backend.`);
     } catch (error) {
-      console.error("Error editando vehiculo:", error);
+      console.error("Error editando vehículo en el backend:", error);
     }
+  };  
 
-    /*
+  const updateVehiculo = async (
+    vehiculoActualizado: Omit<
+    Vehiculo, 
+    "coordinates" | "date_created" | "date_updated"
+    >
+  ) => {
     try {
-      await axios.put(apiVehiculosBackend, vehiculoEditado);
-      fetchVehiculos();
+      setVehiculos((prevVehiculos) =>
+        prevVehiculos.map((vehiculo) =>
+          vehiculo.id === vehiculoActualizado.id
+            ? { ...vehiculo, ...vehiculoActualizado }
+            : vehiculo
+        )
+      );
+
+      console.log(`El Vehículo con ID ${vehiculoActualizado.id} ha sido actualizado.`);
     } catch (error) {
-      console.error('Error modifying vehiculo:', error);
+      console.error("Error actualizando vehículo:", error);
     }
-    */
   };
 
   useEffect(() => {
@@ -147,7 +159,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <VehiculoContext.Provider
-      value={{ vehiculos, fetchVehiculos, createVehiculo, modifyVehiculo }}
+      value={{ vehiculos, fetchVehiculos, createVehiculo, modifyVehiculo, updateVehiculo }}
     >
       {children}
     </VehiculoContext.Provider>

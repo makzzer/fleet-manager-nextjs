@@ -13,127 +13,49 @@ interface Coordinates {
 
 interface Vehiculo {
   id: string;
+  status: boolean;
   model: string;
   brand: string;
   year: number;
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
-  activo: boolean;
 }
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
-  onVehicleUpdated: (VehiculoID: Vehiculo) => void;
 }
 
-const VehiculoCard = ({ vehiculo, onVehicleUpdated }: VehiculoCardProps) => {
+const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const router = useRouter();
-  const { modifyVehiculo } = useVehiculo();
+  const { vehiculos, fetchVehiculos, modifyVehiculo } = useVehiculo();
+  const {updateVehiculo} = useVehiculo();
 
   const handleViewVehiculo = (id: string) => {
     router.push(`/vehiculos/${id}`);
   };
 
-  {
-    /*
-  const handleDelete = () => {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: "¡No podrás revertir esta acción!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Aquí puedes agregar la lógica para eliminar el vehículo
-        Swal.fire(
-          'Eliminado!',
-          'El vehículo ha sido eliminado.',
-          'success'
-        )
-      }
-    });
-  };
-  */
-  }
-
-  // const handleDisableVehicle = async () => {
-  //   const updateUrl = `${apiVehiculosBackend}/${vehiculo.id}`;
-  //   const newStatus = !vehiculo.activo;
-
-  //   try {
-  //     const response = await axios.put(updateUrl, {
-  //       data: { activo: newStatus },
-  //     });
-
-  //     const updatedVehiculo = { ...vehiculo, activo: newStatus };
-  //     onVehicleUpdated(updatedVehiculo);
-
-  //     Swal.fire({
-  //       title: `Vehículo ${newStatus ? "habilitado" : "deshabilitado"}`,
-  //       text: `El vehículo ha sido ${newStatus ? "habilitado" : "deshabilitado"} correctamente.`,
-  //       icon: "success",
-  //       confirmButtonColor: "#3085d6",
-  //     });
-  //   } catch (error) {
-  //     Swal.fire({
-  //       title: "Error",
-  //       text: "Hubo un problema al cambiar el estado del vehículo. Por favor, intenta de nuevo.",
-  //       icon: "error",
-  //       confirmButtonColor: "#d33",
-  //     });
-  //   }
-  // };
-
-  const handleDisableVehicle = async (vehiculo: Vehiculo) => {
-    const updateUrl = `${apiVehiculosBackend}${vehiculo.id}`;
-
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: `El vehículo será ${
-        vehiculo.activo ? "deshabilitado" : "habilitado"
-      } y su estado cambiará a ${vehiculo.activo ? "inactivo" : "activo"}.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: vehiculo.activo ? "Deshabilitar" : "Habilitar",
-      cancelButtonText: "Cancelar",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          // Hacer la solicitud PUT para actualizar el estado del vehículo
-          await axios.put(updateUrl, {
-            data: { activo: !vehiculo.activo },
-          });
-
-          Swal.fire({
-            title: `Vehículo ${
-              vehiculo.activo ? "deshabilitado" : "habilitado"
-            }`,
-            text: `El vehículo ha sido ${
-              vehiculo.activo ? "deshabilitado" : "habilitado"
-            } correctamente.`,
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-          });
-
-          // Llamar a la función para actualizar el estado del vehículo en la tabla
-          onVehicleUpdated({ ...vehiculo, activo: !vehiculo.activo });
-        } catch (error) {
-          Swal.fire({
-            title: "Error",
-            text: `Hubo un problema al cambiar el estado del vehículo. Por favor, intenta de nuevo: ${error}`,
-            icon: "error",
-            confirmButtonColor: "#d33",
-          });
-        }
-      }
-    });
+  const handleDisableVehicle = async () => {
+    const newStatus = !vehiculo.status;
+    const updatedVehiculo = { ...vehiculo, status: newStatus };
+  
+    try {
+      await updateVehiculo(updatedVehiculo);
+  
+      Swal.fire({
+        title: `Vehículo ${newStatus ? "habilitado" : "deshabilitado"}`,
+        text: `El vehículo ha sido ${newStatus ? "habilitado" : "deshabilitado"} correctamente.`,
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al cambiar el estado del vehículo. Por favor, intenta de nuevo.",
+        icon: "error",
+        confirmButtonColor: "#d33",
+      });
+    }
   };
 
   const handleEdit = () => {
@@ -160,9 +82,9 @@ const VehiculoCard = ({ vehiculo, onVehicleUpdated }: VehiculoCardProps) => {
       }">
           </div>
           <div class="flex flex-col">
-            <label for="edit-vehicle-activo" class="text-left text-gray-700 font-medium">Activo</label>
-            <input id="edit-vehicle-activo" type="checkbox" ${
-              vehiculo.activo ? "checked" : ""
+            <label for="edit-vehicle-status" class="text-left text-gray-700 font-medium">Status</label>
+            <input id="edit-vehicle-status" type="checkbox" ${
+              vehiculo.status ? "checked" : ""
             }>
           </div>
         </div>
@@ -181,8 +103,8 @@ const VehiculoCard = ({ vehiculo, onVehicleUpdated }: VehiculoCardProps) => {
           (document.getElementById("edit-vehicle-year") as HTMLInputElement)
             .value
         );
-        const activo = (
-          document.getElementById("edit-vehicle-activo") as HTMLInputElement
+        const status = (
+          document.getElementById("edit-vehicle-status") as HTMLInputElement
         ).checked;
 
         if (
@@ -197,13 +119,13 @@ const VehiculoCard = ({ vehiculo, onVehicleUpdated }: VehiculoCardProps) => {
           return false;
         }
 
-        return { model, brand, year, activo };
+        return { model, brand, year, status };
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        const { model, brand, year, activo } = result.value;
-        const updatedVehiculo = { ...vehiculo, model, brand, year, activo };
+        const { model, brand, year, status } = result.value;
+        const updatedVehiculo = { ...vehiculo, model, brand, year, status };
 
         modifyVehiculo(updatedVehiculo);
 
@@ -219,7 +141,7 @@ const VehiculoCard = ({ vehiculo, onVehicleUpdated }: VehiculoCardProps) => {
   return (
     <div
       className={`p-6 rounded-lg shadow-lg text-white transition duration-300 ease-in-out ${
-        vehiculo.activo
+        vehiculo.status
           ? "bg-gray-800 hover:bg-gray-900"
           : "bg-gray-800 opacity-50"
       }`}
@@ -262,14 +184,14 @@ const VehiculoCard = ({ vehiculo, onVehicleUpdated }: VehiculoCardProps) => {
         </button>
 
         <button
-          onClick={() => handleDisableVehicle(vehiculo)}
+          onClick={() => handleDisableVehicle()}
           className={`font-bold py-2 px-4 rounded ${
-            vehiculo.activo
+            vehiculo.status
               ? "bg-red-500 hover:bg-red-600"
               : "bg-blue-500 hover:bg-blue-600"
           }`}
         >
-          {vehiculo.activo ? "Deshabilitar" : "Habilitar"}
+          {vehiculo.status ? "Deshabilitar" : "Habilitar"}
         </button>
       </div>
     </div>
