@@ -68,7 +68,7 @@ export default function OCDetails({ orden }: OCDetailsProps) {
       <div className="bg-gray-900 rounded-lg shadow-lg overflow-hidden w-full max-w-lg">
         <div className="p-6">
           <div className="flex flex-col items-center text-center">
-            {orden.status === "completado" ? (
+            {orden.status === "COMPLETED" ? (
               <>
                 <CheckCircleIcon className="w-12 h-12 text-green-500 mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">
@@ -78,7 +78,7 @@ export default function OCDetails({ orden }: OCDetailsProps) {
                   Tu orden ha sido completada
                 </p>
               </>
-            ) : orden.status === "pendiente" ? (
+            ) : orden.status === "ACTIVE" ? (
               <>
                 <TimerIcon className="w-12 h-12 text-yellow-500 mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">
@@ -103,7 +103,9 @@ export default function OCDetails({ orden }: OCDetailsProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div className="bg-gray-800 p-3 rounded md:col-span-2">
                 <p className="text-gray-400 text-sm">Fecha de creación</p>
-                <p className="text-white font-semibold">{orden.date_created}</p>
+                <p className="text-white font-semibold">
+                  {orden.date_created.slice(0, 10)}
+                </p>
               </div>
               <div className="bg-gray-800 p-3 rounded">
                 <p className="text-gray-400 text-sm">Nombre del proveedor</p>

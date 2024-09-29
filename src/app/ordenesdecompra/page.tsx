@@ -153,19 +153,23 @@ const OrdenesDeCompra = () => {
                     {orden.provider.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {orden.date_created}
+                    {orden.date_created.slice(0, 10)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${
-                        orden.status === "completado"
+                        orden.status === "COMPLETED"
                           ? "text-green-300 border-green-500"
-                          : orden.status === "pendiente"
+                          : orden.status === "ACTIVE"
                           ? "text-yellow-300 border-yellow-500"
                           : "text-red-300 border-red-500"
                       }`}
                     >
-                      {orden.status}
+                      {orden.status === "COMPLETED"
+                        ? "Completada"
+                        : orden.status === "ACTIVE"
+                        ? "Pendiente"
+                        : "Cancelada"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -207,9 +211,10 @@ const OrdenesDeCompra = () => {
             </tbody>
           </table>
         </div>
-        <OrdenCompraForm onSubmit={onCreateSubmit} 
+        <OrdenCompraForm
+          onSubmit={onCreateSubmit}
           proveedores={proveedores}
-          productos={productos} 
+          productos={productos}
         />
       </div>
     </ProtectedRoute>
