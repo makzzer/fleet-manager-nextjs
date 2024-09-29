@@ -2,49 +2,20 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
 
-import { useOrdenesDeCompra } from "../context/OrdenesCompraContext";
+import { useOrdenesDeCompra, OrdenDeCompra, CreacionOrdenDeCompra } from "../context/OrdenesCompraContext";
 
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
-import OrdenCompraForm from "./OrdenCompraForm";
+import OrdenCompraForm, { OrdenDeCompraFormData } from "./OrdenCompraForm";
 
 //ruta protegida
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
 const apiActualizarOrden = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras`;
 
-interface Proveedor {
-  id: string;
-  name: string;
-  email: string;
-  cuit: string;
-  phone_number: string;
-  address: string;
-}
-
-interface Producto {
-  id: string;
-  name: string;
-  brand: string;
-  description: string;
-  category: string;
-  quantity: number;
-}
-
-interface OrdenDeCompra {
-  id: string;
-  provider: Proveedor;
-  product: Producto;
-  quantity: number;
-  amount: number;
-  date_created: string;
-  date_updated: string;
-  status: string;
-}
-
 const OrdenesDeCompra = () => {
-  const { ordenesDeCompra, fetchOrdenesDeCompra, createOrdenDeCompra } =
+  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra } =
     useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -57,6 +28,24 @@ const OrdenesDeCompra = () => {
     };
     loadOrdenesDeCompra();
   }, [fetchOrdenesDeCompra]);
+
+  useEffect(() => {
+    const loadProveedores = async () => {
+      setLoading(true); // esta es la carga para el Skeleton placeholder
+      await fetchProveedores();
+      setLoading(false); // Esta es la carga para el skeleton placeholder
+    };
+    loadProveedores();
+  }, [fetchProveedores]);
+
+  useEffect(() => {
+    const loadProductos = async () => {
+      setLoading(true); // esta es la carga para el Skeleton placeholder
+      await fetchProductos();
+      setLoading(false); // Esta es la carga para el skeleton placeholder
+    };
+    loadProductos();
+  }, [fetchProductos]);
 
   const handleDelete = (id: string) => {
     console.log(`Eliminar orden con ID: ${id}`);
@@ -121,55 +110,20 @@ const OrdenesDeCompra = () => {
     }
   };
 
-  const onCreateSubmit = async (formData: {
-    proveedor: string;
-    fecha_de_creacion: string;
-    total_compra: string;
-    estado: string;
-  }) => {
-    const nuevaOrden: OrdenDeCompra = {
-      id: "0",
-      provider: {
-        id: "1",
-        name: formData.proveedor,
-        email: "contacto@proveedord.com",
-        cuit: "30-12345623-9",
-        phone_number: "11-1133-5678",
-        address: "Calle Falsa 019, Buenos Aires",
-      },
-      product: {
-        id: "401",
-        name: "Producto 4",
-        brand: "Marca 4",
-        description: "Product...",
-        category: "Categoría D",
-        quantity: 3,
-      },
-      quantity: 3,
-      amount: parseInt(formData.total_compra),
-      date_created: formData.fecha_de_creacion,
-      date_updated: formData.fecha_de_creacion,
-      status: formData.estado,
-    };
-    /*
-    {
-      id: "0",
-      total_compra: formData.total_compra,
-      createdAt: "2024-09-27T08:00:00Z",
-      updatedAt: "2024-09-27T10:00:00Z",
-      estado: formData.estado,
-      fecha_de_creacion: "2024-03-10",
-      proveedor: {
-        id: 3,
-        name: formData.proveedor,
-        mail: "ventas@proveedorc.com",
-        createdAt: "2023-07-20T10:20:00Z",
-        updatedAt: "2024-02-15T13:00:00Z",
-      },
-      productos: [],
-    };
-    */
-    createOrdenDeCompra(nuevaOrden);
+  const onCreateSubmit = async (formData: OrdenDeCompraFormData) => {
+    const ordenDeCompra : CreacionOrdenDeCompra = {
+      providerId: formData.providerId,
+      productId: formData.productId,
+      quantity: formData.quantity,
+      amount: formData.amount
+    }
+    createOrdenDeCompra(ordenDeCompra);
+    Swal.fire({
+      title: "Orden Creada",
+      text: "La orden de compra se creó con éxito.",
+      icon: "success",
+      confirmButtonText: "Cerrar",
+    });
   };
 
   return (
@@ -253,7 +207,10 @@ const OrdenesDeCompra = () => {
             </tbody>
           </table>
         </div>
-        <OrdenCompraForm onSubmit={onCreateSubmit} />
+        <OrdenCompraForm onSubmit={onCreateSubmit} 
+          proveedores={proveedores}
+          productos={productos} 
+        />
       </div>
     </ProtectedRoute>
   );

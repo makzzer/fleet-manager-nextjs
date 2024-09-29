@@ -10,36 +10,8 @@ import React, {
 import axios from "axios";
 
 const apiOrdenesDeCompraBackend = `https://fleet-manager-gzui.onrender.com/api/orders`;
-
-//-------DEFINO LAS INTERFACES------
-// interface Proveedor {
-//   id: number;
-//   name: string;
-//   mail: string;
-//   createdAt: string;
-//   updatedAt: string;
-// }
-
-// interface Producto {
-//   id: number;
-//   name: string;
-//   stock: number;
-//   stock_minimo: number;
-//   min_price_compra_stock: number | null;
-//   precio: number;
-//   cantidad: number;
-// }
-
-// interface OrdenDeCompra {
-//   id: number;
-//   total_compra: number;
-//   createdAt: string;
-//   updatedAt: string;
-//   estado: string;
-//   fecha_de_creacion: string;
-//   proveedor: Proveedor;
-//   productos: Producto[];
-// }
+const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
+const apiProductosBackend = `https://fleet-manager-gzui.onrender.com/api/products`;
 
 interface Proveedor {
   id: string;
@@ -59,7 +31,7 @@ interface Producto {
   quantity: number;
 }
 
-interface OrdenDeCompra {
+export interface OrdenDeCompra {
   id: string;
   provider: Proveedor;
   product: Producto;
@@ -70,10 +42,21 @@ interface OrdenDeCompra {
   status: string;
 }
 
+export interface CreacionOrdenDeCompra {
+  providerId: string;
+  productId: string;
+  quantity: number;
+  amount: number;
+}
+
 interface OrdenDeCompraContextProps {
   ordenesDeCompra: OrdenDeCompra[];
+  proveedores: Proveedor[];
+  productos: Producto[];
   fetchOrdenesDeCompra: () => void;
-  createOrdenDeCompra: (ordenDeCompra: OrdenDeCompra) => Promise<void>;
+  fetchProductos: () => void;
+  fetchProveedores: () => void;
+  createOrdenDeCompra: (ordenDeCompra: CreacionOrdenDeCompra) => Promise<void>;
 }
 
 // Creo el context
@@ -91,87 +74,14 @@ export const useOrdenesDeCompra = () => {
   return context;
 };
 
-const ordenesDeCompraPrueba: OrdenDeCompra[] = [
-  {
-    id: "1",
-    provider: {
-      id: "1",
-      name: "Proveedor A",
-      email: "contacto@proveedora.com",
-      cuit: "30-12345678-9",
-      phone_number: "11-1234-5678",
-      address: "Calle Falsa 123, Buenos Aires",
-    },
-    product: {
-      id: "101",
-      name: "Producto 1",
-      brand: "Marca 1",
-      description: "Product...",
-      category: "Categoría A",
-      quantity: 3,
-    },
-    quantity: 3,
-    amount: 1500,
-    date_created: "2024-01-01",
-    date_updated: "2024-01-02",
-    status: "pendiente",
-  },
-  {
-    id: "2",
-    provider: {
-      id: "2",
-      name: "Proveedor B",
-      email: "info@proveedorb.com",
-      cuit: "30-87654321-0",
-      phone_number: "11-8765-4321",
-      address: "Calle Verdadera 456, Córdoba",
-    },
-    product: {
-      id: "201",
-      name: "Producto 3",
-      brand: "Marca 3",
-      description: "Product...",
-      category: "Categoría B",
-      quantity: 2,
-    },
-    quantity: 2,
-    amount: 2300,
-    date_created: "2024-02-05",
-    date_updated: "2024-02-06",
-    status: "completado",
-  },
-  {
-    id: "3",
-    provider: {
-      id: "3",
-      name: "Proveedor C",
-      email: "ventas@proveedorc.com",
-      cuit: "30-11223344-5",
-      phone_number: "11-1122-3344",
-      address: "Calle Central 789, Mendoza",
-    },
-    product: {
-      id: "301",
-      name: "Producto 5",
-      brand: "Marca 5",
-      description: "Product...",
-      category: "Categoría C",
-      quantity: 2,
-    },
-    quantity: 2,
-    amount: 1800,
-    date_created: "2024-03-10",
-    date_updated: "2024-03-11",
-    status: "cancelada",
-  },
-];
-
 export const OrdenDeCompraProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
   const [ordenesDeCompra, setOrdenesDeCompra] = useState<OrdenDeCompra[]>([]);
+  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
 
   const fetchOrdenesDeCompra = useCallback(async () => {
     try {
@@ -188,15 +98,33 @@ export const OrdenDeCompraProvider = ({
       }
     } catch (error) {
       console.error("Error al obtener las ordenes de compra:", error);
-      setOrdenesDeCompra(ordenesDeCompraPrueba);
     }
   }, []);
 
-  const createOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
-    setOrdenesDeCompra((prevOrdenesDeCompra) => [
-      ...prevOrdenesDeCompra,
-      { ...ordenDeCompra, id: (prevOrdenesDeCompra.length + 1).toString() },
-    ]);
+  const fetchProductos = useCallback(async () => {
+    try {
+      const response = await axios.get(apiProductosBackend);
+      setProductos(response.data);
+    } catch (error) {
+      console.error("Error al obtener los productos:", error);
+    }
+  }, []);
+
+  const fetchProveedores = useCallback(async () => {
+    try {
+      const response = await axios.get(apiProveedoresBackend);
+      setProveedores(response.data);
+    } catch (error) {
+      console.error("Error al obtener los proveedores:", error);
+    }
+  }, []);
+
+  const createOrdenDeCompra = async (ordenDeCompra: CreacionOrdenDeCompra) => {
+    try {
+      await axios.post(apiOrdenesDeCompraBackend, ordenDeCompra);
+    } catch (error) {
+      console.error("Error al crear la orden de compra:", error);
+    }
   };
 
   /*
@@ -267,7 +195,7 @@ export const OrdenDeCompraProvider = ({
 
   return (
     <OrdenDeCompraContext.Provider
-      value={{ ordenesDeCompra, fetchOrdenesDeCompra, createOrdenDeCompra }}
+      value={{ ordenesDeCompra, proveedores, productos, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra }}
     >
       {children}
     </OrdenDeCompraContext.Provider>

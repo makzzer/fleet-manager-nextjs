@@ -2,23 +2,30 @@
 
 import React, { useState } from "react";
 
-interface formData {
-  proveedor: string;
-  fecha_de_creacion: string;
-  total_compra: string;
-  estado: string;
+export interface OrdenDeCompraFormData {
+  providerId: string;
+  productId: string;
+  quantity: number;
+  amount: number;
+}
+
+export interface SelectData {
+  id: string;
+  name: string;
 }
 
 interface OrdenCompraFormProps {
-  onSubmit: (data: formData) => void; // Define correctamente el tipo de datos que enviarás en el formulario
+  onSubmit: (data: OrdenDeCompraFormData) => void; // Define correctamente el tipo de datos que enviarás en el formulario
+  proveedores: SelectData[];
+  productos: SelectData[];
 }
 
-const OrdenCompraForm: React.FC<OrdenCompraFormProps> = ({ onSubmit }) => {
+const OrdenCompraForm: React.FC<OrdenCompraFormProps> = ({ onSubmit, proveedores, productos }) => {
   const [formData, setFormData] = useState({
-    proveedor: "",
-    fecha_de_creacion: "",
-    estado: "pendiente",
-    total_compra: "",
+      providerId: "",
+      productId: "",
+      quantity: 0,
+      amount: 0
   });
 
   const handleChange = (
@@ -31,6 +38,7 @@ const OrdenCompraForm: React.FC<OrdenCompraFormProps> = ({ onSubmit }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+    setFormData({ providerId: "", productId: "", quantity: 0, amount: 0 });
   };
 
   return (
@@ -41,57 +49,63 @@ const OrdenCompraForm: React.FC<OrdenCompraFormProps> = ({ onSubmit }) => {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label
-            htmlFor="proveedor"
+            htmlFor="providerId"
             className="bg-gray-800 text-gray-200 text-left text-sm font-semibold border-b border-gray-700"
           >
             Proveedor
           </label>
-          <input
-            type="text"
-            name="proveedor"
-            id="proveedor"
-            value={formData.proveedor}
-            onChange={handleChange}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-500 bg-white border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md placeholder-gray-500"
-            placeholder="Nombre del proveedor"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="fecha_de_creacion"
-            className="bg-gray-800 text-gray-200 text-left text-sm font-semibold border-b border-gray-700"
-          >
-            Fecha de Creación
-          </label>
-          <input
-            type="date"
-            name="fecha_de_creacion"
-            id="fecha_de_creacion"
-            value={formData.fecha_de_creacion}
-            onChange={handleChange}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-500 bg-white border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md placeholder-gray-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="estado"
-            className="bg-gray-800 text-gray-200 text-left text-sm font-semibold border-b border-gray-700"
-          >
-            Estado
-          </label>
           <select
-            name="estado"
-            id="estado"
-            value={formData.estado}
+            name="providerId"
+            id="providerId"
+            value={formData.providerId}
             onChange={handleChange}
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-500 bg-white border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
           >
-            <option value="pendiente">Pendiente</option>
-            <option value="completado">Completado</option>
-            <option value="cancelado">Cancelado</option>
+            {proveedores.map((proveedor) => (
+              <option key={proveedor.id} value={proveedor.id}>
+                {proveedor.name}
+              </option>
+            ))}
+            </select>
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="productId"
+            className="bg-gray-800 text-gray-200 text-left text-sm font-semibold border-b border-gray-700"
+          >
+            Producto
+          </label>
+          <select
+            name="productId"
+            id="productId"
+            value={formData.productId}
+            onChange={handleChange}
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-500 bg-white border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          >
+             {productos.map((producto) => (
+              <option key={producto.id} value={producto.id}>
+                {producto.name}
+              </option>
+            ))}
           </select>
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="quantity"
+            className="bg-gray-800 text-gray-200 text-left text-sm font-semibold border-b border-gray-700"
+          >
+            Cantidad
+          </label>
+          <input
+            type="number"
+            name="quantity"
+            id="quantity"
+            value={formData.quantity}
+            onChange={handleChange}
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-500 bg-white border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md placeholder-gray-500"
+            placeholder="Cantidad"
+          />
         </div>
 
         <div className="mb-4">
@@ -99,19 +113,18 @@ const OrdenCompraForm: React.FC<OrdenCompraFormProps> = ({ onSubmit }) => {
             htmlFor="total_compra"
             className="bg-gray-800 text-gray-200 text-left text-sm font-semibold border-b border-gray-700"
           >
-            Total de la Compra
+            Monto Total
           </label>
           <input
             type="number"
-            name="total_compra"
-            id="total_compra"
-            value={formData.total_compra}
+            name="amount"
+            id="amount"
+            value={formData.amount}
             onChange={handleChange}
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-500 bg-white border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md placeholder-gray-500"
-            placeholder="Total de la compra"
+            placeholder="Monto total de la compra"
           />
         </div>
-
         <div className="mt-6">
           <button
             type="submit"
