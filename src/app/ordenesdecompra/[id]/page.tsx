@@ -46,7 +46,7 @@ const OCPage = () => {
   }, [ordenesDeCompra, fetchOrdenesDeCompra]);
 
   const orden: OrdenDeCompra | undefined = ordenesDeCompra.find(
-    (o) => parseInt(o.id) === Number(id)
+    (o) => o.id === id
   );
 
   if (!orden) {
