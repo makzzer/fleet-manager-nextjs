@@ -33,7 +33,7 @@ interface UserContextProps {
   users: User[];
   fetchUsers: () => void;
   createUser: (usuario: NewUserRequest) => void;
-  setRoles: (id: string, roles: string[]) => void;
+  setRoles: (id: string, role: string) => void;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -65,7 +65,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const createUser = async (usuario: NewUserRequest) => {
     try {
-      console.log(usuario);
       await axios.post(apiUsuarios, usuario);
       fetchUsers();
     } catch (error) {
@@ -73,15 +72,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const setRoles = async (id: string, roles: string[]) => {
+  const setRoles = async (id: string, role: string) => {
     try {
-      console.log(id, roles);
-      /*
-        await axios.put(`${apiUsuarios}/${id}/roles`, roles)
-        fetchUsers();
-      */
+      await axios.put(`${apiUsuarios}/${id}/roles`, { role });
+      fetchUsers();
     } catch (error) {
-      console.error("Error assigning roles:", error);
+      console.error("Error assigning role:", error);
     }
   };
 

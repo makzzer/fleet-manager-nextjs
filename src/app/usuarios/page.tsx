@@ -157,21 +157,25 @@ const ListaUsuarios = () => {
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
             <div class="space-y-2">
-              ${allRoles
-                .map(
-                  (rol) => `
-                <label class="flex items-center">
-                  <input ${
-                    user.roles.includes(rol.toUpperCase())
-                      ? "disabled checked"
-                      : ""
-                  } type="checkbox" name="roles" value="${rol}" class="form-checkbox h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800">
-                  <span class="ml-2 text-gray-900">${rol}</span>
-                </label>
-              `
-                )
-                .join("")}
-            </div>
+            ${allRoles
+              .map(
+                (rol) => `
+                  <label class="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="roles" 
+                      value="${rol}" 
+                      class="form-radio h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800"
+                      ${
+                        user.roles.includes(rol.toUpperCase()) ? "disabled" : ""
+                      }
+                    >
+                    <span class="ml-2 text-gray-900">${rol}</span>
+                  </label>
+                `
+              )
+              .join("")}
+          </div>
           </div>
       </div>
       `,
@@ -180,24 +184,25 @@ const ListaUsuarios = () => {
       confirmButtonText: "Guardar",
       focusConfirm: false,
       preConfirm: () => {
-        const roles = Array.from(
-          document.querySelectorAll(
-            'input[name="roles"]:checked:not([disabled])'
-          )
-        ).map((rol) => (rol as HTMLInputElement).value);
+        const rolSeleccionado = (
+          document.querySelector(
+            'input[name="roles"]:checked'
+          ) as HTMLInputElement
+        ).value;
 
-        if (roles.length === 0) {
-          Swal.showValidationMessage("Debe seleccionar almenos un rol.");
+        if (!rolSeleccionado) {
+          Swal.showValidationMessage("Debe seleccionar un rol.");
           return false;
         }
 
-        return { roles };
+        const role = rolSeleccionado.toUpperCase();
+
+        return { role };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        const nuevosRoles: string[] = result.value.roles;
-
-        setRoles(user.id, nuevosRoles);
+        const role: string = result.value.role;
+        setRoles(user.id, role);
 
         Swal.fire({
           title: "Roles asignados con éxito",
