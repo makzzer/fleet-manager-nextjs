@@ -7,6 +7,21 @@ import UserCard from "../components/Cards/UserCard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
 
+interface Permissions {
+  module: string;
+  operations: string[];
+}
+
+interface User {
+  id: string;
+  username: string;
+  full_name: string;
+  roles: string[];
+  permissions: Permissions[];
+  date_created: string;
+  date_updated: string;
+}
+
 
 const rolColors: { [key: string]: string } = {
   MANAGER: "bg-yellow-500",
@@ -35,12 +50,12 @@ const ListaUsuarios = () => {
   });
 
   // Alert para ver permisos de un usuario
-  const handleViewPermisos = (user: any) => {
+  const handleViewPermisos = (user: User) => {
     Swal.fire({
       title: `Permisos de ${user.full_name}`,
       html: user.permissions
         .map(
-          (perm: any) => `
+          (perm: Permissions) => `
           <div>
             <strong>${perm.module}:</strong>
             <span>${perm.operations.join(", ")}</span>

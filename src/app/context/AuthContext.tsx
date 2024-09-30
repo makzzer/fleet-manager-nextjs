@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import axios from "axios";
@@ -26,20 +26,21 @@ interface AuthResponse {
   error?: string;
 }
 
-interface UserContextProps {
+interface AuthContextProps {
   authenticatedUser: User | null;
-  isLoading: boolean; // Añadimos el estado de carga
+  isLoading: boolean;
   authenticateUser: (username: string, password: string) => Promise<AuthResponse>;
   logoutUser: () => void;
+  hasPermission: (requiredPermissions: Permissions[]) => boolean;
 }
 
-// Creamos el UserContext
-const AuthContext = createContext<UserContextProps | undefined>(undefined);
+// Creamos el AuthContext
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useUser debe ser usado dentro de UserProvider');
+    throw new Error('useAuth debe ser usado dentro de AuthProvider');
   }
   return context;
 };
@@ -69,24 +70,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { user }; // Devolvemos el usuario en caso de éxito
 
     } catch (error) {
-      // Manejar error (e.g., credenciales incorrectas)
       console.error('Error authenticating user:', error);
-      return { error: 'Usuario o contraseña incorrectos' }; // Mensaje de error
+      return { error: 'Usuario o contraseña incorrectos' };
     }
   }, []);
 
   // Función para cerrar sesión
   const logoutUser = useCallback(() => {
-    setAuthenticatedUser(null); // Reseteamos el usuario autenticado a null
+    setAuthenticatedUser(null);
     localStorage.removeItem('authenticatedUser'); // Remover usuario de localStorage
   }, []);
+
+  // Función para verificar si el usuario tiene TODOS los permisos necesarios
+  const hasPermission = (requiredPermissions: Permissions[]): boolean => {
+    if (!authenticatedUser) return false;
+
+    return requiredPermissions.every(({ module, operations }) =>
+      authenticatedUser.permissions.some(
+        (perm) => perm.module === module && operations.every((op) => perm.operations.includes(op))
+      )
+    );
+  };
 
   return (
     <AuthContext.Provider value={{
       authenticatedUser,
-      isLoading, // Pasamos el estado de carga
+      isLoading,
       authenticateUser,
       logoutUser,
+      hasPermission
     }}>
       {children}
     </AuthContext.Provider>

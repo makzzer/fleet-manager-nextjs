@@ -2,9 +2,9 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useVehiculo } from "@/app/context/VehiculoContext";
-import axios from "axios";
+//import axios from "axios";
 
-const apiVehiculosBackend = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
+//const apiVehiculosBackend = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
 
 interface Coordinates {
   latitude: number;
@@ -28,7 +28,7 @@ interface VehiculoCardProps {
 
 const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const router = useRouter();
-  const { vehiculos, fetchVehiculos, modifyVehiculo } = useVehiculo();
+  const { modifyVehiculo } = useVehiculo();
   const {updateVehiculo} = useVehiculo();
 
   const handleViewVehiculo = (id: string) => {
