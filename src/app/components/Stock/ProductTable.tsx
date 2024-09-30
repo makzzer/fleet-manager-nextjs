@@ -23,8 +23,9 @@ interface Producto {
   id: string;
   name: string;
   brand: string;
+  description: string;
   category: string;
-  purchaseDate: string;
+  quantity: string;
 }
 
 interface ProductTableProps {
@@ -105,7 +106,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
               Categoria
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Fecha de compra
+              Descripción
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
               Acciones
@@ -122,7 +123,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
                 {product.category}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                {product.purchaseDate}
+                {product.description}
               </td>
               <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
                 <IconButton

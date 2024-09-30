@@ -26,8 +26,9 @@ interface Producto {
   id: string;
   name: string;
   brand: string;
+  description: string;
   category: string;
-  purchaseDate: string;
+  quantity: string;
 }
 
 const Stock = () => {
@@ -128,10 +129,11 @@ const Stock = () => {
       title: "Agregar Producto",
       html: `
             <input type="text" id="id" class="swal2-input" placeholder="Id">
-            <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
-            <input type="text" id="marca" class="swal2-input" placeholder="Marca">
-            <input type="text" id="categoria" class="swal2-input" placeholder="Categoria">
-            <input type="text" id="fecha-compra" class="swal2-input" placeholder="Fecha de compra">
+            <input type="text" id="name" class="swal2-input" placeholder="Nombre">
+            <input type="text" id="brand" class="swal2-input" placeholder="Marca">
+            <input type="text" id="description" class="swal2-input" placeholder="Descripción">
+            <input type="text" id="category" class="swal2-input" placeholder="Categoria">
+            <input type="text" id="quantity" class="swal2-input" placeholder="Cantidad">
           `,
       confirmButtonText: "Agregar",
       cancelButtonText: "Cancelar",
@@ -139,31 +141,35 @@ const Stock = () => {
       focusConfirm: false,
       preConfirm: () => {
         const idElement = document.getElementById("id") as HTMLInputElement;
-        const nombreElement = document.getElementById(
-          "nombre"
+        const nameElement = document.getElementById(
+          "name"
         ) as HTMLInputElement;
-        const marcaElement = document.getElementById(
-          "marca"
+        const brandElement = document.getElementById(
+          "brand"
         ) as HTMLInputElement;
-        const categoriaElement = document.getElementById(
-          "categoria"
+        const descriptionElement = document.getElementById(
+          "description"
         ) as HTMLInputElement;
-        const fechaCompraElement = document.getElementById(
-          "fecha-compra"
+        const categoryElement = document.getElementById(
+          "category"
         ) as HTMLInputElement;
-
+        const quantityElement = document.getElementById(
+          "quanntity"
+        ) as HTMLInputElement;
+        
         const id = idElement?.value;
-        const nombre = nombreElement?.value;
-        const marca = marcaElement?.value;
-        const categoria = categoriaElement?.value;
-        const fechaCompra = fechaCompraElement?.value;
+        const name = nameElement?.value;
+        const brand = brandElement?.value;
+        const description = descriptionElement?.value;
+        const category = categoryElement?.value;
+        const quantity = quantityElement?.value;
 
-        if (!id || !nombre || !marca || !categoria || !fechaCompra) {
+        if (!id || !name || !brand || !description || !category) {
           Swal.showValidationMessage("Completa todos los campos");
           return null;
         }
 
-        return { id, nombre, marca, categoria, fechaCompra };
+        return { id, name, brand, description, category };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
@@ -171,15 +177,16 @@ const Stock = () => {
           id: result.value.id,
           name: result.value.nombre,
           brand: result.value.marca,
+          description: result.value.description,
           category: result.value.categoria,
-          purchaseDate: result.value.fechaCompra,
+          quantity: result.value.quantity,
         };
 
         createProducto(producto);
 
         Swal.fire({
-          title: "Vehículo agregado con éxito",
-          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
+          title: "Producto agregado con éxito",
+          text: "El nuevo producto ha sido creado y registrado correctamente.",
           icon: "success",
         });
       }

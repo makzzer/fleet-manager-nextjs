@@ -17,8 +17,9 @@ interface Producto {
   id: string;
   name: string;
   brand: string;
+  description: string;
   category: string;
-  purchaseDate: string;
+  quantity: string;
 }
 
 interface ProductoContextProps {
@@ -59,10 +60,15 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
 
   const createProducto = async (producto: Producto) => {
     try {
+      console.log("Producto a enviar:", producto);
       await axios.post(apiProductosBackend, producto);
       fetchProductos();
     } catch (error) {
-      console.error("Error al crear producto:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Error al crear producto:", error.response.data);
+      } else {
+        console.error("Error desconocido al crear producto", error);
+      }
     }
   };
 
