@@ -177,42 +177,31 @@ const ListaUsuarios = () => {
       `,
       showCancelButton: true,
       cancelButtonText: "Cancelar",
-      confirmButtonText: "Registrar",
+      confirmButtonText: "Guardar",
       focusConfirm: false,
       preConfirm: () => {
-        const username = (
-          document.getElementById("add-user-userName") as HTMLInputElement
-        ).value;
-        const name = (
-          document.getElementById("add-user-name") as HTMLInputElement
-        ).value;
-        const lastName = (
-          document.getElementById("add-user-lastName") as HTMLInputElement
-        ).value;
-        const password = (
-          document.getElementById("add-user-password") as HTMLInputElement
-        ).value;
+        const roles = Array.from(
+          document.querySelectorAll(
+            'input[name="roles"]:checked:not([disabled])'
+          )
+        ).map((rol) => (rol as HTMLInputElement).value);
 
-        if (!username || !name || !lastName || !password) {
-          Swal.showValidationMessage("Completa todos los campos");
-          return null;
+        if (roles.length === 0) {
+          Swal.showValidationMessage("Debe seleccionar almenos un rol.");
+          return false;
         }
 
-        const full_name = name.concat(" ", lastName);
-        return { username, full_name, password };
+        return { roles };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        const nuevoUsuario: NewUserRequest = {
-          ...result.value,
-          role: "",
-        };
+        const nuevosRoles: string[] = result.value;
 
-        createUser(nuevoUsuario);
+        console.log(nuevosRoles);
 
         Swal.fire({
-          title: "Vehículo agregado con éxito",
-          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
+          title: "Roles asignados con éxito",
+          text: "Los nuevos roles han sidos asignados correctamente.",
           icon: "success",
         });
       }
