@@ -7,6 +7,13 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 // API para autenticación de usuarios
 const apiUsuarios = "https://fleet-manager-gzui.onrender.com/api/users";
 
+interface NewUserRequest {
+  username: string;
+  fullName: string;
+  password: string;
+  role: string;
+}
+
 interface Permissions {
   module: string;
   operations: string[];
@@ -25,6 +32,7 @@ interface User {
 interface UserContextProps {
   users: User[];
   fetchUsers: () => void;
+  createUser: (usuario: NewUserRequest) => void;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -54,12 +62,22 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const createUser = async (usuario: NewUserRequest) => {
+    try {
+      console.log(usuario);
+      await axios.post(apiUsuarios, usuario);
+      fetchUsers();
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
   return (
-    <UserContext.Provider value={{ users, fetchUsers }}>
+    <UserContext.Provider value={{ users, fetchUsers, createUser }}>
       {children}
     </UserContext.Provider>
   );

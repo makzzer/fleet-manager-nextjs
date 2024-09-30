@@ -5,7 +5,14 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import UserCard from "../components/Cards/UserCard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
+
+interface NewUserRequest {
+  username: string;
+  fullName: string;
+  password: string;
+  role: string;
+}
 
 interface Permissions {
   module: string;
@@ -22,7 +29,6 @@ interface User {
   date_updated: string;
 }
 
-
 const rolColors: { [key: string]: string } = {
   MANAGER: "bg-yellow-500",
   SUPERVISOR: "bg-cian-500",
@@ -34,7 +40,7 @@ const rolColors: { [key: string]: string } = {
 };
 
 const ListaUsuarios = () => {
-  const { users } = useUser(); // Accede al contexto de usuario
+  const { users, createUser } = useUser(); // Accede al contexto de usuario
   const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para la barra de búsqueda
   const [selectedRole, setSelectedRole] = useState<string>(""); // Estado para el filtro por rol
 
@@ -90,8 +96,46 @@ const ListaUsuarios = () => {
       </div>
       `,
       showCancelButton: true,
+      cancelButtonText: "Cancelar",
       confirmButtonText: "Registrar",
-      showLoaderOnConfirm: true,
+      focusConfirm: false,
+      preConfirm: () => {
+        const username = (
+          document.getElementById("add-user-userName") as HTMLInputElement
+        ).value;
+        const name = (
+          document.getElementById("add-user-name") as HTMLInputElement
+        ).value;
+        const lastName = (
+          document.getElementById("add-user-lastName") as HTMLInputElement
+        ).value;
+        const password = (
+          document.getElementById("add-user-password") as HTMLInputElement
+        ).value;
+
+        if (!username || !name || !lastName || !password) {
+          Swal.showValidationMessage("Completa todos los campos");
+          return null;
+        }
+
+        const full_name = name.concat(" ", lastName);
+        return { username, full_name, password };
+      },
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const nuevoUsuario: NewUserRequest = {
+          ...result.value,
+          role: "",
+        };
+
+        createUser(nuevoUsuario);
+
+        Swal.fire({
+          title: "Vehículo agregado con éxito",
+          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
+          icon: "success",
+        });
+      }
     });
   };
 
@@ -159,8 +203,12 @@ const ListaUsuarios = () => {
                       ))}
                     </div>
                   </td>
-                  <td className="px-6 py-4">{user.date_created.slice(0, 10)}</td>
-                  <td className="px-6 py-4">{user.date_updated.slice(0, 10)}</td>
+                  <td className="px-6 py-4">
+                    {user.date_created.slice(0, 10)}
+                  </td>
+                  <td className="px-6 py-4">
+                    {user.date_updated.slice(0, 10)}
+                  </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-right flex justify-center">
                     <button
@@ -170,8 +218,6 @@ const ListaUsuarios = () => {
                       <FaEye className="w-5 h-5" />
                     </button>
                   </td>
-
-
                 </tr>
               ))}
             </tbody>
