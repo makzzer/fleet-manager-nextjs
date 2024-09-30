@@ -1,6 +1,7 @@
 "use client";
 
 import { useUser } from "../context/UserContext";
+import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import UserCard from "../components/Cards/UserCard";
@@ -41,15 +42,17 @@ const allRoles = [
 
 const rolColors: { [key: string]: string } = {
   MANAGER: "bg-yellow-500",
-  SUPERVISOR: "bg-cian-500",
+  SUPERVISOR: "bg-cyan-500",
   ADMIN: "bg-green-500",
   OPERATOR: "bg-red-500",
   CUSTOMER: "bg-teal-500",
   DEVELOPER: "bg-purple-500",
+  CLIENT: "bg-blue-500",
 };
 
 const ListaUsuarios = () => {
   const { users, createUser, setRoles } = useUser(); // Accede al contexto de usuario
+  const { hasRole } = useAuth()
   const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para la barra de búsqueda
   const [selectedRole, setSelectedRole] = useState<string>(""); // Estado para el filtro por rol
 
@@ -183,23 +186,22 @@ const ListaUsuarios = () => {
             <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
             <div class="space-y-2">
             ${allRoles
-              .map(
-                (rol) => `
+          .map(
+            (rol) => `
                   <label class="flex items-center">
                     <input 
                       type="radio" 
                       name="roles" 
                       value="${rol}" 
                       class="form-radio h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800"
-                      ${
-                        user.roles.includes(rol.toUpperCase()) ? "disabled" : ""
-                      }
+                      ${user.roles.includes(rol.toUpperCase()) ? "disabled" : ""
+              }
                     >
                     <span class="ml-2 text-gray-900">${rol}</span>
                   </label>
                 `
-              )
-              .join("")}
+          )
+          .join("")}
           </div>
           </div>
       </div>
@@ -243,12 +245,16 @@ const ListaUsuarios = () => {
       <div className="min-h-screen bg-gray-900 p-8">
         <div className="flex justify-between mb-6">
           <h1 className="text-3xl font-bold text-blue-400">Usuarios</h1>
-          <button
-            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            onClick={handleAddUser}
-          >
-            Crear usuario
-          </button>
+
+
+          {hasRole("SUPERVISOR") && (
+            <button
+              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              onClick={handleAddUser}
+            >
+              Crear usuario
+            </button>
+          )}
         </div>
         <div className="flex flex-col lg:flex-row justify-between items-center mb-6 space-y-4 lg:space-y-0">
           <input
@@ -316,12 +322,20 @@ const ListaUsuarios = () => {
                     >
                       <FaEye className="w-5 h-5" />
                     </button>
-                    <button
-                      onClick={() => handleSetUser(user)}
-                      className="text-yellow-600 hover:text-yellow-800 p-2 rounded-full flex justify-center items-center"
-                    >
-                      <MdGroupAdd className="w-5 h-5" />
-                    </button>
+
+
+
+                    {/* Mostrar este botón solo si el usuario autenticado es SUPERVISOR */}
+                    {hasRole("SUPERVISOR") && (
+                      <button
+                        onClick={() => handleSetUser(user)}
+                        className="text-yellow-600 hover:text-yellow-800 p-2 rounded-full flex justify-center items-center"
+                      >
+                        <MdGroupAdd className="w-5 h-5" />
+                      </button>
+                    )}
+
+
                   </td>
                 </tr>
               ))}
