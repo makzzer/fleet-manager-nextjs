@@ -31,10 +31,15 @@ const rolColors: { [key: string]: string } = {
 interface UserCardProps {
   user: User;
   onViewPermisos: (user: User) => void;
+  onSetRoles: (user: User) => void;
 }
 
 //Recibe la función para ver los permisos desde el componente padre
-const UserCard: React.FC<UserCardProps> = ({ user, onViewPermisos }) => (
+const UserCard: React.FC<UserCardProps> = ({
+  user,
+  onViewPermisos,
+  onSetRoles,
+}) => (
   <div className="bg-gray-800 p-4 rounded-lg shadow-md mb-4">
     <h3 className="text-xl font-semibold text-white mb-2">{user.full_name}</h3>
     <p className="text-slate-300 mb-2">@{user.username}</p>
@@ -62,7 +67,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onViewPermisos }) => (
       <FaEye className="w-5 h-5" />
     </button>
     <button
-      onClick={() => console.log("Función a implementar -> SetPermisos")}
+      onClick={() => onSetRoles(user)}
       className="text-yellow-600 hover:text-yellow-800 p-1 text-center"
     >
       <MdGroupAdd className="w-5 h-5" />

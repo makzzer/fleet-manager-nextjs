@@ -30,14 +30,22 @@ interface User {
   date_updated: string;
 }
 
+const allRoles = [
+  "Manager",
+  "Supervisor",
+  "Admin",
+  "Operator",
+  "Customer",
+  "Developer",
+];
+
 const rolColors: { [key: string]: string } = {
   MANAGER: "bg-yellow-500",
   SUPERVISOR: "bg-cian-500",
   ADMIN: "bg-green-500",
   OPERATOR: "bg-red-500",
-  CLIENT: "bg-gray-500",
-  DEVELOPER: "bg-purple-500",
   CUSTOMER: "bg-teal-500",
+  DEVELOPER: "bg-purple-500",
 };
 
 const ListaUsuarios = () => {
@@ -93,6 +101,77 @@ const ListaUsuarios = () => {
           </div>
           <div class="flex flex-col">
             <input id="add-user-password" type="password" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Contraseña">
+          </div>
+      </div>
+      `,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Registrar",
+      focusConfirm: false,
+      preConfirm: () => {
+        const username = (
+          document.getElementById("add-user-userName") as HTMLInputElement
+        ).value;
+        const name = (
+          document.getElementById("add-user-name") as HTMLInputElement
+        ).value;
+        const lastName = (
+          document.getElementById("add-user-lastName") as HTMLInputElement
+        ).value;
+        const password = (
+          document.getElementById("add-user-password") as HTMLInputElement
+        ).value;
+
+        if (!username || !name || !lastName || !password) {
+          Swal.showValidationMessage("Completa todos los campos");
+          return null;
+        }
+
+        const full_name = name.concat(" ", lastName);
+        return { username, full_name, password };
+      },
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const nuevoUsuario: NewUserRequest = {
+          ...result.value,
+          role: "",
+        };
+
+        createUser(nuevoUsuario);
+
+        Swal.fire({
+          title: "Vehículo agregado con éxito",
+          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
+          icon: "success",
+        });
+      }
+    });
+  };
+
+  const handleSetUser = (user: User) => {
+    Swal.fire({
+      title: `Agregar roles para
+       ${user.full_name}`,
+      html: `
+        <div class="flex flex-col space-y-4">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
+            <div class="space-y-2">
+              ${allRoles
+                .map(
+                  (rol) => `
+                <label class="flex items-center">
+                  <input ${
+                    user.roles.includes(rol.toUpperCase())
+                      ? "disabled checked"
+                      : ""
+                  } type="checkbox" name="roles" value="${rol}" class="form-checkbox h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800">
+                  <span class="ml-2 text-gray-900">${rol}</span>
+                </label>
+              `
+                )
+                .join("")}
+            </div>
           </div>
       </div>
       `,
@@ -219,9 +298,7 @@ const ListaUsuarios = () => {
                       <FaEye className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() =>
-                        console.log("Función a implementar -> SetPermisos")
-                      }
+                      onClick={() => handleSetUser(user)}
                       className="text-yellow-600 hover:text-yellow-800 p-2 rounded-full flex justify-center items-center"
                     >
                       <MdGroupAdd className="w-5 h-5" />
@@ -240,6 +317,7 @@ const ListaUsuarios = () => {
               key={user.id}
               user={user}
               onViewPermisos={handleViewPermisos}
+              onSetRoles={handleSetUser}
             />
           ))}
         </div>
