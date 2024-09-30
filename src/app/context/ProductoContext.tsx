@@ -53,7 +53,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
         console.error('Error: La respuesta de la API no es un array válido', fetchedProductos);
       }
     } catch (error) {
-      console.error('Error al obtener proveedores:', error);
+      console.error('Error al obtener productos:', error);
     }
   }, []);
 
@@ -62,7 +62,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
       await axios.post(apiProductosBackend, producto);
       fetchProductos();
     } catch (error) {
-      console.error("Error al crear proveedor:", error);
+      console.error("Error al crear producto:", error);
     }
   };
 

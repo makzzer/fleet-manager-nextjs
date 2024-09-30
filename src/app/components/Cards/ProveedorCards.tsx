@@ -2,14 +2,15 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 interface Proveedor {
-    id: string;
-    name: string;
-    cuit: string;
-    direccion: string;
-    telefono: string;
-    date_created?: string;
-    date_updated?: string;
-  }
+  id: string;
+  name: string;
+  email: string;
+  cuit: string;
+  phoneNumber: string;
+  adress: string;
+  date_created?: string;
+  date_updated?: string;
+}
 
 interface ProveedorCardProps {
   proveedor: Proveedor;
@@ -79,8 +80,9 @@ const ProveedorCard = ({ proveedor }: ProveedorCardProps) => {
       </h2>
       <p className="text-lg text-gray-300">ID: {proveedor.id}</p>
       <p className="text-lg text-gray-300">CUIT: {proveedor.cuit}</p>
-      <p className="text-lg text-gray-300">Direccion: {proveedor.direccion}</p>
-      <p className="text-lg text-gray-300">Telefono: {proveedor.telefono}</p>
+      <p className="text-lg text-gray-300">Email: {proveedor.email}</p>
+      <p className="text-lg text-gray-300">Telefono: {proveedor.phoneNumber}</p>
+      <p className="text-lg text-gray-300">Dirección: {proveedor.adress}</p>
 
       <div className="flex justify-center mt-6">
 

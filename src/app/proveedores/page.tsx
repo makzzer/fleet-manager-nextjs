@@ -13,17 +13,20 @@ import { useProveedor } from "../context/ProveedorContext";
 interface Proveedor {
   id: string;
   name: string;
+  email: string;
   cuit: string;
-  direccion: string;
-  telefono: string;
+  phoneNumber: string;
+  adress: string;
+  date_created?: string;
+  date_updated?: string;
 }
 
 const Proveedores = () => {
   const { proveedores, fetchProveedores, createProveedor } = useProveedor();
   const [isLoading, setIsLoading] = useState(true);
-  //  const [filteredProveedores, setFilteredProveedores] = useState(proveedores);
+  const [filteredProveedores, setFilteredProveedores] = useState(proveedores);
 
-  const [proveedoresLocales, setLocalProveedores] = useState(proveedores);
+  // const [proveedoresLocales, setLocalProveedores] = useState(proveedores);
   /*
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
 */
@@ -36,14 +39,14 @@ const Proveedores = () => {
     loadProveedores();
   }, [fetchProveedores]);
 
-  useEffect(() => {
-    setLocalProveedores(proveedores);
-  }, [proveedores]);
-  /*
+  // useEffect(() => {
+  //   setLocalProveedores(proveedores);
+  // }, [proveedores]);
+
   useEffect(() => {
     setFilteredProveedores(proveedores);
   }, [proveedores]);
-*/
+
   // Filtra los productos según el término de búsqueda
   /*
   useEffect(() => {
@@ -90,48 +93,46 @@ const Proveedores = () => {
     Swal.fire({
       title: "Agregar Proveedor",
       html: `
-      <input type="text" id="id" class="swal2-input" placeholder="ID">
-      <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
+      <input type="text" id="ID" class="swal2-input" placeholder="ID">
+      <input type="text" id="name" class="swal2-input" placeholder="Name">
+      <input type="text" id="email" class="swal2-input" placeholder="Email">
       <input type="text" id="cuit" class="swal2-input" placeholder="CUIT">
-      <input type="text" id="direccion" class="swal2-input" placeholder="Dirección">
-      <input type="text" id="telefono" class="swal2-input" placeholder="Teléfono">
+      <input type="text" id="phoneNumber" class="swal2-input" placeholder="Teléfono">
+      <input type="text" id="adress" class="swal2-input" placeholder="Dirección">
     `,
       confirmButtonText: "Agregar",
       showCancelButton: true,
       preConfirm: () => {
         const idElement = document.getElementById("ID") as HTMLInputElement;
-        const nombreElement = document.getElementById(
-          "nombre"
-        ) as HTMLInputElement;
+        const nameElement = document.getElementById("name") as HTMLInputElement;
+        const emailElement = document.getElementById("email") as HTMLInputElement;
         const cuitElement = document.getElementById("cuit") as HTMLInputElement;
-        const direccionElement = document.getElementById(
-          "direccion"
-        ) as HTMLInputElement;
-        const telefonoElement = document.getElementById(
-          "telefono"
-        ) as HTMLInputElement;
+        const phoneNumberElement = document.getElementById("phoneNumber") as HTMLInputElement;
+        const adressElement = document.getElementById("adress") as HTMLInputElement;
 
         const id = idElement?.value;
-        const nombre = nombreElement?.value;
+        const name = nameElement?.value;
+        const email = emailElement?.value;
         const cuit = cuitElement?.value;
-        const direccion = direccionElement?.value;
-        const telefono = telefonoElement?.value;
+        const phoneNumber = phoneNumberElement?.value;
+        const adress = adressElement?.value;
 
-        if (!nombre || !cuit || !direccion || !telefono) {
-          Swal.showValidationMessage("Completa todos los campos");
-          return null;
-        }
+        // if ( !name ) {
+        //   Swal.showValidationMessage("Completa todos los campos");
+        //   return null;
+        // }
 
-        return { id, nombre, cuit, direccion, telefono };
+        return { id, name, email, cuit, phoneNumber, adress };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         const proveedor: Proveedor = {
           id: result.value.id,
           name: result.value.name,
+          email: result.value.email,
           cuit: result.value.cuit,
-          direccion: result.value.direccion,
-          telefono: result.value.telefono,
+          phoneNumber: result.value.phoneNumber,
+          adress: result.value.adress,
         };
 
         createProveedor(proveedor);
@@ -221,8 +222,8 @@ const Proveedores = () => {
                   />
                 </div>
               ))
-          ) : proveedoresLocales.length > 0 ? (
-            proveedoresLocales.map((proveedor, index) => (
+          ) : filteredProveedores.length > 0 ? (
+            filteredProveedores.map((proveedor, index) => (
               <ProveedorCard key={index} proveedor={proveedor} />
             ))
           ) : (
