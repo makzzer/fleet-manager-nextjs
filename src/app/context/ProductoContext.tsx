@@ -9,9 +9,9 @@ import React, {
   useCallback,
 } from "react";
 
-//import axios from "axios";
+import axios from "axios";
 
-//const apiProductosBackend = `https://fleet-manager-gzui.onrender.com/api/products`;
+const apiProductosBackend = `https://fleet-manager-gzui.onrender.com/api/products`;
 
 interface Producto {
   id: string;
@@ -39,46 +39,45 @@ export const useProducto = () => {
   return context;
 };
 
-const productosPrueba: Producto[] = [
-  {
-    id: "1",
-    name: "Producto A",
-    brand: "Marca X",
-    category: "Categoría 1",
-    purchaseDate: "2023-08-01",
-  },
-  {
-    id: "2",
-    name: "Producto B",
-    brand: "Marca Y",
-    category: "Categoría 2",
-    purchaseDate: "2023-09-15",
-  },
-  {
-    id: "3",
-    name: "Producto C",
-    brand: "Marca Y",
-    category: "Categoría 3",
-    purchaseDate: "2024-9-12",
-  }
-];
+// const productosPrueba: Producto[] = [
+//   {
+//     id: "1",
+//     name: "Producto A",
+//     brand: "Marca X",
+//     category: "Categoría 1",
+//     purchaseDate: "2023-08-01",
+//   },
+//   {
+//     id: "2",
+//     name: "Producto B",
+//     brand: "Marca Y",
+//     category: "Categoría 2",
+//     purchaseDate: "2023-09-15",
+//   },
+//   {
+//     id: "3",
+//     name: "Producto C",
+//     brand: "Marca Y",
+//     category: "Categoría 3",
+//     purchaseDate: "2024-9-12",
+//   }
+// ];
 
 export const ProductoProvider = ({ children }: { children: ReactNode }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
 
-  const fetchProductos = useCallback(() => {
-    setProductos(productosPrueba);
-  }, []);
+  // const fetchProductos = useCallback(() => {
+  //   setProductos(productosPrueba);
+  // }, []);
 
-  const createProducto = async (producto: Producto) => {
-    setProductos((prevProductos) => [
-      ...prevProductos,
-      { ...producto, id: (prevProductos.length + 1).toString() },
-    ]);
-  };
+  // const createProducto = async (producto: Producto) => {
+  //   setProductos((prevProductos) => [
+  //     ...prevProductos,
+  //     { ...producto, id: (prevProductos.length + 1).toString() },
+  //   ]);
+  // };
 
-  /*
-  //Para cuando esté el back
+  // Para cuando esté el back
   const fetchProductos = useCallback(async () => {
     try {
       const response = await axios.get(apiProductosBackend);
@@ -102,7 +101,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error al crear proveedor:", error);
     }
   };
-  */
+  
 
   useEffect(() => {
     fetchProductos();

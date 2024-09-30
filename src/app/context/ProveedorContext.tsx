@@ -41,30 +41,6 @@ export const useProveedor = () => {
   return context;
 };
 
-// const proveedoresLocales: Proveedor[] = [
-//   {
-//     id: "1",
-//     name: "Proveedor 1",
-//     cuit: "2022",
-//     direccion: "calle 1",
-//     telefono: "100",
-//   },
-//   {
-//     id: "2",
-//     name: "Proveedor 2",
-//     cuit: "2023",
-//     direccion: "calle 2",
-//     telefono: "200",
-//   },
-//   {
-//     id: "3",
-//     name: "Proveedor 3",
-//     cuit: "2024",
-//     direccion: "calle 3",
-//     telefono: "300",
-//   },
-// ];
-
 export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
   // proveedores de api
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
@@ -83,21 +59,6 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
       console.error('Error al obtener proveedores:', error);
     }
   }, []);
-
-  // const [proveedores, setProveedores] = useState<Proveedor[]>([]);
-
-  // const fetchProveedores = useCallback(() => {
-  //   setProveedores(proveedoresLocales);
-  // }, []);
-
-  // const createProveedor = async (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => {
-  //   try {
-  //     await axios.post(apiProveedoresBackend, proveedor);
-  //     fetchProveedores();
-  //   } catch (error) {
-  //     console.error('Error al crear proveedor:', error);
-  //   }
-  // };
 
   const createProveedor = async (proveedor: Proveedor) => {
     setProveedores((proveedoresLocales) => [
