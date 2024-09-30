@@ -127,6 +127,15 @@ const ListaUsuarios = () => {
           return null;
         }
 
+        if (
+          users.map(
+            (user) => user.username.toUpperCase() === username.toUpperCase()
+          )
+        ) {
+          Swal.showValidationMessage("El nombre de usuario ya está en uso");
+          return null;
+        }
+
         const full_name = name.concat(" ", lastName);
         return { username, full_name, password };
       },
