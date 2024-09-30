@@ -1,4 +1,3 @@
-// src/components/ListaUsuarios.tsx
 "use client";
 
 import { useUser } from "../context/UserContext";
@@ -6,14 +5,16 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import UserCard from "../components/Cards/UserCard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
+import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
+
 
 const rolColors: { [key: string]: string } = {
   MANAGER: "bg-yellow-500",
-  SUPERVISOR: "bg-purple-500",
+  SUPERVISOR: "bg-cian-500",
   ADMIN: "bg-green-500",
   OPERATOR: "bg-red-500",
-  CLIENT: "bg-blue-500",
-  DEVELOPER: "bg-gray-500",
+  CLIENT: "bg-gray-500",
+  DEVELOPER: "bg-purple-500",
   CUSTOMER: "bg-teal-500",
 };
 
@@ -123,7 +124,7 @@ const ListaUsuarios = () => {
                 <th className="px-6 py-3">Roles</th>
                 <th className="px-6 py-3">Creado</th>
                 <th className="px-6 py-3">Actualizado</th>
-                <th className="px-6 py-3 text-right">Acciones</th>
+                <th className="px-6 py-3 text-right">Permisos</th>
               </tr>
             </thead>
             <tbody className="bg-gray-800 text-gray-200">
@@ -145,14 +146,17 @@ const ListaUsuarios = () => {
                   </td>
                   <td className="px-6 py-4">{user.date_created.slice(0, 10)}</td>
                   <td className="px-6 py-4">{user.date_updated.slice(0, 10)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
+
+                  <td className="px-6 py-4 whitespace-nowrap text-right flex justify-center">
                     <button
                       onClick={() => handleViewPermisos(user)}
-                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                      className="text-green-600 hover:text-green-800 p-2 rounded-full flex justify-center items-center"
                     >
-                      Ver permisos
+                      <FaEye className="w-5 h-5" />
                     </button>
                   </td>
+
+
                 </tr>
               ))}
             </tbody>
