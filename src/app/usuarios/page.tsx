@@ -49,7 +49,7 @@ const rolColors: { [key: string]: string } = {
 };
 
 const ListaUsuarios = () => {
-  const { users, createUser } = useUser(); // Accede al contexto de usuario
+  const { users, createUser, setRoles } = useUser(); // Accede al contexto de usuario
   const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para la barra de búsqueda
   const [selectedRole, setSelectedRole] = useState<string>(""); // Estado para el filtro por rol
 
@@ -195,9 +195,9 @@ const ListaUsuarios = () => {
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        const nuevosRoles: string[] = result.value;
+        const nuevosRoles: string[] = result.value.roles;
 
-        console.log(nuevosRoles);
+        setRoles(user.id, nuevosRoles);
 
         Swal.fire({
           title: "Roles asignados con éxito",
