@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useUser } from '../context/UserContext'; 
+import { useAuth } from '../context/AuthContext'; 
 import { useRouter } from 'next/navigation';
 
 // Definimos el tema oscuro con Material UI
@@ -42,7 +42,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState(''); // Estado para manejar los mensajes de error
 
-  const { authenticateUser } = useUser(); // Traemos el método del contexto
+  const { authenticateUser } = useAuth(); // Traemos el método del contexto
 
   // Alternar visibilidad de la contraseña
   const handleTogglePassword = () => {

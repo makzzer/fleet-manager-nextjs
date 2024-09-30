@@ -1,4 +1,5 @@
 import React from "react";
+import { FaEye } from "react-icons/fa";
 
 interface Permissions {
   module: string;
@@ -52,12 +53,15 @@ const UserCard: React.FC<UserCardProps> = ({ user, onViewPermisos }) => (
     <p className="text-slate-300 text-sm mb-3">
       Actualizado: {user.date_updated.slice(0, 10)}
     </p>
+
     <button
       onClick={() => onViewPermisos(user)}
-      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+      className="text-green-600 hover:text-green-800 p-1 text-center"
     >
-      Permisos
+      <FaEye className="w-5 h-5" />
     </button>
+
+
   </div>
 );
 
