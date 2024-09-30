@@ -128,7 +128,7 @@ const ListaUsuarios = () => {
         }
 
         if (
-          users.map(
+          users.some(
             (user) => user.username.toUpperCase() === username.toUpperCase()
           )
         ) {
@@ -136,7 +136,23 @@ const ListaUsuarios = () => {
           return null;
         }
 
+        //Validación para verificar que el nombre de usuario
+        if (!/^[a-zA-Z0-9]{3,15}$/.test(username)) {
+          Swal.showValidationMessage(
+            "El nombre de usuario debe ser alfanumérico y tener entre 3 y 15 caracteres"
+          );
+          return null;
+        }
+
         const full_name = name.concat(" ", lastName);
+
+        //Validación para verificar que el nombre completo no tenga numeros ni caracteres especiales (solo espacios)
+        if (!/^[a-zA-Z\s]+$/.test(full_name)) {
+          Swal.showValidationMessage(
+            "El nombre completo solo debe contener letras"
+          );
+          return null;
+        }
         return { username, full_name, password };
       },
     }).then((result) => {
