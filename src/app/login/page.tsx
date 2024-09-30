@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useUser } from '../context/UserContext'; 
+import { useUser } from '../context/AuthContext'; 
 import { useRouter } from 'next/navigation';
 
 // Definimos el tema oscuro con Material UI

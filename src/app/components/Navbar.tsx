@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useUser } from "../context/UserContext"; // Importa el contexto de usuario
+import { useUser } from "../context/AuthContext"; // Importa el contexto de usuario
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
