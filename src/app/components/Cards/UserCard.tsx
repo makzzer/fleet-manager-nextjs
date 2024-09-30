@@ -1,5 +1,6 @@
 import React from "react";
 import { FaEye } from "react-icons/fa";
+import { MdGroupAdd } from "react-icons/md";
 
 interface Permissions {
   module: string;
@@ -60,8 +61,12 @@ const UserCard: React.FC<UserCardProps> = ({ user, onViewPermisos }) => (
     >
       <FaEye className="w-5 h-5" />
     </button>
-
-
+    <button
+      onClick={() => console.log("Función a implementar -> SetPermisos")}
+      className="text-yellow-600 hover:text-yellow-800 p-1 text-center"
+    >
+      <MdGroupAdd className="w-5 h-5" />
+    </button>
   </div>
 );
 

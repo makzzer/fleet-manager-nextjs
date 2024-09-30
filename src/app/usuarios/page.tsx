@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import UserCard from "../components/Cards/UserCard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { FaEye } from "react-icons/fa";
+import { MdGroupAdd } from "react-icons/md";
 
 interface NewUserRequest {
   username: string;
@@ -216,6 +217,14 @@ const ListaUsuarios = () => {
                       className="text-green-600 hover:text-green-800 p-2 rounded-full flex justify-center items-center"
                     >
                       <FaEye className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() =>
+                        console.log("Función a implementar -> SetPermisos")
+                      }
+                      className="text-yellow-600 hover:text-yellow-800 p-2 rounded-full flex justify-center items-center"
+                    >
+                      <MdGroupAdd className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
