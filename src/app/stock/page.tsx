@@ -35,41 +35,32 @@ const Stock = () => {
   const router = useRouter();
   const { productos, fetchProductos, createProducto } = useProducto();
   const [productosStockBajo] = useState(5);
-  // const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
-  // const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
+  const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
 
-  const [localProducts, setLocalProducts] = useState(productos);
+  // const [localProducts, setLocalProducts] = useState(productos);
 
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
 
   useEffect(() => {
-    const loadProductos = () => {
-      fetchProductos();
-    };
-    loadProductos();
-  }, [fetchProductos]);
-
-  useEffect(() => {
     const loadProductos = async () => {
-      //      setIsLoading(true); // esta es la carga para el Skeleton placeholder
+      setIsLoading(true); // esta es la carga para el Skeleton placeholder
       await fetchProductos();
-      //     setIsLoading(false); // Esta es la carga para el skeleton placeholder
+      setIsLoading(false); // Esta es la carga para el skeleton placeholder
     };
     loadProductos();
   }, [fetchProductos]);
 
-  /*
   useEffect(() => {
     setFilteredProductos(productos);
   }, [productos]);
-  */
 
   // Filtra los productos según el término de búsqueda
   useEffect(() => {
     if (searchTerm === "") {
-      setLocalProducts(productos);
+      setFilteredProductos(productos);
     } else {
-      setLocalProducts(
+      setFilteredProductos(
         productos.filter((producto) =>
           producto.name.toLowerCase().includes(searchTerm.toLowerCase())
         )
@@ -96,9 +87,9 @@ const Stock = () => {
     const { searchTerm } = filters;
     setSearchTerm(searchTerm);
     if (searchTerm === "") {
-      setLocalProducts(productos); // Muestra todos los productos si no hay búsqueda
+      setFilteredProductos(productos); // Muestra todos los productos si no hay búsqueda
     } else {
-      setLocalProducts(
+      setFilteredProductos(
         productos.filter((producto) =>
           // solo filtro por nombre.
           producto.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -154,7 +145,7 @@ const Stock = () => {
           "category"
         ) as HTMLInputElement;
         const quantityElement = document.getElementById(
-          "quanntity"
+          "quantity"
         ) as HTMLInputElement;
         
         const id = idElement?.value;
@@ -169,16 +160,16 @@ const Stock = () => {
           return null;
         }
 
-        return { id, name, brand, description, category };
+        return { id, name, brand, description, category, quantity };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        const producto: Producto = {
+        const producto = {
           id: result.value.id,
-          name: result.value.nombre,
-          brand: result.value.marca,
+          name: result.value.name,
+          brand: result.value.brand,
           description: result.value.description,
-          category: result.value.categoria,
+          category: result.value.category,
           quantity: result.value.quantity,
         };
 
@@ -241,9 +232,9 @@ const Stock = () => {
         {/* Barras de busqueda */}
         <FiltrosProducto onFilter={handleFilter} />
 
-        {localProducts && localProducts.length > 0 ? (
+        {filteredProductos && filteredProductos.length > 0 ? (
           // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
-          <ProductTable products={localProducts} />
+          <ProductTable products={filteredProductos} />
         ) : (
           <div className="flex flex-col items-center justify-center mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-lg font-semibold text-gray-800">
