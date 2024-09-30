@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useUser } from "../context/AuthContext"; // Importa el contexto de usuario
+import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { authenticatedUser, logoutUser } = useUser(); // Usamos el contexto para saber si el usuario está autenticado
+  const { authenticatedUser, logoutUser } = useAuth(); // Usamos el contexto para saber si el usuario está autenticado
   const router = useRouter();
 
   // Función para cerrar el menú al hacer clic fuera de él

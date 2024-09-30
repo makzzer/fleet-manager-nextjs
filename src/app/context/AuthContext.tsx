@@ -34,10 +34,10 @@ interface UserContextProps {
 }
 
 // Creamos el UserContext
-const UserContext = createContext<UserContextProps | undefined>(undefined);
+const AuthContext = createContext<UserContextProps | undefined>(undefined);
 
-export const useUser = () => {
-  const context = useContext(UserContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useUser debe ser usado dentro de UserProvider');
   }
@@ -45,7 +45,7 @@ export const useUser = () => {
 };
 
 // Provider para envolver la aplicación
-export const UserProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Estado de carga
 
@@ -82,13 +82,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{
+    <AuthContext.Provider value={{
       authenticatedUser,
       isLoading, // Pasamos el estado de carga
       authenticateUser,
       logoutUser,
     }}>
       {children}
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 };
