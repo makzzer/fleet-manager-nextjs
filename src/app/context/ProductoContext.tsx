@@ -13,18 +13,20 @@ import axios from "axios";
 
 const apiProductosBackend = `https://fleet-manager-gzui.onrender.com/api/products`;
 
-interface Producto {
+export interface Producto {
   id: string;
   name: string;
   brand: string;
   description: string;
   category: string;
-  quantity: string;
+  quantity: number;
 }
 
 interface ProductoContextProps {
   productos: Producto[];
+  producto: Producto | null;
   fetchProductos: () => void;
+  fetchProducto: (id: string) => void;
   createProducto: (producto: Producto) => Promise<void>;
 }
 
@@ -42,6 +44,7 @@ export const useProducto = () => {
 
 export const ProductoProvider = ({ children }: { children: ReactNode }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
+  const [producto, setProducto] = useState<Producto | null>(null);
 
   const fetchProductos = useCallback(async () => {
     try {
@@ -54,6 +57,16 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
         console.error('Error: La respuesta de la API no es un array válido', fetchedProductos);
       }
     } catch (error) {
+      console.error('Error al obtener productos:', error);
+    }
+  }, []);
+
+  const fetchProducto = useCallback(async (id : string) => {
+    try {
+      const response = await axios.get(`${apiProductosBackend}/${id}`);
+      setProducto(response.data);
+    } catch (error) {
+      setProducto(null);
       console.error('Error al obtener productos:', error);
     }
   }, []);
@@ -78,9 +91,11 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ProductoContext.Provider
-      value={{ productos, fetchProductos, createProducto }}
+      value={{ productos, producto, fetchProductos, fetchProducto, createProducto }}
     >
       {children}
     </ProductoContext.Provider>
   );
 };
+
+

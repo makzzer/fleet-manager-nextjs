@@ -112,8 +112,8 @@ const OrdenesDeCompra = () => {
 
   const onCreateSubmit = async (formData: OrdenDeCompraFormData) => {
     const ordenDeCompra : CreacionOrdenDeCompra = {
-      providerId: formData.providerId,
-      productId: formData.productId,
+      provider_id: formData.providerId,
+      product_id: formData.productId,
       quantity: formData.quantity,
       amount: formData.amount
     }
@@ -137,7 +137,6 @@ const OrdenesDeCompra = () => {
           <table className="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden">
             <thead>
               <tr className="bg-gray-800 text-gray-200 text-left text-sm uppercase font-semibold border-b border-gray-700">
-                <th className="px-6 py-3">ID</th>
                 <th className="px-6 py-3">Proveedor</th>
                 <th className="px-6 py-3">Fecha</th>
                 <th className="px-6 py-3">Estado</th>
@@ -148,7 +147,6 @@ const OrdenesDeCompra = () => {
             <tbody className="bg-gray-800 text-gray-200">
               {ordenesDeCompra.map((orden) => (
                 <tr key={orden.id} className="border-b border-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">{orden.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {orden.provider.name}
                   </td>

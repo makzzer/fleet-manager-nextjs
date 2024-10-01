@@ -49,6 +49,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         confirmButtonColor: "#3085d6",
       });
     } catch (error) {
+      console.error(error);
       Swal.fire({
         title: "Error",
         text: "Hubo un problema al cambiar el estado del vehículo. Por favor, intenta de nuevo.",

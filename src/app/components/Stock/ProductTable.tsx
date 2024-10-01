@@ -6,6 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 //import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 /*
 interface Product {
@@ -25,7 +26,7 @@ interface Producto {
   brand: string;
   description: string;
   category: string;
-  quantity: string;
+  quantity: number;
 }
 
 interface ProductTableProps {
@@ -35,12 +36,17 @@ interface ProductTableProps {
 const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
   const [showScrollIcon, setShowScrollIcon] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const handleScroll = () => {
     if (tableRef.current) {
       const { scrollLeft } = tableRef.current;
       setShowScrollIcon(scrollLeft === 0);
     }
+  };
+
+  const handleView = (id: string) => {
+    router.push(`/stock/${id}`);
   };
 
   useEffect(() => {
@@ -130,6 +136,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
                   aria-label="Ver producto"
                   color="primary"
                   title="Ver producto"
+                  onClick={() => handleView(product.id)}
                 >
                   <VisibilityIcon />
                 </IconButton>

@@ -14,7 +14,7 @@ import { useState } from "react";
 import FiltrosProducto from "../components/Stock/FiltrosProducto";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import { useProducto } from "../context/ProductoContext";
+import { useProducto, Producto } from "../context/ProductoContext";
 // import SearchBar from "../components/SearchBar/SearchBar";
 
 // import { TextField, InputAdornment } from '@mui/material';

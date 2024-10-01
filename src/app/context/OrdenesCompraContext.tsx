@@ -43,8 +43,8 @@ export interface OrdenDeCompra {
 }
 
 export interface CreacionOrdenDeCompra {
-  providerId: string;
-  productId: string;
+  provider_id: string;
+  product_id: string;
   quantity: number;
   amount: number;
 }

@@ -32,6 +32,7 @@ interface AuthContextProps {
   authenticateUser: (username: string, password: string) => Promise<AuthResponse>;
   logoutUser: () => void;
   hasPermission: (requiredPermissions: Permissions[]) => boolean;
+  hasRole: (role: string) => boolean; // Añadimos la función para verificar roles
 }
 
 // Creamos el AuthContext
@@ -63,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const authenticateUser = useCallback(async (username: string, password: string): Promise<AuthResponse> => {
     try {
       const response = await axios.post(apiAuthBackend, { username, password });
-      
+
       const user = response.data; // Aquí recibes el objeto User si es exitoso
       setAuthenticatedUser(user); // Guardamos el usuario autenticado
       localStorage.setItem('authenticatedUser', JSON.stringify(user)); // Guardar usuario en localStorage
@@ -92,13 +93,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  // Función para verificar si el usuario tiene un rol específico
+  const hasRole = (role: string): boolean => {
+    if (!authenticatedUser) return false;
+    return authenticatedUser.roles.includes(role.toUpperCase());
+  };
+
   return (
     <AuthContext.Provider value={{
       authenticatedUser,
       isLoading,
       authenticateUser,
       logoutUser,
-      hasPermission
+      hasPermission,
+      hasRole,
     }}>
       {children}
     </AuthContext.Provider>
