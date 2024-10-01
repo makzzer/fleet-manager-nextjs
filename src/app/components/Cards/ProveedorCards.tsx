@@ -6,8 +6,8 @@ interface Proveedor {
   name: string;
   email: string;
   cuit: string;
-  phoneNumber: string;
-  adress: string;
+  phone_number: string;
+  address: string;
   date_created?: string;
   date_updated?: string;
 }
@@ -81,8 +81,8 @@ const ProveedorCard = ({ proveedor }: ProveedorCardProps) => {
       <p className="text-lg text-gray-300">ID: {proveedor.id}</p>
       <p className="text-lg text-gray-300">CUIT: {proveedor.cuit}</p>
       <p className="text-lg text-gray-300">Email: {proveedor.email}</p>
-      <p className="text-lg text-gray-300">Telefono: {proveedor.phoneNumber}</p>
-      <p className="text-lg text-gray-300">Dirección: {proveedor.adress}</p>
+      <p className="text-lg text-gray-300">Telefono: {proveedor.phone_number}</p>
+      <p className="text-lg text-gray-300">Dirección: {proveedor.address}</p>
 
       <div className="flex justify-center mt-6">
 

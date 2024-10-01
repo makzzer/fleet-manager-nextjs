@@ -17,8 +17,8 @@ interface Proveedor {
   name: string;
   email: string;
   cuit: string;
-  phoneNumber: string;
-  adress: string;
+  phone_number: string;
+  address: string;
   date_created?: string;
   date_updated?: string;
 }

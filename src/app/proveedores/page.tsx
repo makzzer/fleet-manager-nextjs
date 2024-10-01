@@ -15,8 +15,8 @@ interface Proveedor {
   name: string;
   email: string;
   cuit: string;
-  phoneNumber: string;
-  adress: string;
+  phone_number: string;
+  address: string;
   date_created?: string;
   date_updated?: string;
 }
@@ -96,8 +96,8 @@ const Proveedores = () => {
       <input type="text" id="name" class="swal2-input" placeholder="Name">
       <input type="text" id="email" class="swal2-input" placeholder="Email">
       <input type="text" id="cuit" class="swal2-input" placeholder="CUIT">
-      <input type="text" id="phoneNumber" class="swal2-input" placeholder="Teléfono">
-      <input type="text" id="adress" class="swal2-input" placeholder="Dirección">
+      <input type="text" id="phone_number" class="swal2-input" placeholder="Teléfono">
+      <input type="text" id="address" class="swal2-input" placeholder="Dirección">
     `,
       confirmButtonText: "Agregar",
       showCancelButton: true,
@@ -105,21 +105,21 @@ const Proveedores = () => {
         const nameElement = document.getElementById("name") as HTMLInputElement;
         const emailElement = document.getElementById("email") as HTMLInputElement;
         const cuitElement = document.getElementById("cuit") as HTMLInputElement;
-        const phoneNumberElement = document.getElementById("phoneNumber") as HTMLInputElement;
-        const adressElement = document.getElementById("adress") as HTMLInputElement;
+        const phone_numberElement = document.getElementById("phone_number") as HTMLInputElement;
+        const addressElement = document.getElementById("address") as HTMLInputElement;
 
         const name = nameElement?.value;
         const email = emailElement?.value;
         const cuit = cuitElement?.value;
-        const phoneNumber = phoneNumberElement?.value;
-        const adress = adressElement?.value;
+        const phone_number = phone_numberElement?.value;
+        const address = addressElement?.value;
 
         // if ( !name ) {
         //   Swal.showValidationMessage("Completa todos los campos");
         //   return null;
         // }
 
-        return { name, email, cuit, phoneNumber, adress };
+        return { name, email, cuit, phone_number, address };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
@@ -128,8 +128,8 @@ const Proveedores = () => {
           name: result.value.name,
           email: result.value.email,
           cuit: result.value.cuit,
-          phoneNumber: result.value.phoneNumber,
-          adress: result.value.adress,
+          phone_number: result.value.phone_number,
+          address: result.value.address,
         };
 
         createProveedor(proveedor);
