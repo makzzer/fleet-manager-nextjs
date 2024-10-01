@@ -93,7 +93,6 @@ const Proveedores = () => {
     Swal.fire({
       title: "Agregar Proveedor",
       html: `
-      <input type="text" id="ID" class="swal2-input" placeholder="ID">
       <input type="text" id="name" class="swal2-input" placeholder="Name">
       <input type="text" id="email" class="swal2-input" placeholder="Email">
       <input type="text" id="cuit" class="swal2-input" placeholder="CUIT">
@@ -103,14 +102,12 @@ const Proveedores = () => {
       confirmButtonText: "Agregar",
       showCancelButton: true,
       preConfirm: () => {
-        const idElement = document.getElementById("ID") as HTMLInputElement;
         const nameElement = document.getElementById("name") as HTMLInputElement;
         const emailElement = document.getElementById("email") as HTMLInputElement;
         const cuitElement = document.getElementById("cuit") as HTMLInputElement;
         const phoneNumberElement = document.getElementById("phoneNumber") as HTMLInputElement;
         const adressElement = document.getElementById("adress") as HTMLInputElement;
 
-        const id = idElement?.value;
         const name = nameElement?.value;
         const email = emailElement?.value;
         const cuit = cuitElement?.value;
@@ -122,7 +119,7 @@ const Proveedores = () => {
         //   return null;
         // }
 
-        return { id, name, email, cuit, phoneNumber, adress };
+        return { name, email, cuit, phoneNumber, adress };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {

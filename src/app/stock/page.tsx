@@ -14,22 +14,13 @@ import { useState } from "react";
 import FiltrosProducto from "../components/Stock/FiltrosProducto";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import { useProducto, Producto } from "../context/ProductoContext";
+import { useProducto } from "../context/ProductoContext";
 // import SearchBar from "../components/SearchBar/SearchBar";
 
 // import { TextField, InputAdornment } from '@mui/material';
 // import SearchIcon from '@mui/icons-material/Search';
 
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-
-interface Producto {
-  id: string;
-  name: string;
-  brand: string;
-  description: string;
-  category: string;
-  quantity: string;
-}
 
 const Stock = () => {
   const router = useRouter();
