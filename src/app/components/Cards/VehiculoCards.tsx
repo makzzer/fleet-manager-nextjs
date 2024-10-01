@@ -29,7 +29,7 @@ interface VehiculoCardProps {
 const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const router = useRouter();
   const { modifyVehiculo } = useVehiculo();
-  const {updateVehiculo} = useVehiculo();
+  const { updateVehiculo } = useVehiculo();
 
   const handleViewVehiculo = (id: string) => {
     router.push(`/vehiculos/${id}`);
@@ -38,10 +38,10 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const handleDisableVehicle = async () => {
     const newStatus = !vehiculo.status;
     const updatedVehiculo = { ...vehiculo, status: newStatus };
-  
+
     try {
       await updateVehiculo(updatedVehiculo);
-  
+
       Swal.fire({
         title: `Vehículo ${newStatus ? "habilitado" : "deshabilitado"}`,
         text: `El vehículo ha sido ${newStatus ? "habilitado" : "deshabilitado"} correctamente.`,
@@ -66,29 +66,18 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         <div class="flex flex-col space-y-4">
           <div class="flex flex-col">
             <label for="edit-vehicle-model" class="text-left text-gray-700 font-medium">Modelo</label>
-            <input id="edit-vehicle-model" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${
-              vehiculo.model
-            }">
+            <input id="edit-vehicle-model" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.model
+        }">
           </div>
           <div class="flex flex-col">
             <label for="edit-vehicle-brand" class="text-left text-gray-700 font-medium">Marca</label>
-            <input id="edit-vehicle-brand" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${
-              vehiculo.brand
-            }">
+            <input id="edit-vehicle-brand" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.brand
+        }">
           </div>
           <div class="flex flex-col">
             <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
-            <input id="edit-vehicle-year" type="number" min="1900" max="${new Date().getFullYear()}" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${
-        vehiculo.year
-      }">
-          </div>
-          <div class="flex flex-col">
-            <label for="edit-vehicle-status" class="text-left text-gray-700 font-medium">Status</label>
-            <input id="edit-vehicle-status" type="checkbox" ${
-              vehiculo.status ? "checked" : ""
-            }>
-          </div>
-        </div>
+            <input id="edit-vehicle-year" type="number" min="1900" max="${new Date().getFullYear()}" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.year
+        }">
       `,
       showCancelButton: true,
       confirmButtonText: "Guardar",
@@ -104,9 +93,6 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           (document.getElementById("edit-vehicle-year") as HTMLInputElement)
             .value
         );
-        const status = (
-          document.getElementById("edit-vehicle-status") as HTMLInputElement
-        ).checked;
 
         if (
           !model ||
@@ -120,13 +106,13 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           return false;
         }
 
-        return { model, brand, year, status };
+        return { model, brand, year };
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        const { model, brand, year, status } = result.value;
-        const updatedVehiculo = { ...vehiculo, model, brand, year, status };
+        const { model, brand, year } = result.value;
+        const updatedVehiculo = { ...vehiculo, model, brand, year };
 
         modifyVehiculo(updatedVehiculo);
 
@@ -141,11 +127,10 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
 
   return (
     <div
-      className={`p-6 rounded-lg shadow-lg text-white transition duration-300 ease-in-out ${
-        vehiculo.status
+      className={`p-6 rounded-lg shadow-lg text-white transition duration-300 ease-in-out ${vehiculo.status
           ? "bg-gray-800 hover:bg-gray-900"
           : "bg-gray-800 opacity-50"
-      }`}
+        }`}
     >
       <h2 className="text-2xl font-bold mb-3">
         {vehiculo.brand} {vehiculo.model} - {vehiculo.year}
@@ -186,11 +171,10 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
 
         <button
           onClick={() => handleDisableVehicle()}
-          className={`font-bold py-2 px-4 rounded ${
-            vehiculo.status
+          className={`font-bold py-2 px-4 rounded ${vehiculo.status
               ? "bg-red-500 hover:bg-red-600"
               : "bg-blue-500 hover:bg-blue-600"
-          }`}
+            }`}
         >
           {vehiculo.status ? "Deshabilitar" : "Habilitar"}
         </button>
