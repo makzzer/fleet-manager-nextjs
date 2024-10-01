@@ -14,21 +14,13 @@ import { useState } from "react";
 import FiltrosProducto from "../components/Stock/FiltrosProducto";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import { useProducto } from "../context/ProductoContext";
+import { useProducto, Producto } from "../context/ProductoContext";
 // import SearchBar from "../components/SearchBar/SearchBar";
 
 // import { TextField, InputAdornment } from '@mui/material';
 // import SearchIcon from '@mui/icons-material/Search';
 
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-
-interface Producto {
-  id: string;
-  name: string;
-  brand: string;
-  category: string;
-  purchaseDate: string;
-}
 
 const Stock = () => {
   const router = useRouter();
@@ -172,14 +164,15 @@ const Stock = () => {
           name: result.value.nombre,
           brand: result.value.marca,
           category: result.value.categoria,
-          purchaseDate: result.value.fechaCompra,
+          description: "", //Agregar al fornmulario de alta
+          quantity: 0, //gregar al fornmulario de alta
         };
 
         createProducto(producto);
 
         Swal.fire({
-          title: "Vehículo agregado con éxito",
-          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
+          title: "Producto agregado con éxito",
+          text: "El nuevo producto ha sido creado y registrado correctamente.",
           icon: "success",
         });
       }

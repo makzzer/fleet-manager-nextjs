@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useProducto, Producto } from "@/app/context/ProductoContext";
+import { useProducto } from "@/app/context/ProductoContext";
 import Link from "next/link";
 
 const ProductPage = () => {
