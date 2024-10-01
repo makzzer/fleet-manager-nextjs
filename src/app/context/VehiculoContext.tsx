@@ -19,7 +19,7 @@ interface Coordinates {
 
 interface Vehiculo {
   id: string;
-  status: boolean;
+  status: string;
   model: string;
   brand: string;
   year: number;

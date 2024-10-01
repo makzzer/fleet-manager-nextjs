@@ -13,7 +13,7 @@ interface Coordinates {
 
 interface Vehiculo {
   id: string;
-  status: boolean;
+  status: string;
   model: string;
   brand: string;
   year: number;
@@ -29,22 +29,27 @@ interface VehiculoCardProps {
 const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const router = useRouter();
   const { modifyVehiculo } = useVehiculo();
-  const { updateVehiculo } = useVehiculo();
+  // const { updateVehiculo } = useVehiculo();
 
   const handleViewVehiculo = (id: string) => {
-    router.push(`/vehiculos/${id}`);
+    if (vehiculo.status === "AVAILABLE") {
+      router.push(`/vehiculos/${id}`);
+    }
   };
 
   const handleDisableVehicle = async () => {
-    const newStatus = !vehiculo.status;
+    // const newStatus = vehiculo.status ? "AVAILABLE" : "UNAVAILABLE";
+    const newStatus = vehiculo.status === "AVAILABLE" ? "UNAVAILABLE" : "AVAILABLE";
     const updatedVehiculo = { ...vehiculo, status: newStatus };
 
     try {
-      await updateVehiculo(updatedVehiculo);
+      await modifyVehiculo(updatedVehiculo);
 
       Swal.fire({
-        title: `Vehículo ${newStatus ? "habilitado" : "deshabilitado"}`,
-        text: `El vehículo ha sido ${newStatus ? "habilitado" : "deshabilitado"} correctamente.`,
+        // title: `Vehículo ${newStatus ? "habilitado" : "deshabilitado"}`,
+        title: `Vehículo ${newStatus === "AVAILABLE" ? "habilitado" : "deshabilitado"}`,
+        // text: `El vehículo ha sido ${newStatus ? "habilitado" : "deshabilitado"} correctamente.`,
+        text: `El vehículo ha sido ${newStatus === "AVAILABLE" ? "habilitado" : "deshabilitado"} correctamente.`,
         icon: "success",
         confirmButtonColor: "#3085d6",
       });
@@ -60,76 +65,78 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   };
 
   const handleEdit = () => {
-    Swal.fire({
-      title: "Editar vehículo",
-      html: `
+    if (vehiculo.status === "AVAILABLE") {
+      Swal.fire({
+        title: "Editar vehículo",
+        html: `
         <div class="flex flex-col space-y-4">
           <div class="flex flex-col">
             <label for="edit-vehicle-model" class="text-left text-gray-700 font-medium">Modelo</label>
             <input id="edit-vehicle-model" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.model
-        }">
+          }">
           </div>
           <div class="flex flex-col">
             <label for="edit-vehicle-brand" class="text-left text-gray-700 font-medium">Marca</label>
             <input id="edit-vehicle-brand" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.brand
-        }">
+          }">
           </div>
           <div class="flex flex-col">
             <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
             <input id="edit-vehicle-year" type="number" min="1900" max="${new Date().getFullYear()}" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.year
-        }">
+          }">
       `,
-      showCancelButton: true,
-      confirmButtonText: "Guardar",
-      showLoaderOnConfirm: true,
-      preConfirm: () => {
-        const model = (
-          document.getElementById("edit-vehicle-model") as HTMLInputElement
-        ).value;
-        const brand = (
-          document.getElementById("edit-vehicle-brand") as HTMLInputElement
-        ).value;
-        const year = parseInt(
-          (document.getElementById("edit-vehicle-year") as HTMLInputElement)
-            .value
-        );
-
-        if (
-          !model ||
-          !brand ||
-          year < 1900 ||
-          year > new Date().getFullYear()
-        ) {
-          Swal.showValidationMessage(
-            "Por favor, complete todos los campos correctamente."
+        showCancelButton: true,
+        confirmButtonText: "Guardar",
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+          const model = (
+            document.getElementById("edit-vehicle-model") as HTMLInputElement
+          ).value;
+          const brand = (
+            document.getElementById("edit-vehicle-brand") as HTMLInputElement
+          ).value;
+          const year = parseInt(
+            (document.getElementById("edit-vehicle-year") as HTMLInputElement)
+              .value
           );
-          return false;
+
+          if (
+            !model ||
+            !brand ||
+            year < 1900 ||
+            year > new Date().getFullYear()
+          ) {
+            Swal.showValidationMessage(
+              "Por favor, complete todos los campos correctamente."
+            );
+            return false;
+          }
+
+          return { model, brand, year };
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const { model, brand, year } = result.value;
+          const updatedVehiculo = { ...vehiculo, model, brand, year };
+
+          modifyVehiculo(updatedVehiculo);
+
+          Swal.fire({
+            title: "Actualizado!",
+            text: "El vehículo ha sido actualizado.",
+            icon: "success",
+          });
         }
-
-        return { model, brand, year };
-      },
-      allowOutsideClick: () => !Swal.isLoading(),
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const { model, brand, year } = result.value;
-        const updatedVehiculo = { ...vehiculo, model, brand, year };
-
-        modifyVehiculo(updatedVehiculo);
-
-        Swal.fire({
-          title: "Actualizado!",
-          text: "El vehículo ha sido actualizado.",
-          icon: "success",
-        });
-      }
-    });
+      });
+    };
   };
 
   return (
     <div
       className={`p-6 rounded-lg shadow-lg text-white transition duration-300 ease-in-out ${vehiculo.status
-          ? "bg-gray-800 hover:bg-gray-900"
-          : "bg-gray-800 opacity-50"
+        ? "bg-gray-800 hover:bg-gray-900"
+        : "bg-gray-800 opacity-50"
         }`}
     >
       <h2 className="text-2xl font-bold mb-3">
@@ -157,27 +164,38 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
       <div className="flex justify-between mt-6">
         <button
           onClick={() => handleViewVehiculo(vehiculo.id)}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+          disabled={vehiculo.status !== "AVAILABLE"}
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
         >
           Ver Detalles
         </button>
 
         <button
           onClick={handleEdit}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          disabled={vehiculo.status !== "AVAILABLE"}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
         >
           Editar
         </button>
 
         <button
+          onClick={handleDisableVehicle}
+          className={`font-bold py-2 px-4 rounded ${
+            vehiculo.status === "AVAILABLE" ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
+          }`}
+        >
+          {vehiculo.status === "AVAILABLE" ? "Deshabilitar" : "Habilitar"}
+        </button>
+
+        {/* <button
           onClick={() => handleDisableVehicle()}
           className={`font-bold py-2 px-4 rounded ${vehiculo.status
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-blue-500 hover:bg-blue-600"
+            ? "bg-red-500 hover:bg-red-600"
+            : "bg-blue-500 hover:bg-blue-600"
             }`}
         >
           {vehiculo.status ? "Deshabilitar" : "Habilitar"}
-        </button>
+        </button> */}
       </div>
     </div>
   );
