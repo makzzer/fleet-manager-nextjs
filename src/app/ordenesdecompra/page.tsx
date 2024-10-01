@@ -112,8 +112,8 @@ const OrdenesDeCompra = () => {
 
   const onCreateSubmit = async (formData: OrdenDeCompraFormData) => {
     const ordenDeCompra : CreacionOrdenDeCompra = {
-      providerId: formData.providerId,
-      productId: formData.productId,
+      provider_id: formData.providerId,
+      product_id: formData.productId,
       quantity: formData.quantity,
       amount: formData.amount
     }

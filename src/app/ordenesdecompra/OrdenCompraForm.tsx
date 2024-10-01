@@ -15,8 +15,8 @@ export interface SelectData {
   name: string;
 }
 
-interface OrdenCompraFormProps {
-  onSubmit: (data: OrdenDeCompraFormData) => void; // Define correctamente el tipo de datos que enviarás en el formulario
+interface OrdenCompraFormProps {    //Define las propiedades que recibirá el componente.
+  onSubmit: (data: OrdenDeCompraFormData) => void; 
   proveedores: SelectData[];
   productos: SelectData[];
 }
