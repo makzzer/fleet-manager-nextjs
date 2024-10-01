@@ -30,6 +30,8 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const router = useRouter();
   const { modifyVehiculo } = useVehiculo();
   // const { updateVehiculo } = useVehiculo();
+  const { deleteVehiculo } = useVehiculo();
+  const { enableVehiculo } = useVehiculo();
 
   const handleViewVehiculo = (id: string) => {
     if (vehiculo.status === "AVAILABLE") {
@@ -37,22 +39,54 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
     }
   };
 
+  // const handleDisableVehicle = async () => {
+  //   // const newStatus = vehiculo.status ? "AVAILABLE" : "UNAVAILABLE";
+  //   const newStatus = vehiculo.status === "AVAILABLE" ? "UNAVAILABLE" : "AVAILABLE";
+  //   const updatedVehiculo = { ...vehiculo, status: newStatus };
+
+  //   try {
+  //     await modifyVehiculo(updatedVehiculo);
+
+  //     Swal.fire({
+  //       // title: `Vehículo ${newStatus ? "habilitado" : "deshabilitado"}`,
+  //       title: `Vehículo ${newStatus === "AVAILABLE" ? "habilitado" : "deshabilitado"}`,
+  //       // text: `El vehículo ha sido ${newStatus ? "habilitado" : "deshabilitado"} correctamente.`,
+  //       text: `El vehículo ha sido ${newStatus === "AVAILABLE" ? "habilitado" : "deshabilitado"} correctamente.`,
+  //       icon: "success",
+  //       confirmButtonColor: "#3085d6",
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     Swal.fire({
+  //       title: "Error",
+  //       text: "Hubo un problema al cambiar el estado del vehículo. Por favor, intenta de nuevo.",
+  //       icon: "error",
+  //       confirmButtonColor: "#d33",
+  //     });
+  //   }
+  // };
+
   const handleDisableVehicle = async () => {
-    // const newStatus = vehiculo.status ? "AVAILABLE" : "UNAVAILABLE";
     const newStatus = vehiculo.status === "AVAILABLE" ? "UNAVAILABLE" : "AVAILABLE";
     const updatedVehiculo = { ...vehiculo, status: newStatus };
-
     try {
-      await modifyVehiculo(updatedVehiculo);
-
-      Swal.fire({
-        // title: `Vehículo ${newStatus ? "habilitado" : "deshabilitado"}`,
-        title: `Vehículo ${newStatus === "AVAILABLE" ? "habilitado" : "deshabilitado"}`,
-        // text: `El vehículo ha sido ${newStatus ? "habilitado" : "deshabilitado"} correctamente.`,
-        text: `El vehículo ha sido ${newStatus === "AVAILABLE" ? "habilitado" : "deshabilitado"} correctamente.`,
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-      });
+      if (vehiculo.status === "AVAILABLE") {
+        await deleteVehiculo(updatedVehiculo); // Deshabilita el vehículo
+        Swal.fire({
+          title: "Vehículo deshabilitado",
+          text: "El vehículo ha sido deshabilitado correctamente.",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+        });
+      } else {
+        await enableVehiculo(updatedVehiculo.id); // Habilita el vehículo
+        Swal.fire({
+          title: "Vehículo habilitado",
+          text: "El vehículo ha sido habilitado correctamente.",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+        });
+      }
     } catch (error) {
       console.error(error);
       Swal.fire({

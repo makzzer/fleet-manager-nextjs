@@ -40,12 +40,8 @@ interface VehiculoContextProps {
       "coordinates" | "date_created" | "date_updated"
     >
   ) => Promise<void>;
-  updateVehiculo: (
-    vehiculoActualizado: Omit<
-      Vehiculo,
-      "Coordinates" | "date_created" | "date_updated"
-    >
-  ) => Promise<void>;
+  deleteVehiculo: (vehiculoEliminado: Vehiculo) => Promise<void>;
+  enableVehiculo: (id: string) => Promise<void>;
 }
 
 const VehiculoContext = createContext<VehiculoContextProps | undefined>(
@@ -132,34 +128,48 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     }
   };  
 
-  const updateVehiculo = async (
-    vehiculoActualizado: Omit<
-    Vehiculo, 
-    "coordinates" | "date_created" | "date_updated"
-    >
-  ) => {
+  const deleteVehiculo = async (vehiculoEliminado: Vehiculo) => {
     try {
+      // Realiza DELETE para deshabilitar el vehículo en el backend
+      await axios.delete(`${apiVehiculosBackend}/${vehiculoEliminado.id}`);
+      
+      // Actualiza el estado localmente
       setVehiculos((prevVehiculos) =>
         prevVehiculos.map((vehiculo) =>
-          vehiculo.id === vehiculoActualizado.id
-            ? { ...vehiculo, ...vehiculoActualizado }
-            : vehiculo
+          vehiculo.id === vehiculoEliminado.id ? { ...vehiculo, status: "UNAVAILABLE" } : vehiculo
         )
       );
-
-      console.log(`El Vehículo con ID ${vehiculoActualizado.id} ha sido actualizado.`);
+      
+      console.log(`Vehículo con ID ${vehiculoEliminado.id} ha sido deshabilitado.`);
     } catch (error) {
-      console.error("Error actualizando vehículo:", error);
+      console.error("Error deshabilitando vehículo en el backend:", error);
     }
   };
 
+  const enableVehiculo = async (id: string) => {
+    try {
+      await axios.put(`${apiVehiculosBackend}/${id}`, { status: "AVAILABLE" });
+      
+      // Actualiza el estado localmente
+      setVehiculos((prevVehiculos) =>
+        prevVehiculos.map((vehiculo) =>
+          vehiculo.id === id ? { ...vehiculo, status: "AVAILABLE" } : vehiculo
+        )
+      );
+      
+      console.log(`Vehículo con ID ${id} ha sido habilitado.`);
+    } catch (error) {
+      console.error("Error habilitando vehículo en el backend:", error);
+    }
+  };
+  
   useEffect(() => {
     fetchVehiculos();
   }, [fetchVehiculos]);
 
   return (
     <VehiculoContext.Provider
-      value={{ vehiculos, fetchVehiculos, createVehiculo, modifyVehiculo, updateVehiculo }}
+      value={{ vehiculos, fetchVehiculos, createVehiculo, modifyVehiculo, deleteVehiculo, enableVehiculo }}
     >
       {children}
     </VehiculoContext.Provider>
