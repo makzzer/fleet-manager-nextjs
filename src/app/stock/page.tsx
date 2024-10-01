@@ -110,7 +110,6 @@ const Stock = () => {
     Swal.fire({
       title: "Agregar Producto",
       html: `
-            <input type="text" id="id" class="swal2-input" placeholder="Id">
             <input type="text" id="name" class="swal2-input" placeholder="Nombre">
             <input type="text" id="brand" class="swal2-input" placeholder="Marca">
             <input type="text" id="description" class="swal2-input" placeholder="Descripción">
@@ -122,36 +121,24 @@ const Stock = () => {
       showCancelButton: true,
       focusConfirm: false,
       preConfirm: () => {
-        const idElement = document.getElementById("id") as HTMLInputElement;
-        const nameElement = document.getElementById(
-          "name"
-        ) as HTMLInputElement;
-        const brandElement = document.getElementById(
-          "brand"
-        ) as HTMLInputElement;
-        const descriptionElement = document.getElementById(
-          "description"
-        ) as HTMLInputElement;
-        const categoryElement = document.getElementById(
-          "category"
-        ) as HTMLInputElement;
-        const quantityElement = document.getElementById(
-          "quantity"
-        ) as HTMLInputElement;
+        const nameElement = document.getElementById("name") as HTMLInputElement;
+        const brandElement = document.getElementById("brand") as HTMLInputElement;
+        const descriptionElement = document.getElementById("description") as HTMLInputElement;
+        const categoryElement = document.getElementById("category") as HTMLInputElement;
+        const quantityElement = document.getElementById("quantity") as HTMLInputElement;
         
-        const id = idElement?.value;
         const name = nameElement?.value;
         const brand = brandElement?.value;
         const description = descriptionElement?.value;
         const category = categoryElement?.value;
         const quantity = quantityElement?.value;
 
-        if (!id || !name || !brand || !description || !category) {
+        if ( !name || !brand || !description || !category ) {
           Swal.showValidationMessage("Completa todos los campos");
           return null;
         }
 
-        return { id, name, brand, description, category, quantity };
+        return { name, brand, description, category, quantity };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
