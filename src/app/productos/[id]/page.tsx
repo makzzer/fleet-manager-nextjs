@@ -39,15 +39,11 @@ const ProductPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 <div className="bg-gray-800 p-3 rounded md:col-span-2">
                   <p className="text-gray-400 text-sm md:col-span-2">Nombre</p>
-                  <p className="text-white font-semibold">
-                    {producto.name}
-                  </p>
+                  <p className="text-white font-semibold">{producto.name}</p>
                 </div>
                 <div className="bg-gray-800 p-3 rounded md:col-span-2">
                   <p className="text-gray-400 text-sm">Marca</p>
-                  <p className="text-white font-semibold">
-                    {producto.brand}
-                  </p>
+                  <p className="text-white font-semibold">{producto.brand}</p>
                 </div>
                 <div className="bg-gray-800 p-3 rounded md:col-span-2">
                   <p className="text-gray-400 text-sm">Categoría</p>
@@ -73,7 +69,7 @@ const ProductPage = () => {
           </div>
           <div className="px-6 py-4 bg-gray-900 flex justify-center space-x-4">
             <Link
-              href="/stock"
+              href="/productos"
               className="bg-blue-600 px-4 py-2 rounded shadow-md hover:bg-blue-700 text-white"
             >
               Volver
@@ -86,5 +82,3 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
-
-

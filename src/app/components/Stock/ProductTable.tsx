@@ -46,7 +46,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
   };
 
   const handleView = (id: string) => {
-    router.push(`/stock/${id}`);
+    router.push(`/productos/${id}`);
   };
 
   useEffect(() => {

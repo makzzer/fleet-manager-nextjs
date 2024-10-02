@@ -80,8 +80,8 @@ const Navbar = () => {
                 </a>
               </li>
               <li>
-                <a href="/stock" className="hover:text-gray-400">
-                  Stock
+                <a href="/productos" className="hover:text-gray-400">
+                  Productos
                 </a>
               </li>
               <li>
@@ -120,8 +120,9 @@ const Navbar = () => {
 
         {/* Menú desplegable en dispositivos pequeños */}
         <div
-          className={`${isOpen ? "block" : "hidden"
-            } fixed top-0 left-0 w-full h-full bg-gray-900 text-white transition-all duration-300 ease-in-out z-40`}
+          className={`${
+            isOpen ? "block" : "hidden"
+          } fixed top-0 left-0 w-full h-full bg-gray-900 text-white transition-all duration-300 ease-in-out z-40`}
         >
           <div className="p-4 flex justify-between items-center">
             <div className="text-2xl font-bold">Fleet Manager</div>
@@ -169,11 +170,11 @@ const Navbar = () => {
                 </li>
                 <li>
                   <a
-                    href="/stock"
+                    href="/productos"
                     className="hover:text-gray-400"
                     onClick={() => setIsOpen(false)}
                   >
-                    Stock
+                    Productos
                   </a>
                 </li>
                 <li>

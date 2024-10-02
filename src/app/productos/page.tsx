@@ -59,6 +59,10 @@ const Stock = () => {
     }
   }, [searchTerm, productos]);
 
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
+
   // // el query va a ser lo que voy escribiendo en el input de la bar
   // const handleSearch = (query: string) => {
   //   const filtered = productos.filter(
@@ -122,18 +126,26 @@ const Stock = () => {
       focusConfirm: false,
       preConfirm: () => {
         const nameElement = document.getElementById("name") as HTMLInputElement;
-        const brandElement = document.getElementById("brand") as HTMLInputElement;
-        const descriptionElement = document.getElementById("description") as HTMLInputElement;
-        const categoryElement = document.getElementById("category") as HTMLInputElement;
-        const quantityElement = document.getElementById("quantity") as HTMLInputElement;
-        
+        const brandElement = document.getElementById(
+          "brand"
+        ) as HTMLInputElement;
+        const descriptionElement = document.getElementById(
+          "description"
+        ) as HTMLInputElement;
+        const categoryElement = document.getElementById(
+          "category"
+        ) as HTMLInputElement;
+        const quantityElement = document.getElementById(
+          "quantity"
+        ) as HTMLInputElement;
+
         const name = nameElement?.value;
         const brand = brandElement?.value;
         const description = descriptionElement?.value;
         const category = categoryElement?.value;
         const quantity = quantityElement?.value;
 
-        if ( !name || !brand || !description || !category ) {
+        if (!name || !brand || !description || !category) {
           Swal.showValidationMessage("Completa todos los campos");
           return null;
         }
@@ -168,7 +180,7 @@ const Stock = () => {
       <div className="p-6 bg-gray-900 min-h-screen rounded-lg text-white">
         <div className="flex justify-between items-center mb-6">
           <h1 className="md:text-4xl text-3xl font-bold text-blue-400">
-            Gestión de Stock
+            Gestión de Productos
           </h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
