@@ -28,7 +28,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-800 text-white flex">
+      <body className="min-h-screen bg-gray-800 text-white flex flex-col">
         <Providers>
           {/* Sidebar fija en pantallas grandes y pequeñas */}
 
