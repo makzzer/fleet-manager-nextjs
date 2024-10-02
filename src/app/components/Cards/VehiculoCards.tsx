@@ -2,10 +2,6 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useVehiculo } from "@/app/context/VehiculoContext";
-import { LuActivity } from "react-icons/lu";
-//import axios from "axios";
-
-//const apiVehiculosBackend = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
 
 interface Coordinates {
   latitude: number;
