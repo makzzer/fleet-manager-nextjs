@@ -50,7 +50,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
       <div className="fixed top-3 left-1 z-40 lg:hidden">
         <button
           onClick={toggleSidebar}
-          className="text-gray-300 hover:bg-gray-800 p-2 rounded-full focus:outline-none focus:ring"
+          className="text-gray-300 hover:bg-gray-800 p-2 rounded-full focus:outline-none"
         >
           {isOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
         </button>
@@ -62,10 +62,10 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
       } lg:relative lg:translate-x-0 lg:w-${isOpen ? "64" : "20"} p-6 lg:p-0 shadow-xl`}
       >
         {/* Botón para pantallas grandes */}
-        <div className="hidden lg:block bg-gray-900 fixed top-6 left-0 z-50">
+        <div className="hidden lg:block  fixed top-6 left-[0.1rem] z-50  ">
           <button
             onClick={toggleSidebar}
-            className="text-white bg-gray-900 hover:bg-gray-800 p-2 rounded-full focus:outline-none focus:ring"
+            className="text-white bg-gray-900 hover:bg-gray-800 p-2 rounded-full focus:outline-none "
           >
             {isOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
           </button>
