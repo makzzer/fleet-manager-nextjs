@@ -2,6 +2,9 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useVehiculo } from "@/app/context/VehiculoContext";
+import { FaCarAlt, FaEye } from "react-icons/fa";
+import { FaPencilAlt } from "react-icons/fa";
+import { MdCarCrash } from "react-icons/md";
 
 interface Coordinates {
   latitude: number;
@@ -138,10 +141,10 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
             (document.getElementById("edit-vehicle-year") as HTMLInputElement)
               .value
           );
-          const latitude =  parseFloat((document.getElementById("edit-vehicle-coordinates-lat") as HTMLInputElement).value);
-          const longitude =  parseFloat((document.getElementById("edit-vehicle-coordinates-lon") as HTMLInputElement).value);
+          const latitude = parseFloat((document.getElementById("edit-vehicle-coordinates-lat") as HTMLInputElement).value);
+          const longitude = parseFloat((document.getElementById("edit-vehicle-coordinates-lon") as HTMLInputElement).value);
 
-          const coordinates = { 
+          const coordinates = {
             latitude: latitude,
             longitude: longitude
           };
@@ -186,7 +189,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         }`}
     >
       <h2 className="text-2xl font-bold mb-3">
-        {vehiculo.brand} {vehiculo.model} - {vehiculo.year} 
+        {vehiculo.brand} {vehiculo.model} - {vehiculo.year}
       </h2>
       <p className="text-lg text-gray-300">ID: {vehiculo.id}</p>
       <div className="mt-4">
@@ -208,40 +211,38 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
       </div>
 
       <div className="flex justify-between mt-6">
-        <button
+        <button title="Detalle"
           onClick={() => handleViewVehiculo(vehiculo.id)}
           disabled={vehiculo.status !== "AVAILABLE"}
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
         >
-          Ver Detalles
+          <FaEye className="w-5 h-5" fontSize="large" />
         </button>
 
-        <button
+        <button title="Editar"
           onClick={handleEdit}
           disabled={vehiculo.status !== "AVAILABLE"}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
         >
-          Editar
+          <FaPencilAlt fontSize="large" />
         </button>
 
-        <button
-          onClick={handleDisableVehicle}
-          className={`font-bold py-2 px-4 rounded ${
-            vehiculo.status === "AVAILABLE" ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
-          }`}
-        >
-          {vehiculo.status === "AVAILABLE" ? "Deshabilitar" : "Habilitar"}
-        </button>
-
-        {/* <button
-          onClick={() => handleDisableVehicle()}
-          className={`font-bold py-2 px-4 rounded ${vehiculo.status
-            ? "bg-red-500 hover:bg-red-600"
-            : "bg-blue-500 hover:bg-blue-600"
-            }`}
-        >
-          {vehiculo.status ? "Deshabilitar" : "Habilitar"}
-        </button> */}
+        {vehiculo.status === "AVAILABLE"
+          ?
+          <button title="Deshabilitar"
+            onClick={handleDisableVehicle}
+            className="font-bold py-2 px-4 rounded bg-red-500 hover:bg-red-600"
+          >
+            <MdCarCrash fontSize="large" />
+          </button>
+          :
+          <button title="Habilitar"
+            onClick={handleDisableVehicle}
+            className="font-bold py-2 px-4 rounded bg-blue-500 hover:bg-blue-600"
+          >
+            <FaCarAlt fontSize="large"/>
+          </button>
+        }
       </div>
     </div>
   );
