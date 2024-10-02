@@ -1,5 +1,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import { IconButton } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 interface Proveedor {
   id: string;
@@ -17,12 +19,12 @@ interface ProveedorCardProps {
 }
 
 const ProveedorCard = ({ proveedor }: ProveedorCardProps) => {
-  
+
   const router = useRouter();
 
   const handleViewProveedor = (id: string) => {
     router.push(`/proveedores/${id}`);
-};
+  };
 
 
   {/*
@@ -76,7 +78,7 @@ const ProveedorCard = ({ proveedor }: ProveedorCardProps) => {
   return (
     <div className="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-lg text-white hover:bg-gray-900 transition duration-300 ease-in-out">
       <h2 className="text-2xl font-bold mb-3">
-        {proveedor.name} 
+        {proveedor.name}
       </h2>
       <p className="text-lg text-gray-300">ID: {proveedor.id}</p>
       <p className="text-lg text-gray-300">CUIT: {proveedor.cuit}</p>
@@ -86,13 +88,22 @@ const ProveedorCard = ({ proveedor }: ProveedorCardProps) => {
 
       <div className="flex justify-center mt-6">
 
-      <button
-          onClick={()=>handleViewProveedor(proveedor.id)}
+        {/* <button
+          onClick={() => handleViewProveedor(proveedor.id)}
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
           Ver Detalles
-        </button>
+        </button> */}
 
-      {/*  <button
+        <IconButton
+          aria-label="Ver proveedor"
+          color="secondary"
+          title="Ver proveedor"
+          onClick={() => handleViewProveedor(proveedor.id)}
+        >
+          <VisibilityIcon sx={{ fontSize: 55 }}/>
+        </IconButton>
+
+        {/*  <button
           onClick={handleEdit}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
           Editar
