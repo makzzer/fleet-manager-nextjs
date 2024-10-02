@@ -7,8 +7,9 @@ const AddProveedorForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     cuit: "",
-    direccion: "",
-    telefono: "",
+    address: "",
+    phone_number: "",
+    email: "", // Agregar campo email
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,11 +25,12 @@ const AddProveedorForm = () => {
     // Crear proveedor con los datos del formulario
     try {
       await createProveedor({
-        id: "",  // ID automatico de BD.
+        id: "",  // ID automático desde la BD.
         name: formData.name,
         cuit: formData.cuit,
-        direccion: formData.direccion,
-        telefono: formData.telefono,
+        address: formData.address,
+        phone_number: formData.phone_number,
+        email: formData.email, // Agregar email al envío
       });
       alert("Proveedor agregado con éxito");
     } catch (error) {
@@ -57,17 +59,25 @@ const AddProveedorForm = () => {
       />
       <input
         type="text"
-        name="direccion"
+        name="address" // Cambiado de direccion a address
         placeholder="Dirección"
-        value={formData.direccion}
+        value={formData.address} // Actualizado
         onChange={handleInputChange}
         className="w-full p-2 mb-2"
       />
       <input
         type="text"
-        name="telefono"
+        name="phone_number" // Cambiado a phone_number para que coincida con la interfaz
         placeholder="Teléfono"
-        value={formData.telefono}
+        value={formData.phone_number} // Actualizado
+        onChange={handleInputChange}
+        className="w-full p-2 mb-4"
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={formData.email}
         onChange={handleInputChange}
         className="w-full p-2 mb-4"
       />
