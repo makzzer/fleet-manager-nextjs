@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IconButton } from "@mui/material";
 //import { FaCheck, FaFire } from "react-icons/fa";
-import EditIcon from "@mui/icons-material/Edit";
 //import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -100,9 +99,6 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
         <thead className="bg-gray-800">
           <tr className="rounded-lg">
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              ID
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
               Producto
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
@@ -112,7 +108,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
               Categoria
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Descripción
+              Cantidad
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
               Acciones
@@ -122,14 +118,13 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
         <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
           {products.map((product) => (
             <tr key={product.id} className={""}>
-              <td className="px-6 py-4 whitespace-nowrap">{product.id}</td>
               <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
               <td className="px-6 py-4 whitespace-nowrap">{product.brand}</td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {product.category}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                {product.description}
+                {product.quantity}
               </td>
               <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
                 <IconButton
@@ -139,13 +134,6 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
                   onClick={() => handleView(product.id)}
                 >
                   <VisibilityIcon />
-                </IconButton>
-                <IconButton
-                  aria-label="Editar producto"
-                  color="warning"
-                  title="Editar producto"
-                >
-                  <EditIcon />
                 </IconButton>
                 <IconButton
                   aria-label="Descargar QR"
