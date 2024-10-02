@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import { FaHome, FaCar, FaUsers, FaCog, FaBars, FaBox,  FaFileAlt, FaTimes } from "react-icons/fa";
+import { FaHome, FaCar, FaUsers, FaBars, FaBox,  FaFileAlt, FaTimes,FaSellsy  } from "react-icons/fa";
 import Link from "next/link";
 
 
@@ -83,7 +83,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
 
           <Link href="/proveedores" onClick={handleLinkClick}>
             <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-              <FaUsers />
+              <FaSellsy />
               <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
                 Proveedores
               </span>
@@ -108,14 +108,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
             </div>
           </Link>
 
-          <Link href="/configuracion" onClick={handleLinkClick}>
-            <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-              <FaCog />
-              <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                Configuración
-              </span>
-            </div>
-          </Link>
+
         </nav>
       </div>
     </div>
