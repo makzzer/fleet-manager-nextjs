@@ -15,7 +15,7 @@ const ProductPage = () => {
       await fetchProducto(Array.isArray(id) ? id[0] : id);
     };
     loadProducto();
-  }, [fetchProducto]);
+  }, [fetchProducto, id]);
 
   if (!producto) {
     return (
