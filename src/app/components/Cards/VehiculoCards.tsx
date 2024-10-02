@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useVehiculo } from "@/app/context/VehiculoContext";
+import { LuActivity } from "react-icons/lu";
 //import axios from "axios";
 
 //const apiVehiculosBackend = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
@@ -118,6 +119,14 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
             <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
             <input id="edit-vehicle-year" type="number" min="1900" max="${new Date().getFullYear()}" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.year
           }">
+           <div class="flex flex-col">
+            <label for="edit-vehicle-coordinates-lat" class="text-left text-gray-700 font-medium">Latitud</label>
+            <input id="edit-vehicle-coordinates-lat" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.coordinates.latitude
+          }">
+           <div class="flex flex-col">
+            <label for="edit-vehicle-coordinates-lon" class="text-left text-gray-700 font-medium">Longitud</label>
+            <input id="edit-vehicle-coordinates-lon" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${vehiculo.coordinates.longitude
+          }">
       `,
         showCancelButton: true,
         confirmButtonText: "Guardar",
@@ -133,6 +142,13 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
             (document.getElementById("edit-vehicle-year") as HTMLInputElement)
               .value
           );
+          const latitude =  parseFloat((document.getElementById("edit-vehicle-coordinates-lat") as HTMLInputElement).value);
+          const longitude =  parseFloat((document.getElementById("edit-vehicle-coordinates-lon") as HTMLInputElement).value);
+
+          const coordinates = { 
+            latitude: latitude,
+            longitude: longitude
+          };
 
           if (
             !model ||
@@ -146,13 +162,13 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
             return false;
           }
 
-          return { model, brand, year };
+          return { model, brand, year, coordinates };
         },
         allowOutsideClick: () => !Swal.isLoading(),
       }).then((result) => {
         if (result.isConfirmed) {
-          const { model, brand, year } = result.value;
-          const updatedVehiculo = { ...vehiculo, model, brand, year };
+          const { model, brand, year, coordinates } = result.value;
+          const updatedVehiculo = { ...vehiculo, model, brand, year, coordinates };
 
           modifyVehiculo(updatedVehiculo);
 
@@ -174,7 +190,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         }`}
     >
       <h2 className="text-2xl font-bold mb-3">
-        {vehiculo.brand} {vehiculo.model} - {vehiculo.year}
+        {vehiculo.brand} {vehiculo.model} - {vehiculo.year} 
       </h2>
       <p className="text-lg text-gray-300">ID: {vehiculo.id}</p>
       <div className="mt-4">

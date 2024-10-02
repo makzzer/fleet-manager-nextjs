@@ -35,10 +35,7 @@ interface VehiculoContextProps {
     vehiculo: Omit<Vehiculo, "date_created" | "date_updated">
   ) => Promise<void>;
   modifyVehiculo: (
-    vehiculoEditado: Omit<
-      Vehiculo,
-      "coordinates" | "date_created" | "date_updated"
-    >
+    vehiculoEditado: Omit<Vehiculo, "date_created" | "date_updated">
   ) => Promise<void>;
   deleteVehiculo: (vehiculoEliminado: Vehiculo) => Promise<void>;
   enableVehiculo: (id: string) => Promise<void>;
@@ -107,7 +104,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const modifyVehiculo = async (
-    vehiculoEditado: Omit<Vehiculo, "coordinates" | "date_created" | "date_updated">
+    vehiculoEditado: Omit<Vehiculo, "date_created" | "date_updated">
   ) => {
     try {
       // Realiza la solicitud PUT para modificar el vehículo en el backend
