@@ -1,8 +1,7 @@
-'use client'
-import { useState } from "react";
-import { FaHome, FaCar, FaUsers, FaBars, FaBox,  FaFileAlt, FaTimes,FaSellsy  } from "react-icons/fa";
+'use client';
+import { useState, useEffect, useRef } from "react";
+import { FaHome, FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy } from "react-icons/fa";
 import Link from "next/link";
-
 
 interface SidebarProps {
   onToggleSidebar: (isOpen: boolean) => void;
@@ -10,6 +9,7 @@ interface SidebarProps {
 
 const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   // Función para alternar la apertura y cierre de la barra lateral
   const toggleSidebar = () => {
@@ -26,10 +26,28 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
     }
   };
 
+  // Función para manejar clic fuera del sidebar en pantallas móviles
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (window.innerWidth < 1024 && sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        onToggleSidebar(false);
+      }
+    };
+
+    // Añadir el event listener al montar el componente
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Limpiar el event listener al desmontar el componente
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onToggleSidebar]);
+
   return (
-    <div className="flex h-screen border-e-2 border-gray-800 ">
+    <div ref={sidebarRef} className="flex h-screen border-e-2 border-gray-800 ">
       {/* Botón flotante para abrir/cerrar la barra lateral en pantallas pequeñas */}
-      <div className="fixed  top-3 left-1 z-40 lg:hidden">
+      <div className="fixed top-3 left-1 z-40 lg:hidden">
         <button
           onClick={toggleSidebar}
           className="text-gray-300 hover:bg-gray-800 p-2 rounded-full focus:outline-none focus:ring"
@@ -39,9 +57,9 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
       </div>
 
       {/* Sidebar */}
-      <div  className={`fixed top-0 left-0 border-e-2 border-gray-800 h-screen min-w-[50px] bg-gray-900 transition-all duration-400 z-10 transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:relative lg:translate-x-0 lg:w-${isOpen ? "64" : "20"} p-6 lg:p-0 shadow-xl`}
+      <div className={`fixed top-0 left-0 border-e-2 border-gray-800 h-screen min-w-[50px] bg-gray-900 transition-all duration-400 z-10 transform ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      } lg:relative lg:translate-x-0 lg:w-${isOpen ? "64" : "20"} p-6 lg:p-0 shadow-xl`}
       >
         {/* Botón para pantallas grandes */}
         <div className="hidden lg:block bg-gray-900 fixed top-6 left-0 z-50">
@@ -107,8 +125,6 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
               </span>
             </div>
           </Link>
-
-
         </nav>
       </div>
     </div>

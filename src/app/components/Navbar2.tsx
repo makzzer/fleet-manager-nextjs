@@ -61,10 +61,10 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-900 text-white border-b-2 border-gray-800 p-4 sticky z-30 top-0 left-0 w-full shadow-md ">
+    <nav className="bg-gray-900 text-white border-b-2 min-h-[80px] border-gray-800 p-4 sticky z-30 top-0 left-0 w-full shadow-md ">
       <div className="container  flex justify-between items-center">
         <div className="hidden md:block">
-          <div className="flex space-x-4 items-center">
+          <div className="flex space-x-4 mt-2 items-center">
             <Link href="/" className="text-3xl ms-20 font-bold text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Fleet Manager
             </Link>
@@ -93,10 +93,10 @@ const Navbar = () => {
                 />
               </button>
               {profileMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-600 rounded-md shadow-lg py-1">
-                  <Link href="/perfil" className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-500">
+                <div className="absolute right-0 mt-0 w-48 bg-gray-600 rounded-md shadow-lg py-1">
+                 {/*} <Link href="/perfil" className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-500">
                     Perfil
-                  </Link>
+                  </Link>*/}
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-500"
@@ -107,7 +107,7 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <Link href="/login" className="text-white text-base font-medium hover:bg-gray-600 px-3 py-2 rounded-md">
+            <Link href="/login" className="text-white mt-1  text-base font-medium hover:bg-gray-600 px-3 py-2 rounded-md">
               Iniciar sesión
             </Link>
           )}
