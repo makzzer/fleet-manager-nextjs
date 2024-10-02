@@ -107,7 +107,7 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <Link href="/login" className="text-white text-base font-medium hover:bg-blue-600 px-3 py-2 rounded-md">
+            <Link href="/login" className="text-white text-base font-medium hover:bg-gray-600 px-3 py-2 rounded-md">
               Iniciar sesión
             </Link>
           )}
@@ -116,12 +116,12 @@ const Navbar = () => {
       {menuOpen && (
         <div
           ref={menuRef}
-          className="md:hidden transition-all duration-700 ease-in-out bg-blue-800 shadow-lg"
+          className="md:hidden transition-all duration-700 ease-in-out bg-gray-800 shadow-lg"
         >
           <div className="px-2 pt-4 pb-3 space-y-1 sm:px-3">
             <Link
               href="/"
-              className="block text-white hover:bg-blue-600 px-3 py-2 rounded-md text-base font-medium"
+              className="block text-white hover:bg-gray-600 px-3 py-2 rounded-md text-base font-medium"
               onClick={closeMenu}
             >
               Home
@@ -130,21 +130,21 @@ const Navbar = () => {
               <>
                 <Link
                   href="/dashboard"
-                  className="block text-white hover:bg-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                  className="block text-white hover:bg-gray-600 px-3 py-2 rounded-md text-base font-medium"
                   onClick={closeMenu}
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/proveedores"
-                  className="block text-white hover:bg-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                  className="block text-white hover:bg-gray-600 px-3 py-2 rounded-md text-base font-medium"
                   onClick={closeMenu}
                 >
                   Proveedores
                 </Link>
                 <Link
                   href="/ordenesdecompra"
-                  className="block text-white hover:bg-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                  className="block text-white hover:bg-gray-600 px-3 py-2 rounded-md text-base font-medium"
                   onClick={closeMenu}
                 >
                   Órdenes de compra

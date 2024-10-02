@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
@@ -12,7 +13,7 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes"; //ruta proteg
 const apiActualizarOrden = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras`;
 
 const OrdenesDeCompra = () => {
-  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra } =
+  const { ordenesDeCompra, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra } =
     useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
