@@ -1,15 +1,25 @@
 'use client'
 import { useState } from "react";
-import { FaHome, FaCar, FaUsers, FaCog, FaBars, FaTimes } from "react-icons/fa";
+import { FaHome, FaCar, FaUsers, FaCog, FaBars, FaBox,  FaFileAlt, FaTimes } from "react-icons/fa";
 import Link from "next/link";
 
-const Sidebar = () => {
+
+interface SidebarProps {
+  onToggleSidebar: (isOpen: boolean) => void;
+}
+
+
+const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Función para alternar la apertura y cierre de la barra lateral
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+    onToggleSidebar(!isOpen);
   };
+
+
+
 
   return (
     <div className="flex h-screen border-e-2 border-gray-800 ">
@@ -24,7 +34,7 @@ const Sidebar = () => {
       </div>
 
       {/* Sidebar */}
-      <div  className={` fixed top-0 left-0  border-e-2 border-gray-800 h-screen min-w-[40px] bg-gray-900 transition-all duration-400 z-10 transform ${
+      <div  className={` fixed top-0 left-0  border-e-2 border-gray-800 h-screen min-w-[50px] bg-gray-900 transition-all duration-400 z-10 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:relative lg:translate-x-0 lg:w-${isOpen ? "64" : "20"} p-6 lg:p-0 shadow-xl`}
       >
@@ -66,7 +76,7 @@ const Sidebar = () => {
 
           <Link href="/productos">
             <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-              <FaUsers />
+              <FaBox />
               <span className={`${
                 isOpen ? "block" : "hidden"
               } lg:${isOpen ? "block" : "hidden"} lg:flex`}>
@@ -89,7 +99,7 @@ const Sidebar = () => {
 
           <Link href="/ordenesdecompra">
             <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-              <FaUsers />
+              <FaFileAlt />
               <span className={`${
                 isOpen ? "block" : "hidden"
               } lg:${isOpen ? "block" : "hidden"} lg:flex`}>

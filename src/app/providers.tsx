@@ -1,4 +1,4 @@
-// src/app/providers.tsx
+'use client'
 import React from "react";
 import { VehiculoProvider } from "./context/VehiculoContext";
 import { ProveedorProvider } from "./context/ProveedorContext";
