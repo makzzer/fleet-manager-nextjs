@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* En tu CSS global */
+.mt-navbar {
+    margin-top: 80px; /* Ajusta este valor según la altura de tu navbar */
+  }
