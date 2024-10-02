@@ -77,7 +77,7 @@ const OrdenesDeCompra = () => {
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-900 p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start mb-6">
-          <h1 className="text-3xl font-bold mb-6 text-blue-400">
+          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
             Órdenes de compra
           </h1>
         </div>

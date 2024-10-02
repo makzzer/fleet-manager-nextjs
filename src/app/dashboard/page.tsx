@@ -65,7 +65,7 @@ const Dashboard = () => {
     <ProtectedRoute>
       <div className="p-6 bg-gray-900 min-h-screen text-white">
         <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">
-          Dashboard General
+          Dashboard
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <StatCard
