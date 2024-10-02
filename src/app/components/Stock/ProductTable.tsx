@@ -107,10 +107,10 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
               Categoria
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
               Cantidad
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+            <th className="px-6 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
               Acciones
             </th>
           </tr>
@@ -123,10 +123,10 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
               <td className="px-6 py-4 whitespace-nowrap">
                 {product.category}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-nowrap text-center">
                 {product.quantity}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
+              <td className="px-6 py-4 whitespace-nowrap flex space-x-2 justify-end">
                 <IconButton
                   aria-label="Ver producto"
                   color="primary"
