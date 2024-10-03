@@ -122,6 +122,7 @@ export const OrdenDeCompraProvider = ({
   const createOrdenDeCompra = async (ordenDeCompra: CreacionOrdenDeCompra) => {
     try {
       await axios.post(apiOrdenesDeCompraBackend, ordenDeCompra);
+      fetchOrdenesDeCompra()//despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
     } catch (error) {
       console.error("Error al crear la orden de compra:", error);
     }
