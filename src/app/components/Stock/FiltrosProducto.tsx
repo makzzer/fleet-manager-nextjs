@@ -65,7 +65,7 @@ const FiltrosProducto: React.FC<FiltrosProductoProps> = ({ onFilter, categorias 
         }}
       >
         <MenuItem value=""><em>Todas las categorías</em></MenuItem>
-        {categorias.map(categoria => <MenuItem value={categoria}><em>{categoria}</em></MenuItem>)}
+        {categorias.map(categoria => <MenuItem key={categoria} value={categoria}><em>{categoria}</em></MenuItem>)}
       </TextField>
     </div>
   );
