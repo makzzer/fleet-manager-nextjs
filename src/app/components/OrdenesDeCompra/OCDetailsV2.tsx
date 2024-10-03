@@ -4,6 +4,10 @@ import TimerIcon from "@mui/icons-material/Timer";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import CheckIcon from '@mui/icons-material/Check';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import Link from "next/link";
 
 interface Proveedor {
@@ -74,80 +78,104 @@ export default function OCDetails({ orden }: OCDetailsProps) {
                 <h2 className="text-2xl font-bold text-white mb-2">
                   Orden completada!
                 </h2>
-                <p className="text-gray-400 mb-6">
-                  Tu orden ha sido completada
-                </p>
+                <p className="text-gray-400 mb-6">Tu orden ha sido completada</p>
               </>
             ) : orden.status === "ACTIVE" ? (
               <>
                 <TimerIcon className="w-12 h-12 text-yellow-500 mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Orden pendiente
-                </h2>
+                <h2 className="text-2xl font-bold text-white mb-2">Orden pendiente</h2>
                 <p className="text-gray-400 mb-6">Tu orden está pendiente</p>
+              </>
+            ) : orden.status === "CANCELLED" ? (
+              <>
+                <CancelIcon className="w-12 h-12 text-red-500 mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Orden cancelada</h2>
+                <p className="text-gray-400 mb-6">Tu orden ha sido cancelada</p>
+              </>
+            ) : orden.status === "CREATED" ? (
+              <>
+                <CheckCircleIcon className="w-12 h-12 text-blue-300 mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Orden creada</h2>
+                <p className="text-gray-400 mb-6">Tu orden ha sido creada.</p>
+              </>
+            ) : orden.status === "REJECTED" ? (
+              <>
+                <DoDisturbIcon className="w-12 h-12 text-red-300 mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Orden rechazada</h2>
+                <p className="text-gray-400 mb-6">Tu orden ha sido rechazada.</p>
+              </>
+            ) : orden.status === "APPROVED" ? (
+              <>
+                <CheckCircleIcon className="w-12 h-12 text-purple-300 mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Orden aprobada</h2>
+                <p className="text-gray-400 mb-6">Tu orden ha sido aprobada.</p>
+              </>
+            ) : orden.status === "INACTIVE" ? (
+              <>
+                <StopCircleIcon className="w-12 h-12 text-gray-300 mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Orden inactiva</h2>
+                <p className="text-gray-400 mb-6">Tu orden está inactiva.</p>
               </>
             ) : (
               <>
-                <CancelIcon className="w-12 h-12 text-red-500 mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Orden cancelada
-                </h2>
-                <p className="text-gray-400 mb-6">Tu orden ha sido cancelada</p>
+                <ContactSupportIcon className="w-12 h-12 text-gray-500 mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Estado desconocido</h2>
+                <p className="text-gray-400 mb-6">El estado de tu orden no es reconocido.</p>
               </>
             )}
+          </div>
 
-            <h3 className="text-3xl font-bold text-white mb-6">
-              ${orden.amount.toLocaleString()}
-            </h3>
+          <h3 className="text-3xl font-bold text-white mb-6">
+            ${orden.amount.toLocaleString()}
+          </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-              <div className="bg-gray-800 p-3 rounded md:col-span-2">
-                <p className="text-gray-400 text-sm">Fecha de creación</p>
-                <p className="text-white font-semibold">
-                  {orden.date_created.slice(0, 10)}
-                </p>
-              </div>
-              <div className="bg-gray-800 p-3 rounded">
-                <p className="text-gray-400 text-sm">Nombre del proveedor</p>
-                <p className="text-white font-semibold">
-                  {orden.provider.name || "N/A"}
-                </p>
-              </div>
-              <div className="bg-gray-800 p-3 rounded">
-                <p className="text-gray-400 text-sm">CUIT del proveedor</p>
-                <p className="text-white font-semibold">
-                  {orden.provider.cuit}
-                </p>
-              </div>
-              {/* Si el mail es largo, el campo de telefono pasa a ocupar 2 columnas */}
-              <div
-                className={`bg-gray-800 p-3 rounded ${
-                  isLongMail ? "md:col-span-2" : ""
-                }`}
-              >
-                <p className="text-gray-400 text-sm">Telefono del proveedor</p>
-                <p className="text-white font-semibold">
-                  {orden.provider.phone_number}
-                </p>
-              </div>
-              {/* Si el mail es largo, el campo de mail pasa a ocupar 2 columnas */}
-              <div
-                className={`bg-gray-800 p-3 rounded ${
-                  isLongMail ? "md:col-span-2" : ""
-                }`}
-              >
-                <p className="text-gray-400 text-sm">Mail del proveedor</p>
-                <p className="text-white font-semibold">
-                  {orden.provider.email}
-                </p>
-              </div>
-              {/* El tercer elemento ocupa 2 columnas en pantallas medianas o grandes */}
-              <div className="bg-gray-800 p-3 rounded md:col-span-2">
-                <p className="text-gray-400 text-sm">Dirección del proveedor</p>
-                <p className="text-white font-semibold">
-                  {orden.provider.address}
-                </p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            <div className="bg-gray-800 p-3 rounded md:col-span-2">
+              <p className="text-gray-400 text-sm">Fecha de creación</p>
+              <p className="text-white font-semibold">
+                {orden.date_created.slice(0, 10)}
+              </p>
+            </div>
+            <div className="bg-gray-800 p-3 rounded">
+              <p className="text-gray-400 text-sm">Nombre del proveedor</p>
+              <p className="text-white font-semibold">
+                {orden.provider.name || "N/A"}
+              </p>
+            </div>
+            <div className="bg-gray-800 p-3 rounded">
+              <p className="text-gray-400 text-sm">CUIT del proveedor</p>
+              <p className="text-white font-semibold">
+                {orden.provider.cuit}
+              </p>
+            </div>
+            {/* Si el mail es largo, el campo de telefono pasa a ocupar 2 columnas */}
+            <div
+              className={`bg-gray-800 p-3 rounded ${
+                isLongMail ? "md:col-span-2" : ""
+              }`}
+            >
+              <p className="text-gray-400 text-sm">Telefono del proveedor</p>
+              <p className="text-white font-semibold">
+                {orden.provider.phone_number}
+              </p>
+            </div>
+            {/* Si el mail es largo, el campo de mail pasa a ocupar 2 columnas */}
+            <div
+              className={`bg-gray-800 p-3 rounded ${
+                isLongMail ? "md:col-span-2" : ""
+              }`}
+            >
+              <p className="text-gray-400 text-sm">Mail del proveedor</p>
+              <p className="text-white font-semibold">
+                {orden.provider.email}
+              </p>
+            </div>
+            {/* El tercer elemento ocupa 2 columnas en pantallas medianas o grandes */}
+            <div className="bg-gray-800 p-3 rounded md:col-span-2">
+              <p className="text-gray-400 text-sm">Dirección del proveedor</p>
+              <p className="text-white font-semibold">
+                {orden.provider.address}
+              </p>
             </div>
           </div>
         </div>
@@ -174,13 +202,6 @@ export default function OCDetails({ orden }: OCDetailsProps) {
           <div className="px-6 py-4 bg-gray-900">
             <h3 className="text-xl font-bold text-white mb-4">Productos</h3>
             <ul className="space-y-2">
-              {/*
-              orden.products.map((producto) => (
-                <li key={producto.id} className="text-gray-300">
-                  <strong>{producto.name}</strong> - Cantidad:{" "}
-                  {producto.cantidad} - Precio: ${producto.precio}
-                </li>
-              ))*/}
               {
                 <li key={orden.product.id} className="text-gray-300">
                   <strong>{orden.product.name}</strong> - Cantidad:{" "}
@@ -194,3 +215,4 @@ export default function OCDetails({ orden }: OCDetailsProps) {
     </div>
   );
 }
+
