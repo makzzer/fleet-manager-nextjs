@@ -33,7 +33,7 @@ interface VehiculoContextProps {
   fetchVehiculos: () => void;
   createVehiculo: (
     vehiculo: Omit<Vehiculo, "date_created" | "date_updated">
-  ) => Promise<void>;
+  ) => Promise<{ resultado: boolean, mensaje?: string }>;
   modifyVehiculo: (
     vehiculoEditado: Omit<Vehiculo, "date_created" | "date_updated">
   ) => Promise<void>;
@@ -94,12 +94,17 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
 
   const createVehiculo = async (
     vehiculo: Omit<Vehiculo, "date_created" | "date_updated">
-  ) => {
+  ): Promise<{ resultado: boolean, mensaje?: string}> => {
     try {
       await axios.post(apiVehiculosBackend, vehiculo);
       fetchVehiculos();
+      return { resultado: true };
     } catch (error) {
+      if(axios.isAxiosError(error)){
+        return { resultado: false, mensaje: error.response?.data.message};
+      }
       console.error("Error creating vehiculo:", error);
+      return { resultado: false, mensaje: "Ha ocurrido un error al crear el vehiculo."}
     }
   };
 

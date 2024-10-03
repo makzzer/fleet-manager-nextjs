@@ -41,7 +41,7 @@ const Vehiculos = () => {
     Swal.fire({
       title: 'Agregar Vehículo',
       html: `
-        <input type="text" id="id" class="swal2-input" placeholder="Patente" oninput="this.value = formatPatente(this.value)">
+        <input type="text" id="id" class="swal2-input" placeholder="Patente" oninput="this.value">
         <input type="text" id="brand" class="swal2-input" placeholder="Marca">
         <input type="text" id="model" class="swal2-input" placeholder="Modelo">
         <input type="number" id="year" class="swal2-input" placeholder="Año">
@@ -79,7 +79,7 @@ const Vehiculos = () => {
 
         return { id, brand, model, year };
       }
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed && result.value) {
         const vehiculo = {
           id: result.value.id,
@@ -93,13 +93,29 @@ const Vehiculos = () => {
           },
         };
 
-        createVehiculo(vehiculo);
+        const { resultado, mensaje } = await createVehiculo(vehiculo);
 
-        Swal.fire({
-          title: "Vehículo agregado con éxito",
-          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
-          icon: "success"
-        });
+        if (resultado) {
+          Swal.fire({
+            title: "Vehículo agregado con éxito",
+            text: "El nuevo vehículo ha sido creado y registrado correctamente.",
+            icon: "success",
+          });
+        } else {
+          if (mensaje && mensaje.includes("already exists")) {
+            Swal.fire({
+              title: "Error al agregar vehículo",
+              text: "La patente ya existe. Por favor, usa una diferente.",
+              icon: "error",
+            });
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: "Ha ocurrido un error al crear el vehículo.",
+              icon: "error",
+            });
+          }
+        }
 
       }
     });
