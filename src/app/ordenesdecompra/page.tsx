@@ -200,7 +200,7 @@ const OrdenesDeCompra = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">${orden.amount}</td>
                   <td className="px-6 py-4 whitespace-nowrap flex justify-end space-x-4">
-                    <button onClick={() => handleView(orden.id)} className="text-green-600 hover:text-green-800">
+                    <button onClick={() => handleView(orden.id)} className="text-blue-600 hover:text-blue-800">
                       <FaEye className="w-5 h-5" />
                     </button>
                     <button onClick={() => handleComplete(orden)} className="text-green-600 hover:text-green-800">
