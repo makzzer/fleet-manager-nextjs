@@ -94,7 +94,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                 </div>
               </Link>
 
-              {hasModuleAccess("VEHICULES") && (
+              {hasModuleAccess("VEHICLES") && (
                 <Link href="/vehiculos" onClick={handleLinkClick}>
                   <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                     <FaCar />
