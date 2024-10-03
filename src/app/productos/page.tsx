@@ -69,20 +69,26 @@ const Stock = () => {
 
   const handleFilter = (filters: {
     searchTerm: string;
-    selectedProveedor: string;
+    selectedCategory: string;
   }) => {
-    const { searchTerm } = filters;
+    const { searchTerm, selectedCategory } = filters;
     setSearchTerm(searchTerm);
-    if (searchTerm === "") {
-      setFilteredProductos(productos); // Muestra todos los productos si no hay búsqueda
-    } else {
-      setFilteredProductos(
-        productos.filter((producto) =>
-          // solo filtro por nombre.
-          producto.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+
+    let filtered = productos;
+
+    if (searchTerm !== "") {
+      filtered = filtered.filter((producto) =>
+        producto.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
+
+    if (selectedCategory !== "") {
+      filtered = filtered.filter((producto) =>
+        producto.category.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+    }
+
+    setFilteredProductos(filtered);
   };
 
   const handleScanQRClick = () => {
