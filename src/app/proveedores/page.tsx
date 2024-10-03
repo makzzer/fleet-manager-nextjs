@@ -9,6 +9,7 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import Swal from "sweetalert2";
 import ProveedorCard from "../components/Cards/ProveedorCards";
 import { useProveedor } from "../context/ProveedorContext";
+import axios from "axios";
 
 interface Proveedor {
   id: string;
@@ -94,7 +95,7 @@ const Proveedores = () => {
     `,
       confirmButtonText: "Agregar",
       showCancelButton: true,
-      preConfirm: () => {
+      preConfirm: async () => {
         const nameElement = document.getElementById("name") as HTMLInputElement;
         const emailElement = document.getElementById("email") as HTMLInputElement;
         const cuitElement = document.getElementById("cuit") as HTMLInputElement;
@@ -138,9 +139,25 @@ const Proveedores = () => {
           return null;
         }
 
+        // validacion de cuit ya existente en bd, para probar..
+        // try {
+        //   console.log("haciendo get a BD");
+        //   const response = await axios.get(`https://fleet-manager-gzui.onrender.com/api/providers?cuit=${cuit}`);
+        //   if (response.data.exists) {
+        //     console.log("cuit repetido encontrado");
+        //     Swal.showValidationMessage("El proveedor ya existe en nuestra base de datos");
+        //     return null;
+        //   }
+        // } catch (error) {
+        //   console.error("Error al validar CUIT", error);
+        //   Swal.showValidationMessage("Hubo un error al validar el CUIT");
+        //   return null;
+        // }
+        // console.log("continuando con la creacion de proveedor");
+
         return { name, email, cuit, phone_number, address };
       },
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isConfirmed && result.value) {
         const proveedor: Proveedor = {
           id: result.value.id,
@@ -150,30 +167,13 @@ const Proveedores = () => {
           phone_number: result.value.phone_number,
           address: result.value.address,
         };
-  
-        try {
-          // Intentar crear el proveedor en el backend
-          await createProveedor(proveedor);
-          Swal.fire({
-            title: "Proveedor agregado con éxito",
-            icon: "success",
-          });
-        } catch (error: any) {
-          // Verificar si el error viene del backend por un CUIT duplicado
-          if (error.response || error.response.status === 400) { // Asumiendo 409 para conflicto
-            Swal.fire({
-              title: "Error",
-              text: "El proveedor ya existe en nuestra base de datos.",
-              icon: "error",
-            });
-          } else {
-            Swal.fire({
-              title: "Error",
-              text: "Hubo un problema al agregar el proveedor. Inténtalo de nuevo.",
-              icon: "error",
-            });
-          }
-        }
+
+        createProveedor(proveedor);
+
+        Swal.fire({
+          title: "Proveedor agregado con éxito",
+          icon: "success",
+        });
       }
     });
   };
