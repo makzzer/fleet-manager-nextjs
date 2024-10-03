@@ -1,23 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import React, { useState, useRef, useEffect } from "react";
-import {  FaEye, FaCheck } from "react-icons/fa";
-import { useOrdenesDeCompra, OrdenDeCompra } from "../context/OrdenesCompraContext";
+import React, { useState, useEffect, useRef } from "react";
+import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
+import { useOrdenesDeCompra, OrdenDeCompra, CreacionOrdenDeCompra } from "../context/OrdenesCompraContext";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
-import ProtectedRoute from "../components/Routes/ProtectedRoutes";
+import ProtectedRoute from "../components/Routes/ProtectedRoutes"; //ruta protegida
 
 const apiActualizarOrden = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras`;
 
 const OrdenesDeCompra = () => {
-  const { ordenesDeCompra, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra } =
-    useOrdenesDeCompra();
+  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra } = useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showScrollIcon, setShowScrollIcon] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
 
+  // Control de scroll
   const handleScroll = () => {
     if (tableRef.current) {
       const { scrollLeft } = tableRef.current;
@@ -25,6 +24,7 @@ const OrdenesDeCompra = () => {
     }
   };
 
+  // Carga de ordenes de compra
   useEffect(() => {
     const loadOrdenesDeCompra = async () => {
       setLoading(true);
@@ -33,6 +33,26 @@ const OrdenesDeCompra = () => {
     };
     loadOrdenesDeCompra();
   }, [fetchOrdenesDeCompra]);
+
+  // Carga de proveedores
+  useEffect(() => {
+    const loadProveedores = async () => {
+      setLoading(true);
+      await fetchProveedores();
+      setLoading(false);
+    };
+    loadProveedores();
+  }, [fetchProveedores]);
+
+  // Carga de productos
+  useEffect(() => {
+    const loadProductos = async () => {
+      setLoading(true);
+      await fetchProductos();
+      setLoading(false);
+    };
+    loadProductos();
+  }, [fetchProductos]);
 
   useEffect(() => {
     const table = tableRef.current;
@@ -73,13 +93,67 @@ const OrdenesDeCompra = () => {
     }
   };
 
+  const handleAgregarOrdenCompra = () => {
+    Swal.fire({
+      title: "Agregar Orden de Compra",
+      html: `
+      <input type="text" id="providerid" class="swal2-input" placeholder="ProviderID">
+      <input type="text" id="productid" class="swal2-input" placeholder="ProductID">
+      <input type="text" id="quantity" class="swal2-input" placeholder="Quantity">
+      <input type="text" id="amount" class="swal2-input" placeholder="Amount">
+    `,
+      confirmButtonText: "Agregar",
+      showCancelButton: true,
+      preConfirm: () => {
+        const providerIdElement = document.getElementById("providerid") as HTMLInputElement;
+        const productIdElement = document.getElementById("productid") as HTMLInputElement;
+        const quantityElement = document.getElementById("quantity") as HTMLInputElement;
+        const amountElement = document.getElementById("amount") as HTMLInputElement;
+
+        const providerId = providerIdElement?.value;
+        const productId = productIdElement?.value;
+        const quantity = quantityElement?.value;
+        const amount = amountElement?.value;
+
+        if (!providerId || !productId || !quantity || !amount) {
+          Swal.showValidationMessage('Por favor completa todos los campos');
+          return null;
+        }
+
+        return { providerId, productId, quantity, amount };
+      },
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const order: CreacionOrdenDeCompra = {
+          provider_id: result.value.providerId,
+          product_id: result.value.productId,
+          quantity: result.value.quantity,
+          amount: result.value.amount,
+        };
+
+        createOrdenDeCompra(order);
+
+        Swal.fire({
+          title: "Orden agregada con éxito",
+          icon: "success",
+        });
+      }
+    });
+  };
+
   return (
     <ProtectedRoute requiredModule="ORDERS">
       <div className="min-h-screen bg-gray-900 p-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start mb-6">
-          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold mb-6 text-blue-400">
             Órdenes de compra
           </h1>
+          <button
+            onClick={handleAgregarOrdenCompra}
+            className="m-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+          >
+            Agregar Orden de Compra
+          </button>
         </div>
         <div className="relative overflow-x-auto bg-gray-800 shadow-md rounded-lg p-6" ref={tableRef}>
           <table className="min-w-full divide-y divide-gray-600 table-auto">
@@ -140,7 +214,7 @@ const OrdenesDeCompra = () => {
 
           {/* Flecha de scroll en pantallas pequeñas */}
           {showScrollIcon && (
-            <div className="absolute bottom-0 right-0 p-2 text-gray-500 md:hidden">
+            <div className="absolute bottom-0 right-4 p-2 text-gray-500 md:hidden">
               <svg
                 className="w-6 h-6 animate-bounce"
                 fill="none"
