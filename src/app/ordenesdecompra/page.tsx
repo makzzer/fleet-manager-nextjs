@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { FaEdit, FaTrashAlt, FaEye, FaCheck } from "react-icons/fa";
+import { FaEye, FaCheck } from "react-icons/fa";
 import { useOrdenesDeCompra, OrdenDeCompra, CreacionOrdenDeCompra } from "../context/OrdenesCompraContext";
 import { useRouter } from "next/navigation";
 import axios from "axios";
