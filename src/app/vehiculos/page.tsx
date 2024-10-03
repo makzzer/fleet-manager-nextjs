@@ -38,11 +38,33 @@ const Vehiculos = () => {
   };
  
   const handleAgregarVehiculo = () => {
+    // Lista de marcas de vehículos
+  const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
+
+   // Construir las opciones del select
+   const opcionesMarcas = marcas.map(marca => `<option value="${marca}">${marca}</option>`).join('');
+
     Swal.fire({
       title: 'Agregar Vehículo',
       html: `
+      <style>
+        input.swal2-input, select.swal2-select {
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 10px;
+          width: 80%;
+          height: 54px;
+          margin-top: 5px;
+          margin-bottom: 10px;
+          box-sizing: border-box;
+        }
+      
+      </style>
         <input type="text" id="id" class="swal2-input" placeholder="Patente" oninput="this.value">
-        <input type="text" id="brand" class="swal2-input" placeholder="Marca">
+        <select id="brand" class="swal2-select">
+        <option value="" disabled selected>Seleccione una marca</option>
+        ${opcionesMarcas}
+        </select>
         <input type="text" id="model" class="swal2-input" placeholder="Modelo">
         <input type="number" id="year" class="swal2-input" placeholder="Año">
       `,
