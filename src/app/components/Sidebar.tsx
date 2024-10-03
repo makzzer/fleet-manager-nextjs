@@ -94,50 +94,59 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                 </div>
               </Link>
 
-              <Link href="/vehiculos" onClick={handleLinkClick}>
-                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-                  <FaCar />
-                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                    Vehículos
-                  </span>
-                </div>
-              </Link>
+              {hasModuleAccess("VEHICULES") && (
+                <Link href="/vehiculos" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <FaCar />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Vehículos
+                    </span>
+                  </div>
+                </Link>)}
 
-              <Link href="/productos" onClick={handleLinkClick}>
-                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-                  <FaBox />
-                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                    Productos
-                  </span>
-                </div>
-              </Link>
+              {hasModuleAccess("PRODUCTS") && (
+                <Link href="/productos" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <FaBox />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Productos
+                    </span>
+                  </div>
+                </Link>
+              )}
 
-              <Link href="/proveedores" onClick={handleLinkClick}>
-                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-                  <FaSellsy />
-                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                    Proveedores
-                  </span>
-                </div>
-              </Link>
 
-              <Link href="/ordenesdecompra" onClick={handleLinkClick}>
-                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-                  <FaFileAlt />
-                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                    Ordenes de compra
-                  </span>
-                </div>
-              </Link>
+              {hasModuleAccess("PROVIDERS") && (
+                <Link href="/proveedores" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <FaSellsy />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Proveedores
+                    </span>
+                  </div>
+                </Link>)}
 
-              <Link href="/usuarios" onClick={handleLinkClick}>
-                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-                  <FaUsers />
-                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                    Usuarios
-                  </span>
-                </div>
-              </Link>
+              {hasModuleAccess("ORDERS") && (
+                <Link href="/ordenesdecompra" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <FaFileAlt />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Órdenes
+                    </span>
+                  </div>
+                </Link>
+              )}
+
+              {hasModuleAccess("USERS") && (
+                <Link href="/usuarios" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <FaUsers />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Usuarios
+                    </span>
+                  </div>
+                </Link>)}
+                
             </nav>
           </div>
         </div>

@@ -33,7 +33,7 @@ interface AuthContextProps {
   logoutUser: () => void;
   hasPermission: (requiredPermissions: Permissions[]) => boolean;
   hasRole: (role: string) => boolean; // Añadimos la función para verificar roles
-  hasModuleAccess: (module: string) => boolean; //acá añado la funcion para verigicar si el usuario tiene el modulo habilitado
+  hasModuleAccess: (module: string) => boolean; //acá añado la funcion para verificar si el usuario tiene el modulo habilitado
 }
 
 // Creamos el AuthContext

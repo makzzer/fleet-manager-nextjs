@@ -168,8 +168,8 @@ const ListaUsuarios = () => {
         createUser(nuevoUsuario);
 
         Swal.fire({
-          title: "Vehículo agregado con éxito",
-          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
+          title: "Usuario creado con éxito",
+          text: "El nuevo Usuario ha sido creado y registrado correctamente.",
           icon: "success",
         });
       }
