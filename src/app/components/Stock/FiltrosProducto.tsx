@@ -4,9 +4,10 @@ import { FaSearch, FaFilter } from 'react-icons/fa';
 
 interface FiltrosProductoProps {
   onFilter: (filters: { searchTerm: string; selectedCategory: string }) => void;
+  categorias: string[];
 }
 
-const FiltrosProducto: React.FC<FiltrosProductoProps> = ({ onFilter }) => {
+const FiltrosProducto: React.FC<FiltrosProductoProps> = ({ onFilter, categorias }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 
@@ -64,27 +65,7 @@ const FiltrosProducto: React.FC<FiltrosProductoProps> = ({ onFilter }) => {
         }}
       >
         <MenuItem value=""><em>Todas las categorías</em></MenuItem>
-        <MenuItem value="Motores"><em>Motores</em></MenuItem>
-        <MenuItem value="Transmisión"><em>Transmisión</em></MenuItem>
-        <MenuItem value="Suspensión"><em>Suspensión</em></MenuItem>
-        <MenuItem value="Frenos"><em>Frenos</em></MenuItem>
-        <MenuItem value="Cristales"><em>Cristales</em></MenuItem>
-        <MenuItem value="Luces"><em>Luces</em></MenuItem>
-        <MenuItem value="Escape"><em>Escape</em></MenuItem>
-        <MenuItem value="Baterías"><em>Baterías</em></MenuItem>
-        <MenuItem value="Carrocería"><em>Carrocería</em></MenuItem>
-        <MenuItem value="Neumáticos"><em>Neumáticos</em></MenuItem>
-        <MenuItem value="Amortiguadores"><em>Amortiguadores</em></MenuItem>
-        <MenuItem value="Filtros"><em>Filtros</em></MenuItem>
-        <MenuItem value="Correas"><em>Correas</em></MenuItem>
-        <MenuItem value="Radiadores"><em>Radiadores</em></MenuItem>
-        <MenuItem value="Espejos"><em>Espejos</em></MenuItem>
-        <MenuItem value="Dirección"><em>Dirección</em></MenuItem>
-        <MenuItem value="Sensores"><em>Sensores</em></MenuItem>
-        <MenuItem value="Aire acondicionado"><em>Aire acondicionado</em></MenuItem>
-        <MenuItem value="Lubricantes"><em>Lubricantes</em></MenuItem>
-        <MenuItem value="Sistemas eléctricos"><em>Sistemas eléctricos</em></MenuItem>
-        <MenuItem value="Paragolpes"><em>Paragolpes</em></MenuItem>
+        {categorias.map(categoria => <MenuItem value={categoria}><em>{categoria}</em></MenuItem>)}
       </TextField>
     </div>
   );
