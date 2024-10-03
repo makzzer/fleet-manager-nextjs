@@ -70,11 +70,29 @@ const OrdenesDeCompra = () => {
     router.push(`/ordenesdecompra/${id}`);
   };
 
+  const getEstadoColor = (status: string) => {
+    switch (status) {
+      case "CREATED":
+        return "text-blue-300 border-blue-500";
+      case "REJECTED":
+        return "text-red-300 border-red-500";
+      case "APPROVED":
+        return "text-purple-300 border-purple-500";
+      case "COMPLETED":
+        return "text-green-300 border-green-500";
+      case "INACTIVE":
+        return "text-gray-300 border-gray-500";
+      default:
+        return "text-gray-300 border-gray-500";
+    }
+  };
+
   const handleComplete = async (orden: OrdenDeCompra) => {
     setLoading(true);
     try {
-      const updatedOrden = { estado: "completado" };
-      await axios.put(`${apiActualizarOrden}/${orden.id}?populate=*`, { data: updatedOrden });
+      const updatedOrden = { estado: "CREATED"};
+      // await axios.put(`${apiActualizarOrden}/${orden.id}?populate=*`, { data: updatedOrden });
+      await axios.put(`${apiActualizarOrden}/${orden.id}`, { data: updatedOrden });
       Swal.fire({
         title: "Orden completada",
         text: "La orden de compra ha sido cerrada y el stock actualizado.",
@@ -183,19 +201,17 @@ const OrdenesDeCompra = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{orden.date_created.slice(0, 10)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${
-                        orden.status === "COMPLETED"
-                          ? "text-green-300 border-green-500"
-                          : orden.status === "ACTIVE"
-                          ? "text-yellow-300 border-yellow-500"
-                          : "text-red-300 border-red-500"
-                      }`}
+                      className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${getEstadoColor(orden.status)}`}
                     >
-                      {orden.status === "COMPLETED"
+                      {orden.status === "CREATED"
+                        ? "Creada"
+                        : orden.status === "REJECTED"
+                        ? "Rechazada"
+                        : orden.status === "APPROVED"
+                        ? "Aprobada"
+                        : orden.status === "COMPLETED"
                         ? "Completada"
-                        : orden.status === "ACTIVE"
-                        ? "Pendiente"
-                        : "Cancelada"}
+                        : "Inactiva"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">${orden.amount}</td>
