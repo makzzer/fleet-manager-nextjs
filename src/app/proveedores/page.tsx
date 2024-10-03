@@ -26,10 +26,8 @@ const Proveedores = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [filteredProveedores, setFilteredProveedores] = useState(proveedores);
 
-  // const [proveedoresLocales, setLocalProveedores] = useState(proveedores);
-  /*
-  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
-*/
+  // const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
+
   useEffect(() => {
     const loadProveedores = async () => {
       setIsLoading(true);
@@ -39,28 +37,23 @@ const Proveedores = () => {
     loadProveedores();
   }, [fetchProveedores]);
 
-  // useEffect(() => {
-  //   setLocalProveedores(proveedores);
-  // }, [proveedores]);
-
   useEffect(() => {
     setFilteredProveedores(proveedores);
   }, [proveedores]);
 
   // Filtra los productos según el término de búsqueda
-  /*
-  useEffect(() => {
-    if (searchTerm === "") {
-      setLocalProveedores(proveedores);
-    } else {
-      setLocalProveedores(
-        proveedores.filter((proveedor) =>
-          proveedor.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    }
-  }, [searchTerm, proveedores]);
-  */
+  // useEffect(() => {
+  //   if (searchTerm === "") {
+  //     setLocalProveedores(proveedores);
+  //   } else {
+  //     setLocalProveedores(
+  //       proveedores.filter((proveedor) =>
+  //         proveedor.name.toLowerCase().includes(searchTerm.toLowerCase())
+  //       )
+  //     );
+  //   }
+  // }, [searchTerm, proveedores]);
+
 
   //el query va a ser lo que voy escribiendo en el input de la bar
   // const handleSearch = (query: string) => {
@@ -114,14 +107,40 @@ const Proveedores = () => {
         const phone_number = phone_numberElement?.value;
         const address = addressElement?.value;
 
-        // if ( !name ) {
-        //   Swal.showValidationMessage("Completa todos los campos");
-        //   return null;
-        // }
+        const nameRegex = /^[A-Za-z\s]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const cuitRegex = /^\d{2}-\d{8}-\d{1}$/;
+        const telefonoRegex = /^(?=(?:\D*\d){10})(?:\d+-?){0,2}\d+$/;
+        const direccionRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+ \d+, [a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/; // este regex respeta formato (calle numero, localidad)
+
+        if (!name || !nameRegex.test(name)) {
+          Swal.showValidationMessage("Nombre inválido. El nombre no puede estar vacío ni contener caracteres especiales o números.");
+          return null;
+        }
+
+        if (!email || !emailRegex.test(email)) {
+          Swal.showValidationMessage("Email inválido. El email no puede estar vacío, además debe contener un solo '@' y un formato válido.");
+          return null;
+        }
+
+        if (!cuit || !cuitRegex.test(cuit)) {
+          Swal.showValidationMessage("CUIT inválido. Debe seguir el formato 00-00000000-0.");
+          return null;
+        }
+
+        if (!phone_number || !telefonoRegex.test(phone_number)) {
+          Swal.showValidationMessage("Teléfono inválido. Debe contener solo números y opcionalmente guiones.");
+          return null;
+        }
+
+        if (!address || !direccionRegex.test(address)) {
+          Swal.showValidationMessage("Dirección inválida. No debe contener caracteres especiales (excepto '.' y ',').");
+          return null;
+        }
 
         return { name, email, cuit, phone_number, address };
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed && result.value) {
         const proveedor: Proveedor = {
           id: result.value.id,
@@ -131,13 +150,30 @@ const Proveedores = () => {
           phone_number: result.value.phone_number,
           address: result.value.address,
         };
-
-        createProveedor(proveedor);
-
-        Swal.fire({
-          title: "Proveedor agregado con éxito",
-          icon: "success",
-        });
+  
+        try {
+          // Intentar crear el proveedor en el backend
+          await createProveedor(proveedor);
+          Swal.fire({
+            title: "Proveedor agregado con éxito",
+            icon: "success",
+          });
+        } catch (error: any) {
+          // Verificar si el error viene del backend por un CUIT duplicado
+          if (error.response || error.response.status === 400) { // Asumiendo 409 para conflicto
+            Swal.fire({
+              title: "Error",
+              text: "El proveedor ya existe en nuestra base de datos.",
+              icon: "error",
+            });
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: "Hubo un problema al agregar el proveedor. Inténtalo de nuevo.",
+              icon: "error",
+            });
+          }
+        }
       }
     });
   };
