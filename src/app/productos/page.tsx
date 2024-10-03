@@ -109,13 +109,37 @@ const Stock = () => {
   };
 
   const handleAgregarProducto = () => {
+    //Lista de categorias de repuestos en productos
+  const categorias = ['Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas', 'Cristales', 'Dirección', 'Escape', 'Espejos', 
+    'Filtros', 'Frenos', 'Lubricantes', 'Luces', 'Motores', 'Neumático', 'Paragolpes', 
+    'Radiadores', 'Sistemas eléctricos', 'Sensores', 'Suspensión', 'Transmisión'
+  ];
+  // Construir las opciones del select
+  const opcionesCategorias = categorias.map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
+
     Swal.fire({
       title: "Agregar Producto",
       html: `
+       <style>
+        input.swal2-input, select.swal2-select {
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 10px;
+          width: 80%;
+          height: 54px;
+          margin-top: 5px;
+          margin-bottom: 10px;
+          box-sizing: border-box;
+        }
+      
+      </style>
             <input type="text" id="name" class="swal2-input" placeholder="Nombre">
             <input type="text" id="brand" class="swal2-input" placeholder="Marca">
             <input type="text" id="description" class="swal2-input" placeholder="Descripción">
-            <input type="text" id="category" class="swal2-input" placeholder="Categoria">
+            <select id="category" class="swal2-select">
+            <option value="" disabled selected>Seleccione una categoria</option>
+            ${opcionesCategorias}
+            </select>
             <input type="text" id="quantity" class="swal2-input" placeholder="Cantidad">
           `,
       confirmButtonText: "Agregar",
@@ -124,18 +148,10 @@ const Stock = () => {
       focusConfirm: false,
       preConfirm: () => {
         const nameElement = document.getElementById("name") as HTMLInputElement;
-        const brandElement = document.getElementById(
-          "brand"
-        ) as HTMLInputElement;
-        const descriptionElement = document.getElementById(
-          "description"
-        ) as HTMLInputElement;
-        const categoryElement = document.getElementById(
-          "category"
-        ) as HTMLInputElement;
-        const quantityElement = document.getElementById(
-          "quantity"
-        ) as HTMLInputElement;
+        const brandElement = document.getElementById("brand") as HTMLInputElement;
+        const descriptionElement = document.getElementById("description") as HTMLInputElement;
+        const categoryElement = document.getElementById("category") as HTMLInputElement;
+        const quantityElement = document.getElementById("quantity") as HTMLInputElement;
 
         const name = nameElement?.value;
         const brand = brandElement?.value;
