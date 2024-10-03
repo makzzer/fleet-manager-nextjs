@@ -33,6 +33,7 @@ interface AuthContextProps {
   logoutUser: () => void;
   hasPermission: (requiredPermissions: Permissions[]) => boolean;
   hasRole: (role: string) => boolean; // Añadimos la función para verificar roles
+  hasModuleAccess: (module: string) => boolean; //acá añado la funcion para verigicar si el usuario tiene el modulo habilitado
 }
 
 // Creamos el AuthContext
@@ -65,9 +66,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await axios.post(apiAuthBackend, { username, password });
 
-      const user = response.data; // Aquí recibes el objeto User si es exitoso
+      const user = response.data; // Acá recibo el objeto User si es exitoso
       setAuthenticatedUser(user); // Guardamos el usuario autenticado
-      localStorage.setItem('authenticatedUser', JSON.stringify(user)); // Guardar usuario en localStorage
+      localStorage.setItem('authenticatedUser', JSON.stringify(user)); // Guardamos el usuario en localStorage
       return { user }; // Devolvemos el usuario en caso de éxito
 
     } catch (error) {
@@ -99,6 +100,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return authenticatedUser.roles.includes(role.toUpperCase());
   };
 
+
+  // Función para verificar si el usuario tiene acceso a un módulo específico
+  const hasModuleAccess = (module: string): boolean => {
+    if (!authenticatedUser) return false;
+    return authenticatedUser.permissions.some((perm) => perm.module === module);
+  };
+
+
   return (
     <AuthContext.Provider value={{
       authenticatedUser,
@@ -107,6 +116,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       logoutUser,
       hasPermission,
       hasRole,
+      hasModuleAccess,
     }}>
       {children}
     </AuthContext.Provider>
