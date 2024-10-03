@@ -106,7 +106,7 @@ const Vehiculos = () => {
   };
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requiredModule="VEHICLES">
 
     <div className="p-6 bg-gray-900 min-h-screen text-white">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">

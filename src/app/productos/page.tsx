@@ -168,7 +168,7 @@ const Stock = () => {
 
   // Dashboard Component
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requiredModule="PRODUCTS">
       <div className="p-6 bg-gray-900 min-h-screen rounded-lg text-white">
         <div className="mb-6">
           <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-8">

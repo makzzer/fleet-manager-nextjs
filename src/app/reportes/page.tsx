@@ -54,7 +54,7 @@ const Analytics = () => {
   }
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requiredModule="ANALYTICS">
       <div className="p-6 bg-gray-900 min-h-screen text-white">
         <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">
           Reportes

@@ -74,7 +74,7 @@ const OrdenesDeCompra = () => {
   };
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requiredModule="ORDERS">
       <div className="min-h-screen bg-gray-900 p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start mb-6">
           <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">

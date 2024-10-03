@@ -143,7 +143,7 @@ const Proveedores = () => {
   };
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requiredModule="PROVIDERS">
       <div className="p-6 min-h-screen bg-gray-900 text-white">
         <div className="flex flex-col sm:flex-row justify-between items-center  mb-6">
           <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0 ">
