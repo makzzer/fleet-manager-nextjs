@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { FaEye, FaCheck } from "react-icons/fa";
+import { FaEye, FaMinusCircle } from "react-icons/fa";
 import { useOrdenesDeCompra, OrdenDeCompra, CreacionOrdenDeCompra } from "../context/OrdenesCompraContext";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import Swal from "sweetalert2";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes"; //ruta protegida
-
-const apiActualizarOrden = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras`;
+import { FaCircleCheck, FaCircleXmark } from "react-icons/fa6";
+import { MdPlaylistAddCheckCircle } from "react-icons/md";
 
 const OrdenesDeCompra = () => {
-  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra } = useOrdenesDeCompra();
+  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra } = useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showScrollIcon, setShowScrollIcon] = useState(true);
@@ -88,22 +87,20 @@ const OrdenesDeCompra = () => {
     }
   };
 
-  const handleComplete = async (orden: OrdenDeCompra) => {
+  const handleStatusChange = async (orden: OrdenDeCompra, status: string) => {
     setLoading(true);
     try {
-      const updatedOrden = { estado: "CREATED"};
-      // await axios.put(`${apiActualizarOrden}/${orden.id}?populate=*`, { data: updatedOrden });
-      await axios.put(`${apiActualizarOrden}/${orden.id}`, { data: updatedOrden });
+      actualizarEstadoOrdenDeCompra(orden.id, status);
       Swal.fire({
-        title: "Orden completada",
-        text: "La orden de compra ha sido cerrada y el stock actualizado.",
+        title: "Orden Actualizada",
+        text: "La orden de compra se actualizó con éxito.",
         icon: "success",
         confirmButtonText: "Cerrar",
       });
     } catch (error) {
       Swal.fire({
         title: "Error",
-        text: "Hubo un problema al cerrar la orden de compra. Inténtalo de nuevo.",
+        text: "Hubo un problema al actualizar el estado de la orden de compra. Inténtalo de nuevo.",
         icon: "error",
         confirmButtonText: "Cerrar",
       });
@@ -220,9 +217,28 @@ const OrdenesDeCompra = () => {
                     <button onClick={() => handleView(orden.id)} className="text-blue-600 hover:text-blue-800">
                       <FaEye className="w-5 h-5" />
                     </button>
-                    <button onClick={() => handleComplete(orden)} className="text-green-600 hover:text-green-800">
-                      <FaCheck className="w-5 h-5" />
-                    </button>
+          
+                    { orden.status === "CREATED"
+                      ?
+                      <>
+                        <button title="Aprobar" onClick={() => handleStatusChange(orden, "APPROVED")} className="text-purple-500 hover:text-green-800">
+                          <FaCircleCheck   className="w-5 h-5" />
+                        </button>
+                        <button title="Rechazar" onClick={() => handleStatusChange(orden, "REJECTED")} className="text-red-500 hover:text-green-800">
+                          <FaCircleXmark  className="w-5 h-5" />
+                        </button>
+                      </>
+                      : orden.status === "APPROVED"
+                      ?
+                      <>
+                        <button title="Completar" onClick={() => handleStatusChange(orden, "COMPLETED")} className="text-green-500 hover:text-green-800">
+                          <MdPlaylistAddCheckCircle className="w-5 h-5" />
+                        </button>
+                        <button title="Inactivar" onClick={() => handleStatusChange(orden, "INACTIVE")} className="text-grey-500 hover:text-green-800">
+                          <FaMinusCircle className="w-5 h-5" />
+                        </button>
+                      </>
+                      : ""}
                   </td>
                 </tr>
               ))}

@@ -57,6 +57,7 @@ interface OrdenDeCompraContextProps {
   fetchProductos: () => void;
   fetchProveedores: () => void;
   createOrdenDeCompra: (ordenDeCompra: CreacionOrdenDeCompra) => Promise<void>;
+  actualizarEstadoOrdenDeCompra: (id: string, estado: string) => Promise<void>;
 }
 
 // Creo el context
@@ -122,73 +123,16 @@ export const OrdenDeCompraProvider = ({
   const createOrdenDeCompra = async (ordenDeCompra: CreacionOrdenDeCompra) => {
     try {
       await axios.post(apiOrdenesDeCompraBackend, ordenDeCompra);
-      fetchOrdenesDeCompra()//despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
+      fetchOrdenesDeCompra();//despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
     } catch (error) {
       console.error("Error al crear la orden de compra:", error);
     }
   };
 
-  /*
-  const finalizeOrdenDeCompra = async (id: string, amount: number) => {
-    setOrdenesDeCompra((prevOrdenesDeCompra) => {
-      prevOrdenesDeCompra.map((orden) => {
-        orden.id === id
-          ? {
-              ...orden,
-            }
-          : orden;
-      });
-    });
+  const actualizarEstadoOrdenDeCompra = async (id: string, estado: string) => {
+    await axios.put(`${apiOrdenesDeCompraBackend}/${id}/status/${estado}`);
+    fetchOrdenesDeCompra();//despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
   };
-  */
-
-  /* const fetchOrdenesDeCompra = async () => {
-       try {
-           const response = await axios.get(apiOrdenesDeCompraDonweb);
-           const fetchedOrdenesDeCompra = response.data.data.map((item: any) => {
-               // Calcular la cantidad necesaria de cada producto
-               const productos = item.attributes.productos.data.map((producto: any) => {
-                   const cantidad = Math.max(producto.attributes.stock_minimo - producto.attributes.stock, 0);
-                   const precioCompra = producto.attributes.min_price_compra_stock || producto.attributes.price;
-
-                   return {
-                       id: producto.id,
-                       name: producto.attributes.title,
-                       stock: producto.attributes.stock,
-                       stock_minimo: producto.attributes.stock_minimo,
-                       min_price_compra_stock: producto.attributes.min_price_compra_stock,
-                       precio: precioCompra,
-                       cantidad: cantidad,
-                   };
-               });
-
-               return {
-                   id: item.id,
-                   total_compra: productos.reduce((total: number, prod: Producto) => total + (prod.precio * prod.cantidad), 0),
-                   createdAt: item.attributes.createdAt,
-                   updatedAt: item.attributes.updatedAt,
-                   estado: item.attributes.estado,
-                   fecha_de_creacion: item.attributes.fecha_de_creacion,
-                   proveedor: item.attributes.proveedor.data 
-                       ? {
-                           id: item.attributes.proveedor.data.id,
-                           name: item.attributes.proveedor.data.attributes.name,
-                           mail: item.attributes.proveedor.data.attributes.mail,
-                           createdAt: item.attributes.proveedor.data.attributes.createdAt,
-                           updatedAt: item.attributes.proveedor.data.attributes.updatedAt,
-                       } 
-                       : { id: 0, name: "Proveedor Desconocido", mail: "" },
-                   productos: productos,
-               };
-           }); 
-
-
-           setOrdenesDeCompra(fetchedOrdenesDeCompra);
-       } catch (error) {
-           console.error('Error al obtener órdenes de compra:', error);
-       }
-   };
-   */
 
   useEffect(() => {
     fetchOrdenesDeCompra();
@@ -196,7 +140,7 @@ export const OrdenDeCompraProvider = ({
 
   return (
     <OrdenDeCompraContext.Provider
-      value={{ ordenesDeCompra, proveedores, productos, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra }}
+      value={{ ordenesDeCompra, proveedores, productos, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra }}
     >
       {children}
     </OrdenDeCompraContext.Provider>
