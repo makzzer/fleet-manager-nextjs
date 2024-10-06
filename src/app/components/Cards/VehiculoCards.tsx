@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useVehiculo } from "@/app/context/VehiculoContext";
 import { FiEdit, FiEye, FiTrash, FiCheckCircle } from "react-icons/fi"; // Feather Icons (más modernos)
+import { FaCar, FaTruck, FaShip } from "react-icons/fa";
 
 interface Coordinates {
   latitude: number;
@@ -18,6 +19,8 @@ interface Vehiculo {
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
+  type: string;
+  fuel: string;
 }
 
 interface VehiculoCardProps {
@@ -55,6 +58,14 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
       }
     ]
   };
+
+  const typeIcons = (vehiculo: Vehiculo) => {
+    return vehiculo.type === 'Auto'
+    ? <FaCar className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
+    : vehiculo.type === 'Camión'
+    ? <FaTruck className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
+    : <FaShip className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
+  }
 
   // Función para generar el rango de años
   const generarOpcionesAños = () => {
@@ -198,9 +209,12 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   return (
     <div className="p-6 rounded-lg shadow-lg text-white transition duration-300 ease-in-out bg-gray-800 hover:bg-gray-900 h-full flex flex-col justify-between">
       <div className="min-h-[120px]">
+        <div className="flex flex-row justify-between">
         <h2 className="text-2xl font-bold mb-3 truncate max-w-full" title={`${vehiculo.brand}`}>
           {vehiculo.brand} {vehiculo.model}
         </h2>
+        {typeIcons(vehiculo)}
+        </div>
         <p className="text-lg text-gray-300 mb-3 ">ID: {vehiculo.id}</p>
         <h3 className="text-2xl font-bold truncate max-w-full" title={`${vehiculo.brand} ${vehiculo.model}`}>
           {vehiculo.year}

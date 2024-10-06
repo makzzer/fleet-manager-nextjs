@@ -70,7 +70,7 @@ const Vehiculos = () => {
 
   const handleAgregarVehiculo = () => {
     // Lista de marcas de vehículos
-  const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
+  //const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
 
   const camiones = {
     marcas: [
@@ -115,13 +115,13 @@ const Vehiculos = () => {
    const opcionesMarcas = camiones.marcas.map(marca => `<option value="${marca.marca}">${marca.marca}</option>`).join('');
 
 // Función que construye las opciones de modelos para una marca específica
-const obtenerOpcionesModelos = (marcaSeleccionada: string) => {
-  const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
-  if (marca) {
-    return marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
-  }
-  return '<option value="" disabled>No hay modelos disponibles</option>'; // Si no hay modelos
-};
+// const obtenerOpcionesModelos = (marcaSeleccionada: string) => {
+//   const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
+//   if (marca) {
+//     return marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
+//   }
+//   return '<option value="" disabled>No hay modelos disponibles</option>'; // Si no hay modelos
+// };
 
     Swal.fire({
       title: 'Agregar Vehículo',

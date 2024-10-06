@@ -26,13 +26,15 @@ interface Vehiculo {
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
+  type: string;
+  fuel: string;
 }
 
 interface VehiculoContextProps {
   vehiculos: Vehiculo[];
   fetchVehiculos: () => void;
   createVehiculo: (
-    vehiculo: Omit<Vehiculo, "date_created" | "date_updated">
+    vehiculo: Omit<Vehiculo, "date_created" | "date_updated" | "type" | "fuel" >
   ) => Promise<{ resultado: boolean, mensaje?: string }>;
   modifyVehiculo: (
     vehiculoEditado: Omit<Vehiculo, "date_created" | "date_updated">
@@ -52,6 +54,20 @@ export const useVehiculo = () => {
   }
   return context;
 };
+
+const typeOptions = ['Camión', 'Auto', 'Barco'];
+const fuelOptions = ['Gasoil', 'Eléctrico'];
+
+
+const getRandomType = () => {
+  const valorRandom = Math.floor(Math.random() * typeOptions.length);
+  return typeOptions[valorRandom];
+}
+
+const getRandomFuel = () => {
+  const valorRandom = Math.floor(Math.random() * fuelOptions.length);
+  return fuelOptions[valorRandom];
+}
 
 export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
@@ -77,6 +93,8 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
             },
             date_created: item.date_created,
             date_updated: item.date_updated,
+            type: getRandomType(),
+            fuel: getRandomFuel(),
           })
         );
 
@@ -93,7 +111,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const createVehiculo = async (
-    vehiculo: Omit<Vehiculo, "date_created" | "date_updated">
+    vehiculo: Omit<Vehiculo, "date_created" | "date_updated" | "type" | "fuel">
   ): Promise<{ resultado: boolean, mensaje?: string}> => {
     try {
       await axios.post(apiVehiculosBackend, vehiculo);
