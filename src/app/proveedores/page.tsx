@@ -3,30 +3,15 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-
-// import Link from "next/link";
-// import { FaUserTie, FaEnvelope, FaPhone, FaEnvelopeSquare } from 'react-icons/fa';
 import Swal from "sweetalert2";
 import ProveedorCard from "../components/Cards/ProveedorCards";
 import { useProveedor } from "../context/ProveedorContext";
 
-interface Proveedor {
-  id: string;
-  name: string;
-  email: string;
-  cuit: string;
-  phone_number: string;
-  address: string;
-  date_created?: string;
-  date_updated?: string;
-}
-
 const Proveedores = () => {
   const { proveedores, fetchProveedores, createProveedor } = useProveedor();
   const [isLoading, setIsLoading] = useState(true);
-  const [filteredProveedores, setFilteredProveedores] = useState(proveedores);
-
-  // const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
+  const [filteredProveedores, setFilteredProveedores] = useState([]);
+  const [loadMoreCount, setLoadMoreCount] = useState(6); // Para cargar de a 6
 
   useEffect(() => {
     const loadProveedores = async () => {
@@ -38,55 +23,18 @@ const Proveedores = () => {
   }, [fetchProveedores]);
 
   useEffect(() => {
-    setFilteredProveedores(proveedores);
-  }, [proveedores]);
+    setFilteredProveedores(proveedores.slice(0, loadMoreCount)); // Mostrar los primeros 6 proveedores
+  }, [proveedores, loadMoreCount]);
 
-  // Filtra los productos según el término de búsqueda
-  // useEffect(() => {
-  //   if (searchTerm === "") {
-  //     setLocalProveedores(proveedores);
-  //   } else {
-  //     setLocalProveedores(
-  //       proveedores.filter((proveedor) =>
-  //         proveedor.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //       )
-  //     );
-  //   }
-  // }, [searchTerm, proveedores]);
-
-
-  //el query va a ser lo que voy escribiendo en el input de la bar
-  // const handleSearch = (query: string) => {
-  //   const filtered = proveedores.filter(
-  //     proveedor =>
-  //       proveedor.name.toLowerCase().includes(query.toLowerCase()) ||
-  //       proveedor.cuit.toLowerCase().includes(query.toLowerCase()) ||
-  //       proveedor.direccion.toLowerCase().includes(query.toLowerCase()) ||
-  //       proveedor.telefono.toLowerCase().includes(query.toLowerCase())
-  //   );
-  //   setFilteredProveedores(filtered);
-  // };
-
-  // futuro buscador local
-  // const handleFilter = (filters: { searchTerm: string; selectedProveedor: string }) => {
-  //   const { searchTerm } = filters;
-  //   if (searchTerm === '') {
-  //     setLocalProveedores(proveedores); // Muestra todos los productos si no hay búsqueda
-  //   } else {
-  //     setLocalProveedores(
-  //       proveedores.filter((proveedor) =>
-  //         // solo filtro por nombre.
-  //         proveedor.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //       )
-  //     );
-  //   }
-  // };
+  const handleLoadMore = () => {
+    setLoadMoreCount(loadMoreCount + 6); // Cargar 6 proveedores más
+  };
 
   const handleAgregarProveedor = () => {
     Swal.fire({
       title: "Agregar Proveedor",
       html: `
-      <input type="text" id="name" class="swal2-input" placeholder="Name">
+      <input type="text" id="name" class="swal2-input" placeholder="Nombre">
       <input type="text" id="email" class="swal2-input" placeholder="Email">
       <input type="text" id="cuit" class="swal2-input" placeholder="CUIT">
       <input type="text" id="phone_number" class="swal2-input" placeholder="Teléfono">
@@ -94,55 +42,9 @@ const Proveedores = () => {
     `,
       confirmButtonText: "Agregar",
       showCancelButton: true,
-      preConfirm: () => {
-        const nameElement = document.getElementById("name") as HTMLInputElement;
-        const emailElement = document.getElementById("email") as HTMLInputElement;
-        const cuitElement = document.getElementById("cuit") as HTMLInputElement;
-        const phone_numberElement = document.getElementById("phone_number") as HTMLInputElement;
-        const addressElement = document.getElementById("address") as HTMLInputElement;
-
-        const name = nameElement?.value;
-        const email = emailElement?.value;
-        const cuit = cuitElement?.value;
-        const phone_number = phone_numberElement?.value;
-        const address = addressElement?.value;
-
-        const nameRegex = /^[A-Za-z\s]+$/;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const cuitRegex = /^\d{2}-\d{8}-\d{1}$/;
-        const telefonoRegex = /^(?=(?:\D*\d){10})(?:\d+-?){0,2}\d+$/;
-        const direccionRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+ \d+, [a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/; // este regex respeta formato (calle numero, localidad)
-
-        if (!name || !nameRegex.test(name)) {
-          Swal.showValidationMessage("Nombre inválido. El nombre no puede estar vacío ni contener caracteres especiales o números.");
-          return null;
-        }
-
-        if (!email || !emailRegex.test(email)) {
-          Swal.showValidationMessage("Email inválido. El email no puede estar vacío, además debe contener un solo '@' y un formato válido.");
-          return null;
-        }
-
-        if (!cuit || !cuitRegex.test(cuit)) {
-          Swal.showValidationMessage("CUIT inválido. Debe seguir el formato 00-00000000-0.");
-          return null;
-        }
-
-        if (!phone_number || !telefonoRegex.test(phone_number)) {
-          Swal.showValidationMessage("Teléfono inválido. Debe contener solo números y opcionalmente guiones.");
-          return null;
-        }
-
-        if (!address || !direccionRegex.test(address)) {
-          Swal.showValidationMessage("Dirección inválida. No debe contener caracteres especiales (excepto '.' y ',').");
-          return null;
-        }
-
-        return { name, email, cuit, phone_number, address };
-      },
     }).then(async (result) => {
       if (result.isConfirmed && result.value) {
-        const proveedor: Proveedor = {
+        const proveedor = {
           id: result.value.id,
           name: result.value.name,
           email: result.value.email,
@@ -150,29 +52,12 @@ const Proveedores = () => {
           phone_number: result.value.phone_number,
           address: result.value.address,
         };
-  
+
         try {
-          // Intentar crear el proveedor en el backend
           await createProveedor(proveedor);
-          Swal.fire({
-            title: "Proveedor agregado con éxito",
-            icon: "success",
-          });
-        } catch (error: any) {
-          // Verificar si el error viene del backend por un CUIT duplicado
-          if (error.response || error.response.status === 400) { // Asumiendo 409 para conflicto
-            Swal.fire({
-              title: "Error",
-              text: "El proveedor ya existe en nuestra base de datos.",
-              icon: "error",
-            });
-          } else {
-            Swal.fire({
-              title: "Error",
-              text: "Hubo un problema al agregar el proveedor. Inténtalo de nuevo.",
-              icon: "error",
-            });
-          }
+          Swal.fire("Proveedor agregado con éxito", "", "success");
+        } catch (error) {
+          Swal.fire("Error", "Hubo un problema al agregar el proveedor", "error");
         }
       }
     });
@@ -181,8 +66,8 @@ const Proveedores = () => {
   return (
     <ProtectedRoute requiredModule="PROVIDERS">
       <div className="p-6 min-h-screen bg-gray-900 text-white">
-        <div className="flex flex-col sm:flex-row justify-between items-center  mb-6">
-          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0 ">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
             Gestión de Proveedores
           </h1>
           <button
@@ -193,34 +78,6 @@ const Proveedores = () => {
           </button>
         </div>
 
-        {/* Renderizado de los skeleton loaders o las cards */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                {isLoading ? (
-                    Array(6).fill(0).map((_, index) => (
-                        <div key={index} className="p-4 bg-gray-800 rounded-lg">
-                            <Skeleton height={200} baseColor="#2d3748"
-                                highlightColor="#4a5568" />
-
-                            <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"
-                                highlightColor="#4a5568" />
-                            <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"
-                                highlightColor="#4a5568" />
-                            <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"
-                                highlightColor="#4a5568" />
-                        </div>
-                    ))
-                ) : (
-                    filteredProveedores.length > 0 ? (
-                        filteredProveedores.map((proveedor, index) => (
-                            <ProveedorCard key={index} proveedor={proveedor} />
-                        ))
-                    ) : (
-                        <p className="text-center col-span-3 text-blue-300">No se encontraron proveedores</p>
-                    )
-                )}
-            </div> */}
-
-        {/* Renderizado de los skeleton loaders o las cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {isLoading ? (
             Array(6)
@@ -246,13 +103,6 @@ const Proveedores = () => {
                     baseColor="#2d3748"
                     highlightColor="#4a5568"
                   />
-                  <Skeleton
-                    width={`50%`}
-                    height={20}
-                    style={{ marginTop: 10 }}
-                    baseColor="#2d3748"
-                    highlightColor="#4a5568"
-                  />
                 </div>
               ))
           ) : filteredProveedores.length > 0 ? (
@@ -265,16 +115,20 @@ const Proveedores = () => {
             </p>
           )}
         </div>
+
+        {filteredProveedores.length < proveedores.length && (
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={handleLoadMore}
+              className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Ver más
+            </button>
+          </div>
+        )}
       </div>
     </ProtectedRoute>
   );
 };
 
 export default Proveedores;
-
-// reemplazo de proveedores locales.
-// : filteredProveedores.length > 0 ? (
-//   filteredProveedores.map((proveedor, index) => (
-//     <ProveedorCard key={index} proveedor={proveedor} />
-//   ))
-// )
