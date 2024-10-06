@@ -241,59 +241,67 @@ const OrdenesDeCompra = () => {
               </tr>
             </thead>
             <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
-              {visibleOrdenesDeCompra.map((orden) => (
-                <tr key={orden.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{orden.provider.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{orden.date_created.slice(0, 10)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${getEstadoColor(orden.status)}`}
-                    >
-                      {orden.status === "CREATED"
-                        ? "Creada"
-                        : orden.status === "REJECTED"
-                          ? "Rechazada"
-                          : orden.status === "APPROVED"
-                            ? "Aprobada"
-                            : orden.status === "COMPLETED"
-                              ? "Completada"
-                              : "Inactiva"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">${orden.amount}</td>
-                  <td className="px-6 py-4 whitespace-nowrap flex justify-end space-x-4">
-                    <button onClick={() => handleView(orden.id)} className="text-blue-600 hover:text-blue-800">
-                      <FaEye className="w-5 h-5" />
-                    </button>
+              {filteredOrdenes.length > 0 ? (
+                visibleOrdenesDeCompra.map((orden) => (
+                  <tr key={orden.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">{orden.provider.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{orden.date_created.slice(0, 10)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${getEstadoColor(orden.status)}`}
+                      >
+                        {orden.status === "CREATED"
+                          ? "Creada"
+                          : orden.status === "REJECTED"
+                            ? "Rechazada"
+                            : orden.status === "APPROVED"
+                              ? "Aprobada"
+                              : orden.status === "COMPLETED"
+                                ? "Completada"
+                                : "Inactiva"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">${orden.amount}</td>
+                    <td className="px-6 py-4 whitespace-nowrap flex justify-end space-x-4">
+                      <button onClick={() => handleView(orden.id)} className="text-blue-600 hover:text-blue-800">
+                        <FaEye className="w-5 h-5" />
+                      </button>
 
-                    {orden.status === "CREATED" ? (
-                      <>
-                        <button title="Aprobar" onClick={() => handleStatusChange(orden, "APPROVED")} className="text-purple-500 hover:text-green-800">
-                          <FaCircleCheck className="w-5 h-5" />
-                        </button>
-                        <button title="Rechazar" onClick={() => handleStatusChange(orden, "REJECTED")} className="text-red-500 hover:text-green-800">
-                          <FaCircleXmark className="w-5 h-5" />
-                        </button>
-                      </>
-                    ) : orden.status === "APPROVED" ? (
-                      <>
-                        <button title="Completar" onClick={() => handleStatusChange(orden, "COMPLETED")} className="text-green-500 hover:text-green-800">
-                          <MdPlaylistAddCheckCircle className="w-5 h-5" />
-                        </button>
-                        <button title="Inactivar" onClick={() => handleStatusChange(orden, "INACTIVE")} className="text-grey-500 hover:text-green-800">
-                          <FaMinusCircle className="w-5 h-5" />
-                        </button>
-                      </>
-                    ) : (
-                      ""
-                    )}
+                      {orden.status === "CREATED" ? (
+                        <>
+                          <button title="Aprobar" onClick={() => handleStatusChange(orden, "APPROVED")} className="text-purple-500 hover:text-green-800">
+                            <FaCircleCheck className="w-5 h-5" />
+                          </button>
+                          <button title="Rechazar" onClick={() => handleStatusChange(orden, "REJECTED")} className="text-red-500 hover:text-green-800">
+                            <FaCircleXmark className="w-5 h-5" />
+                          </button>
+                        </>
+                      ) : orden.status === "APPROVED" ? (
+                        <>
+                          <button title="Completar" onClick={() => handleStatusChange(orden, "COMPLETED")} className="text-green-500 hover:text-green-800">
+                            <MdPlaylistAddCheckCircle className="w-5 h-5" />
+                          </button>
+                          <button title="Inactivar" onClick={() => handleStatusChange(orden, "INACTIVE")} className="text-grey-500 hover:text-green-800">
+                            <FaMinusCircle className="w-5 h-5" />
+                          </button>
+                        </>
+                      ) : (
+                        ""
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center py-4 text-gray-300">
+                    No hay órdenes de compra con este estado.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
 
-          <hr className="border-gray-700 my-4"/>
+          <hr className="border-gray-700 my-4" />
           {/* Botón Ver más */}
           {visibleOrdenes < filteredOrdenes.length && (
             <div className="flex justify-center mt-4">
