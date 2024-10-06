@@ -10,23 +10,26 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
 const Vehiculos = () => {
   const { vehiculos, fetchVehiculos, createVehiculo } = useVehiculo();
-  const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
-  const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos); // Estado para filtrar vehículos por la barra
+  const [isLoading, setIsLoading] = useState(true);
+  const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos);
+  const [showUnavailable, setShowUnavailable] = useState(false); // Filtro para ocultar/mostrar vehículos deshabilitados
+  const [typeFilter, setTypeFilter] = useState(""); // Filtro por tipo de vehículo
+  const [fuelFilter, setFuelFilter] = useState(""); // Filtro por tipo de combustible
+  const [loadMoreCount, setLoadMoreCount] = useState(6); // Cantidad de vehículos a cargar inicialmente
 
   useEffect(() => {
     const loadVehiculos = async () => {
-      setIsLoading(true); // esta es la carga para el Skeleton placeholder
+      setIsLoading(true);
       await fetchVehiculos();
-      setIsLoading(false); // Esta es la carga para el skeleton placeholder
+      setIsLoading(false);
     };
     loadVehiculos();
   }, [fetchVehiculos]);
 
   useEffect(() => {
-    setFilteredVehiculos(vehiculos);
-  }, [vehiculos]);
+    filterVehiculos();
+  }, [vehiculos, showUnavailable, typeFilter, fuelFilter]);
 
-  //el query va a ser lo que voy escribiendo en el input de la bar
   const handleSearch = (query: string) => {
     const filtered = vehiculos.filter(
       vehiculo =>
@@ -36,7 +39,35 @@ const Vehiculos = () => {
     );
     setFilteredVehiculos(filtered);
   };
- 
+
+  // Función para aplicar los filtros
+  const filterVehiculos = () => {
+    let filtered = vehiculos;
+
+    // Filtro por disponibilidad
+    if (!showUnavailable) {
+      filtered = filtered.filter((vehiculo) => vehiculo.status === "AVAILABLE");
+    }
+
+    // Filtro por tipo de vehículo
+    if (typeFilter) {
+      filtered = filtered.filter((vehiculo) => vehiculo.type === typeFilter);
+    }
+
+    // Filtro por tipo de combustible
+    if (fuelFilter) {
+      filtered = filtered.filter((vehiculo) => vehiculo.fuel === fuelFilter);
+    }
+
+    setFilteredVehiculos(filtered.slice(0, loadMoreCount)); // Aplicamos paginación
+  };
+
+  // Función para cargar más vehículos
+  const handleLoadMore = () => {
+    setLoadMoreCount(loadMoreCount + 6);
+    filterVehiculos(); // Aplicamos el filtro con el nuevo límite
+  };
+
   const handleAgregarVehiculo = () => {
     // Lista de marcas de vehículos
   const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
@@ -214,50 +245,91 @@ const obtenerOpcionesModelos = (marcaSeleccionada: string) => {
       }
     });
   };
-
   return (
     <ProtectedRoute requiredModule="VEHICLES">
+      <div className="p-6 bg-gray-900 min-h-screen text-white">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
+            Gestión de Vehículos
+          </h1>
+          <button
+            onClick={handleAgregarVehiculo}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+            Agregar Vehículo
+          </button>
+        </div>
 
-    <div className="p-6 bg-gray-900 min-h-screen text-white">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-        <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">Gestión de Vehículos</h1>
-        <button
-          onClick={handleAgregarVehiculo}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-          Agregar Vehículo
-        </button>
-      </div>
+        {/* Barra de búsqueda */}
+        <SearchBar onSearch={handleSearch} />
 
-      {/* Aca llamo a mi componente de la barra de busqueda*/}
-      <SearchBar onSearch={handleSearch} />
+        {/* Filtros */}
+        <div className="flex flex-col mt-4 sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="showUnavailable"
+              className="form-checkbox"
+              checked={showUnavailable}
+              onChange={() => setShowUnavailable(!showUnavailable)}
+            />
+            <label htmlFor="showUnavailable">Mostrar vehículos deshabilitados</label>
+          </div>
 
-      {/* Renderizado de los skeleton loaders o las cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {isLoading ? (
-          Array(6).fill(0).map((_, index) => (
-            <div key={index} className="p-4 bg-gray-800 rounded-lg">
-              <Skeleton height={200} baseColor="#2d3748"  // Fondo del placeholder (oscuro)
-                highlightColor="#4a5568" />
+          {/* Filtro por tipo de vehículo */}
+          <select
+            className="bg-gray-800 text-white py-2 px-4 rounded"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="">Todos los tipos</option>
+            <option value="Camión">Camión</option>
+            <option value="Auto">Auto</option>
+            <option value="Barco">Barco</option>
+          </select>
 
-              <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"  // Fondo del placeholder (oscuro)
-                highlightColor="#4a5568" />
-              <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"  // Fondo del placeholder (oscuro)
-                highlightColor="#4a5568" />
-              <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748"  // Fondo del placeholder (oscuro)
-                highlightColor="#4a5568" />
-            </div>
-          ))
-        ) : (
-          filteredVehiculos.length > 0 ? (
+          {/* Filtro por tipo de combustible */}
+          <select
+            className="bg-gray-800 text-white py-2 px-4 rounded"
+            value={fuelFilter}
+            onChange={(e) => setFuelFilter(e.target.value)}>
+            <option value="">Todos los combustibles</option>
+            <option value="Gasoil">Gasoil</option>
+            <option value="Eléctrico">Eléctrico</option>
+          </select>
+        </div>
+
+        {/* Renderizado de vehículos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {isLoading ? (
+            Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <div key={index} className="p-4 bg-gray-800 rounded-lg">
+                  <Skeleton height={200} baseColor="#2d3748" highlightColor="#4a5568" />
+                  <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
+                  <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
+                  <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
+                </div>
+              ))
+          ) : filteredVehiculos.length > 0 ? (
             filteredVehiculos.map((vehiculo, index) => (
-              <VehiculoCard key={index} vehiculo={vehiculo}/>
+              <VehiculoCard key={index} vehiculo={vehiculo} />
             ))
           ) : (
             <p className="text-center col-span-3 text-blue-300">No se encontraron vehículos</p>
-          )
+          )}
+        </div>
+
+        {/* Botón de ver más */}
+        {filteredVehiculos.length > 0 && filteredVehiculos.length < vehiculos.length && (
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={handleLoadMore}
+              className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+              Ver más
+            </button>
+          </div>
         )}
       </div>
-    </div>
     </ProtectedRoute>
   );
 };
