@@ -275,15 +275,15 @@ const obtenerOpcionesModelos = (marcaSeleccionada: string) => {
             <label htmlFor="showUnavailable">Mostrar vehículos deshabilitados</label>
           </div>
 
-          {/* Filtro por tipo de vehículo */}
+          {/* Filtro por Carga Soportada de vehículo */}
           <select
             className="bg-gray-800 text-white py-2 px-4 rounded"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}>
-            <option value="">Todos los tipos</option>
-            <option value="Camión">Camión</option>
-            <option value="Auto">Auto</option>
-            <option value="Barco">Barco</option>
+            <option value="">Todas las cargas</option>
+            <option value="Camión">Menos de 1 Tonelada</option>
+            <option value="Auto">De 1 a 2 Toneladas</option>
+            <option value="Barco">Mas de 2 toneladas</option>
           </select>
 
           {/* Filtro por tipo de combustible */}
