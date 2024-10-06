@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { FaEye, FaCheck } from "react-icons/fa";
+import { FaEye, FaMinusCircle } from "react-icons/fa";
 import { useOrdenesDeCompra, OrdenDeCompra, CreacionOrdenDeCompra } from "../context/OrdenesCompraContext";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import Swal from "sweetalert2";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes"; //ruta protegida
-
-const apiActualizarOrden = `https://${process.env.NEXT_PUBLIC_HTTPS_HOSTING_DONWEB}/api/orden-compras`;
+import { FaCircleCheck, FaCircleXmark } from "react-icons/fa6";
+import { MdPlaylistAddCheckCircle } from "react-icons/md";
 
 const OrdenesDeCompra = () => {
-  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra } = useOrdenesDeCompra();
+  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra } = useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [estadoFiltro, setEstadoFiltro] = useState(""); // Estado para el filtro de estado
+  const [visibleOrdenes, setVisibleOrdenes] = useState(10); // Estado para controlar cuántas órdenes mostramos
   const [showScrollIcon, setShowScrollIcon] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -88,22 +89,20 @@ const OrdenesDeCompra = () => {
     }
   };
 
-  const handleComplete = async (orden: OrdenDeCompra) => {
+  const handleStatusChange = async (orden: OrdenDeCompra, status: string) => {
     setLoading(true);
     try {
-      const updatedOrden = { estado: "CREATED"};
-      // await axios.put(`${apiActualizarOrden}/${orden.id}?populate=*`, { data: updatedOrden });
-      await axios.put(`${apiActualizarOrden}/${orden.id}`, { data: updatedOrden });
+      actualizarEstadoOrdenDeCompra(orden.id, status);
       Swal.fire({
-        title: "Orden completada",
-        text: "La orden de compra ha sido cerrada y el stock actualizado.",
+        title: "Orden Actualizada",
+        text: "La orden de compra se actualizó con éxito.",
         icon: "success",
         confirmButtonText: "Cerrar",
       });
     } catch (error) {
       Swal.fire({
         title: "Error",
-        text: "Hubo un problema al cerrar la orden de compra. Inténtalo de nuevo.",
+        text: "Hubo un problema al actualizar el estado de la orden de compra. Inténtalo de nuevo.",
         icon: "error",
         confirmButtonText: "Cerrar",
       });
@@ -112,20 +111,48 @@ const OrdenesDeCompra = () => {
     }
   };
 
+  // Filtrar las órdenes de compra según el estado seleccionado
+  const filteredOrdenes = ordenesDeCompra.filter((orden) => {
+    if (estadoFiltro === "") return true;
+    return orden.status === estadoFiltro;
+  });
+
+  // Controlar cuántas órdenes de compra se muestran
+  const visibleOrdenesDeCompra = filteredOrdenes.slice(0, visibleOrdenes);
+
+  const handleVerMas = () => {
+    setVisibleOrdenes((prevVisible) => prevVisible + 10); // Mostrar 10 órdenes más
+  };
+
   const handleAgregarOrdenCompra = () => {
+    const proveedoresOptions = proveedores.map(
+      (proveedor) => `<option value="${proveedor.id}">${proveedor.name}</option>`
+    ).join("");
+    const productosOptions = productos.map(
+      (producto) => `<option value="${producto.id}">${producto.name}</option>`
+    ).join("");
+
     Swal.fire({
       title: "Agregar Orden de Compra",
       html: `
-      <input type="text" id="providerid" class="swal2-input" placeholder="ProviderID">
-      <input type="text" id="productid" class="swal2-input" placeholder="ProductID">
-      <input type="text" id="quantity" class="swal2-input" placeholder="Quantity">
-      <input type="text" id="amount" class="swal2-input" placeholder="Amount">
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <select id="providerid" class="swal2-input">
+          <option value="" disabled selected>Selecciona un proveedor</option>
+          ${proveedoresOptions}
+        </select>
+        <select id="productid" class="swal2-input">
+          <option value="" disabled selected>Selecciona un producto</option>
+          ${productosOptions}
+        </select>
+        <input type="number" id="quantity" class="swal2-input" placeholder="Cantidad">
+        <input type="number" id="amount" class="swal2-input" placeholder="Monto">
+      </div>
     `,
       confirmButtonText: "Agregar",
       showCancelButton: true,
       preConfirm: () => {
-        const providerIdElement = document.getElementById("providerid") as HTMLInputElement;
-        const productIdElement = document.getElementById("productid") as HTMLInputElement;
+        const providerIdElement = document.getElementById("providerid") as HTMLSelectElement;
+        const productIdElement = document.getElementById("productid") as HTMLSelectElement;
         const quantityElement = document.getElementById("quantity") as HTMLInputElement;
         const amountElement = document.getElementById("amount") as HTMLInputElement;
 
@@ -134,8 +161,8 @@ const OrdenesDeCompra = () => {
         const quantity = quantityElement?.value;
         const amount = amountElement?.value;
 
-        if (!providerId || !productId || !quantity || !amount) {
-          Swal.showValidationMessage('Por favor completa todos los campos');
+        if (!providerId || !productId || quantity <= 0 || amount <= 0) {
+          Swal.showValidationMessage('Por favor, completa todos los campos correctamente.');
           return null;
         }
 
@@ -174,6 +201,24 @@ const OrdenesDeCompra = () => {
             Agregar Orden de Compra
           </button>
         </div>
+
+        {/* Filtro por estado */}
+        <div className="mb-6">
+          <label className="text-gray-200 text-sm font-bold mr-2">Filtrar por estado:</label>
+          <select
+            value={estadoFiltro}
+            onChange={(e) => setEstadoFiltro(e.target.value)}
+            className="bg-gray-800 text-gray-200 p-2 rounded-md"
+          >
+            <option value="">Todos</option>
+            <option value="CREATED">Creada</option>
+            <option value="REJECTED">Rechazada</option>
+            <option value="APPROVED">Aprobada</option>
+            <option value="COMPLETED">Completada</option>
+            <option value="INACTIVE">Inactiva</option>
+          </select>
+        </div>
+
         <div className="relative overflow-x-auto bg-gray-800 shadow-md rounded-lg p-6" ref={tableRef}>
           <table className="min-w-full divide-y divide-gray-600 table-auto">
             <thead className="bg-gray-800">
@@ -196,56 +241,76 @@ const OrdenesDeCompra = () => {
               </tr>
             </thead>
             <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
-              {ordenesDeCompra.map((orden) => (
-                <tr key={orden.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{orden.provider.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{orden.date_created.slice(0, 10)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${getEstadoColor(orden.status)}`}
-                    >
-                      {orden.status === "CREATED"
-                        ? "Creada"
-                        : orden.status === "REJECTED"
-                        ? "Rechazada"
-                        : orden.status === "APPROVED"
-                        ? "Aprobada"
-                        : orden.status === "COMPLETED"
-                        ? "Completada"
-                        : "Inactiva"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">${orden.amount}</td>
-                  <td className="px-6 py-4 whitespace-nowrap flex justify-end space-x-4">
-                    <button onClick={() => handleView(orden.id)} className="text-blue-600 hover:text-blue-800">
-                      <FaEye className="w-5 h-5" />
-                    </button>
-                    <button onClick={() => handleComplete(orden)} className="text-green-600 hover:text-green-800">
-                      <FaCheck className="w-5 h-5" />
-                    </button>
+              {filteredOrdenes.length > 0 ? (
+                visibleOrdenesDeCompra.map((orden) => (
+                  <tr key={orden.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">{orden.provider.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{orden.date_created.slice(0, 10)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${getEstadoColor(orden.status)}`}
+                      >
+                        {orden.status === "CREATED"
+                          ? "Creada"
+                          : orden.status === "REJECTED"
+                            ? "Rechazada"
+                            : orden.status === "APPROVED"
+                              ? "Aprobada"
+                              : orden.status === "COMPLETED"
+                                ? "Completada"
+                                : "Inactiva"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">${orden.amount}</td>
+                    <td className="px-6 py-4 whitespace-nowrap flex justify-end space-x-4">
+                      <button onClick={() => handleView(orden.id)} className="text-blue-600 hover:text-blue-800">
+                        <FaEye className="w-5 h-5" />
+                      </button>
+
+                      {orden.status === "CREATED" ? (
+                        <>
+                          <button title="Aprobar" onClick={() => handleStatusChange(orden, "APPROVED")} className="text-purple-500 hover:text-green-800">
+                            <FaCircleCheck className="w-5 h-5" />
+                          </button>
+                          <button title="Rechazar" onClick={() => handleStatusChange(orden, "REJECTED")} className="text-red-500 hover:text-green-800">
+                            <FaCircleXmark className="w-5 h-5" />
+                          </button>
+                        </>
+                      ) : orden.status === "APPROVED" ? (
+                        <>
+                          <button title="Completar" onClick={() => handleStatusChange(orden, "COMPLETED")} className="text-green-500 hover:text-green-800">
+                            <MdPlaylistAddCheckCircle className="w-5 h-5" />
+                          </button>
+                          <button title="Inactivar" onClick={() => handleStatusChange(orden, "INACTIVE")} className="text-grey-500 hover:text-green-800">
+                            <FaMinusCircle className="w-5 h-5" />
+                          </button>
+                        </>
+                      ) : (
+                        ""
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center py-4 text-gray-300">
+                    No hay órdenes de compra con este estado.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
 
-          {/* Flecha de scroll en pantallas pequeñas */}
-          {showScrollIcon && (
-            <div className="absolute bottom-0 right-4 p-2 text-gray-500 md:hidden">
-              <svg
-                className="w-6 h-6 animate-bounce"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+          <hr className="border-gray-700 my-4" />
+          {/* Botón Ver más */}
+          {visibleOrdenes < filteredOrdenes.length && (
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={handleVerMas}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                ></path>
-              </svg>
+                Ver más
+              </button>
             </div>
           )}
         </div>

@@ -15,6 +15,13 @@ import { useProducto } from "../context/ProductoContext";
 
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
+  //Lista de categorias de repuestos en productos
+  const categorias = ['Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas', 
+    'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Lubricantes', 'Luces', 
+    'Motores', 'Neumático', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores', 
+    'Suspensión', 'Transmisión'
+  ];
+
 const Stock = () => {
   const router = useRouter();
   const { productos, fetchProductos, createProducto } = useProducto();
@@ -109,11 +116,7 @@ const Stock = () => {
   };
 
   const handleAgregarProducto = () => {
-    //Lista de categorias de repuestos en productos
-  const categorias = ['Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas', 'Cristales', 'Dirección', 'Escape', 'Espejos', 
-    'Filtros', 'Frenos', 'Lubricantes', 'Luces', 'Motores', 'Neumático', 'Paragolpes', 
-    'Radiadores', 'Sistemas eléctricos', 'Sensores', 'Suspensión', 'Transmisión'
-  ];
+
   // Construir las opciones del select
   const opcionesCategorias = categorias.map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
 
@@ -215,7 +218,7 @@ const Stock = () => {
         </div>
 
         {/* Barras de busqueda */}
-        <FiltrosProducto onFilter={handleFilter} />
+        <FiltrosProducto onFilter={handleFilter} categorias={categorias} />
 
         {filteredProductos && filteredProductos.length > 0 ? (
           // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
