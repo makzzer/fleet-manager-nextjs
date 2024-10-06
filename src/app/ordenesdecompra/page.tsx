@@ -13,6 +13,8 @@ const OrdenesDeCompra = () => {
   const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra } = useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [estadoFiltro, setEstadoFiltro] = useState(""); // Estado para el filtro de estado
+  const [visibleOrdenes, setVisibleOrdenes] = useState(10); // Estado para controlar cuántas órdenes mostramos
   const [showScrollIcon, setShowScrollIcon] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -109,15 +111,27 @@ const OrdenesDeCompra = () => {
     }
   };
 
+  // Filtrar las órdenes de compra según el estado seleccionado
+  const filteredOrdenes = ordenesDeCompra.filter((orden) => {
+    if (estadoFiltro === "") return true;
+    return orden.status === estadoFiltro;
+  });
+
+  // Controlar cuántas órdenes de compra se muestran
+  const visibleOrdenesDeCompra = filteredOrdenes.slice(0, visibleOrdenes);
+
+  const handleVerMas = () => {
+    setVisibleOrdenes((prevVisible) => prevVisible + 10); // Mostrar 10 órdenes más
+  };
+
   const handleAgregarOrdenCompra = () => {
-    // Obtener proveedores y productos desde el contexto
     const proveedoresOptions = proveedores.map(
       (proveedor) => `<option value="${proveedor.id}">${proveedor.name}</option>`
     ).join("");
     const productosOptions = productos.map(
       (producto) => `<option value="${producto.id}">${producto.name}</option>`
     ).join("");
-  
+
     Swal.fire({
       title: "Agregar Orden de Compra",
       html: `
@@ -141,18 +155,17 @@ const OrdenesDeCompra = () => {
         const productIdElement = document.getElementById("productid") as HTMLSelectElement;
         const quantityElement = document.getElementById("quantity") as HTMLInputElement;
         const amountElement = document.getElementById("amount") as HTMLInputElement;
-  
+
         const providerId = providerIdElement?.value;
         const productId = productIdElement?.value;
         const quantity = quantityElement?.value;
         const amount = amountElement?.value;
-  
-        // Validar que los campos estén completos
+
         if (!providerId || !productId || quantity <= 0 || amount <= 0) {
           Swal.showValidationMessage('Por favor, completa todos los campos correctamente.');
           return null;
         }
-  
+
         return { providerId, productId, quantity, amount };
       },
     }).then((result) => {
@@ -163,9 +176,9 @@ const OrdenesDeCompra = () => {
           quantity: result.value.quantity,
           amount: result.value.amount,
         };
-  
+
         createOrdenDeCompra(order);
-  
+
         Swal.fire({
           title: "Orden agregada con éxito",
           icon: "success",
@@ -173,8 +186,6 @@ const OrdenesDeCompra = () => {
       }
     });
   };
-
-
 
   return (
     <ProtectedRoute requiredModule="ORDERS">
@@ -190,6 +201,24 @@ const OrdenesDeCompra = () => {
             Agregar Orden de Compra
           </button>
         </div>
+
+        {/* Filtro por estado */}
+        <div className="mb-6">
+          <label className="text-gray-200 text-sm font-bold mr-2">Filtrar por estado:</label>
+          <select
+            value={estadoFiltro}
+            onChange={(e) => setEstadoFiltro(e.target.value)}
+            className="bg-gray-800 text-gray-200 p-2 rounded-md"
+          >
+            <option value="">Todos</option>
+            <option value="CREATED">Creada</option>
+            <option value="REJECTED">Rechazada</option>
+            <option value="APPROVED">Aprobada</option>
+            <option value="COMPLETED">Completada</option>
+            <option value="INACTIVE">Inactiva</option>
+          </select>
+        </div>
+
         <div className="relative overflow-x-auto bg-gray-800 shadow-md rounded-lg p-6" ref={tableRef}>
           <table className="min-w-full divide-y divide-gray-600 table-auto">
             <thead className="bg-gray-800">
@@ -212,7 +241,7 @@ const OrdenesDeCompra = () => {
               </tr>
             </thead>
             <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
-              {ordenesDeCompra.map((orden) => (
+              {visibleOrdenesDeCompra.map((orden) => (
                 <tr key={orden.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{orden.provider.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{orden.date_created.slice(0, 10)}</td>
@@ -223,12 +252,12 @@ const OrdenesDeCompra = () => {
                       {orden.status === "CREATED"
                         ? "Creada"
                         : orden.status === "REJECTED"
-                        ? "Rechazada"
-                        : orden.status === "APPROVED"
-                        ? "Aprobada"
-                        : orden.status === "COMPLETED"
-                        ? "Completada"
-                        : "Inactiva"}
+                          ? "Rechazada"
+                          : orden.status === "APPROVED"
+                            ? "Aprobada"
+                            : orden.status === "COMPLETED"
+                              ? "Completada"
+                              : "Inactiva"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">${orden.amount}</td>
@@ -236,19 +265,17 @@ const OrdenesDeCompra = () => {
                     <button onClick={() => handleView(orden.id)} className="text-blue-600 hover:text-blue-800">
                       <FaEye className="w-5 h-5" />
                     </button>
-          
-                    { orden.status === "CREATED"
-                      ?
+
+                    {orden.status === "CREATED" ? (
                       <>
                         <button title="Aprobar" onClick={() => handleStatusChange(orden, "APPROVED")} className="text-purple-500 hover:text-green-800">
-                          <FaCircleCheck   className="w-5 h-5" />
+                          <FaCircleCheck className="w-5 h-5" />
                         </button>
                         <button title="Rechazar" onClick={() => handleStatusChange(orden, "REJECTED")} className="text-red-500 hover:text-green-800">
-                          <FaCircleXmark  className="w-5 h-5" />
+                          <FaCircleXmark className="w-5 h-5" />
                         </button>
                       </>
-                      : orden.status === "APPROVED"
-                      ?
+                    ) : orden.status === "APPROVED" ? (
                       <>
                         <button title="Completar" onClick={() => handleStatusChange(orden, "COMPLETED")} className="text-green-500 hover:text-green-800">
                           <MdPlaylistAddCheckCircle className="w-5 h-5" />
@@ -257,30 +284,25 @@ const OrdenesDeCompra = () => {
                           <FaMinusCircle className="w-5 h-5" />
                         </button>
                       </>
-                      : ""}
+                    ) : (
+                      ""
+                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          {/* Flecha de scroll en pantallas pequeñas */}
-          {showScrollIcon && (
-            <div className="absolute bottom-0 right-4 p-2 text-gray-500 md:hidden">
-              <svg
-                className="w-6 h-6 animate-bounce"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+          <hr className="border-gray-700 my-4"/>
+          {/* Botón Ver más */}
+          {visibleOrdenes < filteredOrdenes.length && (
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={handleVerMas}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                ></path>
-              </svg>
+                Ver más
+              </button>
             </div>
           )}
         </div>
