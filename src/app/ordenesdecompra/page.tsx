@@ -110,32 +110,49 @@ const OrdenesDeCompra = () => {
   };
 
   const handleAgregarOrdenCompra = () => {
+    // Obtener proveedores y productos desde el contexto
+    const proveedoresOptions = proveedores.map(
+      (proveedor) => `<option value="${proveedor.id}">${proveedor.name}</option>`
+    ).join("");
+    const productosOptions = productos.map(
+      (producto) => `<option value="${producto.id}">${producto.name}</option>`
+    ).join("");
+  
     Swal.fire({
       title: "Agregar Orden de Compra",
       html: `
-      <input type="text" id="providerid" class="swal2-input" placeholder="ProviderID">
-      <input type="text" id="productid" class="swal2-input" placeholder="ProductID">
-      <input type="text" id="quantity" class="swal2-input" placeholder="Quantity">
-      <input type="text" id="amount" class="swal2-input" placeholder="Amount">
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <select id="providerid" class="swal2-input">
+          <option value="" disabled selected>Selecciona un proveedor</option>
+          ${proveedoresOptions}
+        </select>
+        <select id="productid" class="swal2-input">
+          <option value="" disabled selected>Selecciona un producto</option>
+          ${productosOptions}
+        </select>
+        <input type="number" id="quantity" class="swal2-input" placeholder="Cantidad">
+        <input type="number" id="amount" class="swal2-input" placeholder="Monto">
+      </div>
     `,
       confirmButtonText: "Agregar",
       showCancelButton: true,
       preConfirm: () => {
-        const providerIdElement = document.getElementById("providerid") as HTMLInputElement;
-        const productIdElement = document.getElementById("productid") as HTMLInputElement;
+        const providerIdElement = document.getElementById("providerid") as HTMLSelectElement;
+        const productIdElement = document.getElementById("productid") as HTMLSelectElement;
         const quantityElement = document.getElementById("quantity") as HTMLInputElement;
         const amountElement = document.getElementById("amount") as HTMLInputElement;
-
+  
         const providerId = providerIdElement?.value;
         const productId = productIdElement?.value;
         const quantity = quantityElement?.value;
         const amount = amountElement?.value;
-
-        if (!providerId || !productId || !quantity || !amount) {
-          Swal.showValidationMessage('Por favor completa todos los campos');
+  
+        // Validar que los campos estén completos
+        if (!providerId || !productId || quantity <= 0 || amount <= 0) {
+          Swal.showValidationMessage('Por favor, completa todos los campos correctamente.');
           return null;
         }
-
+  
         return { providerId, productId, quantity, amount };
       },
     }).then((result) => {
@@ -146,9 +163,9 @@ const OrdenesDeCompra = () => {
           quantity: result.value.quantity,
           amount: result.value.amount,
         };
-
+  
         createOrdenDeCompra(order);
-
+  
         Swal.fire({
           title: "Orden agregada con éxito",
           icon: "success",
@@ -156,6 +173,8 @@ const OrdenesDeCompra = () => {
       }
     });
   };
+
+
 
   return (
     <ProtectedRoute requiredModule="ORDERS">
