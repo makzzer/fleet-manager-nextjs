@@ -56,18 +56,18 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
     ]
   };
 
-// Función para generar el rango de años
-const generarOpcionesAños = () => {
-  const currentYear = new Date().getFullYear();
-  const startYear = currentYear - 30;
-  const opcionesAños = [];
+  // Función para generar el rango de años
+  const generarOpcionesAños = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 30;
+    const opcionesAños = [];
 
-  for (let year = currentYear; year >= startYear; year--) {
-    opcionesAños.push(`<option value="${year}">${year}</option>`);
-  }
+    for (let year = currentYear; year >= startYear; year--) {
+      opcionesAños.push(`<option value="${year}">${year}</option>`);
+    }
 
-  return opcionesAños.join('');
-};
+    return opcionesAños.join('');
+  };
 
 
   const handleViewVehiculo = (id: string) => {
@@ -205,8 +205,8 @@ const generarOpcionesAños = () => {
         <h3 className="text-2xl font-bold truncate max-w-full" title={`${vehiculo.brand} ${vehiculo.model}`}>
           {vehiculo.year}
         </h3>
-        
-    
+
+
       </div>
 
 
@@ -215,15 +215,14 @@ const generarOpcionesAños = () => {
         <p className="text-sm">Actualizado el: {new Date(vehiculo.date_updated).toLocaleString()}</p>
       </div>
 
-      <div className="flex justify-between mt-6 space-x-2">
+      <div className="flex justify-between text-center mt-6 space-x-2">
         <button
           title="Detalle"
           onClick={() => handleViewVehiculo(vehiculo.id)}
           disabled={vehiculo.status !== "AVAILABLE"}
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50 flex items-center justify-center w-full"
         >
-          <FiEye className="w-5 h-5 mr-2" />
-          
+          <FiEye className="w-5 h-5" />  {/* Eliminamos el 'mr-2' para centrar */}
         </button>
 
         <button
@@ -232,8 +231,7 @@ const generarOpcionesAños = () => {
           disabled={vehiculo.status !== "AVAILABLE"}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50 flex items-center justify-center w-full"
         >
-          <FiEdit className="w-5 h-5 mr-2" />
-          
+          <FiEdit className="w-5 h-5" />  {/* Eliminamos el 'mr-2' para centrar */}
         </button>
 
         {vehiculo.status === "AVAILABLE" ? (
@@ -242,8 +240,7 @@ const generarOpcionesAños = () => {
             onClick={handleDisableVehicle}
             className="font-bold py-2 px-4 rounded bg-red-500 hover:bg-red-600 flex items-center justify-center w-full"
           >
-            <FiTrash className="w-5 h-5 mr-2" />
-            
+            <FiTrash className="w-5 h-5" />  {/* Eliminamos el 'mr-2' para centrar */}
           </button>
         ) : (
           <button
@@ -251,8 +248,7 @@ const generarOpcionesAños = () => {
             onClick={handleDisableVehicle}
             className="font-bold py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 flex items-center justify-center w-full"
           >
-            <FiCheckCircle className="w-5 h-5 mr-2" />
-            
+            <FiCheckCircle className="w-5 h-5" />  {/* Eliminamos el 'mr-2' para centrar */}
           </button>
         )}
       </div>
