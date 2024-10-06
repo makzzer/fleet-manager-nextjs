@@ -31,17 +31,11 @@ const Vehiculos = () => {
   }, [vehiculos, showUnavailable, typeFilter, fuelFilter]);
 
   const handleSearch = (query: string) => {
-    const filtered = vehiculos.filter(
-      vehiculo =>
-        vehiculo.brand.toLowerCase().includes(query.toLowerCase()) ||
-        vehiculo.model.toLowerCase().includes(query.toLowerCase()) ||
-        vehiculo.id.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredVehiculos(filtered);
+    filterVehiculos(query);
   };
 
   // Función para aplicar los filtros
-  const filterVehiculos = () => {
+  const filterVehiculos = (searchTerm = "") => {
     let filtered = vehiculos;
 
     // Filtro por disponibilidad
@@ -59,6 +53,14 @@ const Vehiculos = () => {
       filtered = filtered.filter((vehiculo) => vehiculo.fuel === fuelFilter);
     }
 
+    if (searchTerm) {
+      filtered = filtered.filter(
+        vehiculo =>
+          vehiculo.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          vehiculo.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          vehiculo.id.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
     setFilteredVehiculos(filtered.slice(0, loadMoreCount)); // Aplicamos paginación
   };
 

@@ -28,10 +28,10 @@ const Stock = () => {
   const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
   const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
   const [loadMoreCount, setLoadMoreCount] = useState(5); // Para cargar de a 4
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   // const [localProducts, setLocalProducts] = useState(productos);
-
-  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
 
   useEffect(() => {
     const loadProductos = async () => {
@@ -43,25 +43,22 @@ const Stock = () => {
   }, [fetchProductos]);
 
   useEffect(() => {
-    setFilteredProductos(productos);
-  }, [productos]);
+    let filtered = productos;
 
-  // Filtra los productos según el término de búsqueda
-  useEffect(() => {
-    if (searchTerm === "") {
-      setFilteredProductos(productos);
-    } else {
-      setFilteredProductos(
-        productos.filter((producto) =>
-          producto.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+    if (searchTerm) {
+      filtered = filtered.filter((producto) =>
+        producto.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-  }, [searchTerm, productos]);
 
-  useEffect(() => {
-    setFilteredProductos(productos.slice(0, loadMoreCount)); // Mostrar los primeros 4 proveedores
-  }, [productos, loadMoreCount]);
+    if (selectedCategory) {
+      filtered = filtered.filter((producto) =>
+        producto.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
+    }
+
+    setFilteredProductos(filtered.slice(0, loadMoreCount));
+  }, [productos, searchTerm, selectedCategory, loadMoreCount]);
 
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 5); // Cargar 6 proveedores más
@@ -89,22 +86,7 @@ const Stock = () => {
   }) => {
     const { searchTerm, selectedCategory } = filters;
     setSearchTerm(searchTerm);
-
-    let filtered = productos;
-
-    if (searchTerm !== "") {
-      filtered = filtered.filter((producto) =>
-        producto.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (selectedCategory !== "") {
-      filtered = filtered.filter((producto) =>
-        producto.category.toLowerCase().includes(selectedCategory.toLowerCase())
-      );
-    }
-
-    setFilteredProductos(filtered);
+    setSelectedCategory(selectedCategory);
   };
 
   const handleScanQRClick = () => {
