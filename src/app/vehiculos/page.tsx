@@ -41,8 +41,56 @@ const Vehiculos = () => {
     // Lista de marcas de vehículos
   const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
 
+  const camiones = {
+    marcas: [
+      {
+        marca: 'Toyota',
+        modelos: ['Hino 300', 'Dyna', 'Toyotace']
+      },
+      {
+        marca: 'Ford',
+        modelos: ['F-750', 'Cargo 1723', 'Transit Chasis']
+      },
+      {
+        marca: 'Chevrolet',
+        modelos: ['N-Series', 'T-Series', 'C4500 Kodiak']
+      },
+      {
+        marca: 'Volkswagen',
+        modelos: ['Constellation 24.280', 'Delivery 9.170', 'Worker 17.220']
+      },
+      {
+        marca: 'Mercedes-Benz',
+        modelos: ['Atego 1726', 'Accelo 1016', 'Actros 2545']
+      }
+    ]
+  };
+
+
+  const obtenerOpcionesAnios = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 30;
+    let opciones = '';
+
+    for (let i = currentYear; i >= startYear; i--) {
+      opciones += `<option value="${i}">${i}</option>`;
+    }
+
+    return opciones;
+  };
+
+
    // Construir las opciones del select
-   const opcionesMarcas = marcas.map(marca => `<option value="${marca}">${marca}</option>`).join('');
+   const opcionesMarcas = camiones.marcas.map(marca => `<option value="${marca.marca}">${marca.marca}</option>`).join('');
+
+// Función que construye las opciones de modelos para una marca específica
+const obtenerOpcionesModelos = (marcaSeleccionada: string) => {
+  const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
+  if (marca) {
+    return marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
+  }
+  return '<option value="" disabled>No hay modelos disponibles</option>'; // Si no hay modelos
+};
 
     Swal.fire({
       title: 'Agregar Vehículo',
@@ -65,8 +113,14 @@ const Vehiculos = () => {
         <option value="" disabled selected>Seleccione una marca</option>
         ${opcionesMarcas}
         </select>
-        <input type="text" id="model" class="swal2-input" placeholder="Modelo">
-        <input type="number" id="year" class="swal2-input" placeholder="Año">
+    <select id="model" class="swal2-select" disabled>
+      <option value="" disabled selected>Seleccione una marca primero</option>
+    </select>
+
+    <select id="year" class="swal2-select">
+    <option value="" disabled selected>Selecciona un año</opcion>
+      ${obtenerOpcionesAnios()}
+      </select>
       `,
       confirmButtonText: 'Agregar',
       cancelButtonText: 'Cancelar',
@@ -100,8 +154,26 @@ const Vehiculos = () => {
         }
 
         return { id, brand, model, year };
+      },
+      didOpen: () => {
+        const brandSelect = document.getElementById('brand') as HTMLSelectElement;
+        const modelSelect = document.getElementById('model') as HTMLSelectElement;
+
+        brandSelect.addEventListener('change', function () {
+          const marcaSeleccionada = brandSelect.value;
+          const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
+          
+          if (marca) {
+            const opcionesModelos = marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
+            modelSelect.innerHTML = opcionesModelos;
+            modelSelect.disabled = false;
+          } else {
+            modelSelect.disabled = true;
+            modelSelect.innerHTML = '<option value="" disabled selected>Seleccione una marca primero</option>';
+          }
+        });
       }
-    }).then(async (result) => {
+            }).then(async (result) => {
       if (result.isConfirmed && result.value) {
         const vehiculo = {
           id: result.value.id,
