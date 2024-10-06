@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useAuth } from '../context/AuthContext'; 
+import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 // Definimos el tema oscuro con Material UI
@@ -174,7 +174,7 @@ const Login: React.FC = () => {
               Iniciar Sesión
             </Button>
 
-            <Typography variant="body2" align="center" sx={{ mt: 1, color: '#aaa' }}>
+            {/* <Typography variant="body2" align="center" sx={{ mt: 1, color: '#aaa' }}>
               ¿No tienes cuenta?{' '}
               <a
                 href="#"
@@ -186,6 +186,7 @@ const Login: React.FC = () => {
                 Regístrate
               </a>
             </Typography>
+            */}
           </Box>
         </Paper>
       </Container>
