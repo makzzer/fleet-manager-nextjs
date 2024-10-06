@@ -55,7 +55,7 @@ const Proveedores = () => {
         const phone_number = phone_numberElement?.value;
         const address = addressElement?.value;
 
-        const nameRegex = /^[A-Za-z\s]+$/;
+        const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const cuitRegex = /^\d{2}-\d{8}-\d{1}$/;
         const telefonoRegex = /^(?=(?:\D*\d){10})(?:\d+-?){0,2}\d+$/;
@@ -86,25 +86,9 @@ const Proveedores = () => {
           return null;
         }
 
-        // validacion de cuit ya existente en bd, para probar..
-        // try {
-        //   console.log("haciendo get a BD");
-        //   const response = await axios.get(`https://fleet-manager-gzui.onrender.com/api/providers?cuit=${cuit}`);
-        //   if (response.data.exists) {
-        //     console.log("cuit repetido encontrado");
-        //     Swal.showValidationMessage("El proveedor ya existe en nuestra base de datos");
-        //     return null;
-        //   }
-        // } catch (error) {
-        //   console.error("Error al validar CUIT", error);
-        //   Swal.showValidationMessage("Hubo un error al validar el CUIT");
-        //   return null;
-        // }
-        // console.log("continuando con la creacion de proveedor");
-
         return { name, email, cuit, phone_number, address };
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed && result.value) {
         const proveedor = {
           id: result.value.id,

@@ -27,6 +27,7 @@ const Stock = () => {
   const { productos, fetchProductos, createProducto } = useProducto();
   const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
   const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
+  const [loadMoreCount, setLoadMoreCount] = useState(5); // Para cargar de a 4
 
   // const [localProducts, setLocalProducts] = useState(productos);
 
@@ -57,6 +58,14 @@ const Stock = () => {
       );
     }
   }, [searchTerm, productos]);
+
+  useEffect(() => {
+    setFilteredProductos(productos.slice(0, loadMoreCount)); // Mostrar los primeros 4 proveedores
+  }, [productos, loadMoreCount]);
+
+  const handleLoadMore = () => {
+    setLoadMoreCount(loadMoreCount + 5); // Cargar 6 proveedores más
+  };
 
   if (isLoading) {
     return <div>Cargando...</div>;
@@ -234,6 +243,17 @@ const Stock = () => {
           </div>
         )}
       </div>
+
+      {filteredProductos.length < productos.length && (
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={handleLoadMore}
+              className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Ver más
+            </button>
+          </div>
+        )}
     </ProtectedRoute>
   );
 };
