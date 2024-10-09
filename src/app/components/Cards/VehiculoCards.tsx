@@ -234,7 +234,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           title="Detalle"
           onClick={() => handleViewVehiculo(vehiculo.id)}
           disabled={vehiculo.status !== "AVAILABLE"}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50 flex items-center justify-center w-full"
+          className="bg-blue-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50 flex items-center justify-center w-full"
         >
           <FiEye className="w-5 h-5" />  {/* Eliminamos el 'mr-2' para centrar */}
         </button>
@@ -243,7 +243,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           title="Editar"
           onClick={handleEdit}
           disabled={vehiculo.status !== "AVAILABLE"}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50 flex items-center justify-center w-full"
+          className="bg-yellow-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50 flex items-center justify-center w-full"
         >
           <FiEdit className="w-5 h-5" />  {/* Eliminamos el 'mr-2' para centrar */}
         </button>
@@ -260,7 +260,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           <button
             title="Habilitar"
             onClick={handleDisableVehicle}
-            className="font-bold py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 flex items-center justify-center w-full"
+            className="font-bold py-2 px-4 rounded bg-green-500 hover:bg-blue-600 flex items-center justify-center w-full"
           >
             <FiCheckCircle className="w-5 h-5" />  {/* Eliminamos el 'mr-2' para centrar */}
           </button>
