@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from "react";
-import { FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy } from "react-icons/fa";
+import { FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy,FaCalendarAlt } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md"
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
@@ -93,6 +93,18 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                   </span>
                 </div>
               </Link>
+
+              {hasModuleAccess("RESERVES") && (
+              <Link href="/reservas" onClick={handleLinkClick}>
+                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                  <FaCalendarAlt />
+                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                    Reservas
+                  </span>
+                </div>
+              </Link>)}
+
+
 
               {hasModuleAccess("VEHICLES") && (
                 <Link href="/vehiculos" onClick={handleLinkClick}>

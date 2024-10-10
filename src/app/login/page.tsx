@@ -73,6 +73,7 @@ const Login: React.FC = () => {
   };
 
   return (
+    <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
     <ThemeProvider theme={theme}>
       <Container
         maxWidth="xs"
@@ -191,6 +192,7 @@ const Login: React.FC = () => {
         </Paper>
       </Container>
     </ThemeProvider>
+    </div>
   );
 };
 

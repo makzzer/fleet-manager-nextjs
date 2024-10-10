@@ -63,7 +63,7 @@ const Dashboard = () => {
 
   return (
     <ProtectedRoute>
-      <div className="p-6 bg-gray-900 min-h-screen text-white">
+      <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
         <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">
           Dashboard
         </h1>

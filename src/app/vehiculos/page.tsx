@@ -249,7 +249,7 @@ const Vehiculos = () => {
   };
   return (
     <ProtectedRoute requiredModule="VEHICLES">
-      <div className="p-6 bg-gray-900 min-h-screen text-white">
+      <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
             Gestión de Vehículos

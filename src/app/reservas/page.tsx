@@ -1,71 +1,36 @@
-'use client'
-import { useState } from 'react';
+"use client";
+import { useRouter } from "next/navigation";
 
-const Reserva = () => {
-  const [vehiculo, setVehiculo] = useState('');
-  const [fecha, setFecha] = useState('');
-  const [hora, setHora] = useState('');
-
-  const handleReserva = () => {
-    // lógica de reserva
-  };
+const Home_reservas = () => {
+  const router = useRouter();
 
   return (
-    <div className="p-6 bg-gray-900 text-white min-h-screen">
-      <h1 className="text-3xl font-bold text-blue-400 mb-6">Reservar Vehículo</h1>
+    <div className="min-h-screen flex flex-col items-center rounded-xl justify-center bg-gray-900 text-white p-4">
+      <h1 className="text-4xl font-bold mb-6">Bienvenido</h1>
+      <h2 className="text-2xl font-semibold mb-6">¿Qué deseas hacer?</h2>
 
-      <div className="mb-6">
-        <label className="block text-lg font-medium mb-2">Seleccionar Vehículo</label>
-        <select
-          value={vehiculo}
-          onChange={(e) => setVehiculo(e.target.value)}
-          className="block w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3"
+      <div className="flex flex-col space-y-4 w-full max-w-md">
+        <button
+          onClick={() => router.push("/reservar")}
+          className="text-xl w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg shadow-md transition-all"
         >
-          <option value="" disabled>Selecciona un vehículo</option>
-          <option value="vehiculo1">Vehículo 1</option>
-          <option value="vehiculo2">Vehículo 2</option>
-          {/* Más opciones */}
-        </select>
+          Reservar
+        </button>
+        <button
+          onClick={() => router.push("/reservas")}
+          className="w-full text-xl bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-lg shadow-md transition-all"
+        >
+          Mi Reserva
+        </button>
+        <button
+          onClick={() => router.push("/reservas")}
+          className="w-full text-xl bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-lg shadow-md transition-all"
+        >
+          Solicitar Asistencia
+        </button>
       </div>
-
-      <div className="flex space-x-4 mb-6">
-        <div className="w-1/2">
-          <label className="block text-lg font-medium mb-2">Fecha</label>
-          <input
-            type="date"
-            value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
-            className="block w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3"
-          />
-        </div>
-
-        <div className="w-1/2">
-          <label className="block text-lg font-medium mb-2">Hora</label>
-          <input
-            type="time"
-            value={hora}
-            onChange={(e) => setHora(e.target.value)}
-            className="block w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3"
-          />
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <label className="block text-lg font-medium mb-2">Mapa</label>
-        {/* Aquí podrías insertar el mapa interactivo */}
-        <div className="w-full h-64 bg-gray-800 rounded-lg flex items-center justify-center">
-          <p className="text-gray-400">[Mapa aquí]</p>
-        </div>
-      </div>
-
-      <button
-        onClick={handleReserva}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg w-full"
-      >
-        Reservar
-      </button>
     </div>
   );
-};
+}
 
-export default Reserva;
+export default Home_reservas;

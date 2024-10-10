@@ -189,7 +189,7 @@ const OrdenesDeCompra = () => {
 
   return (
     <ProtectedRoute requiredModule="ORDERS">
-      <div className="min-h-screen bg-gray-900 p-8">
+      <div className="min-h-screen rounded-xl bg-gray-900 p-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           <h1 className="text-3xl font-bold mb-6 text-blue-400">
             Órdenes de compra

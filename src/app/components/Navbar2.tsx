@@ -80,7 +80,7 @@ const Navbar = () => {
 
           </button>
         </div>
-        <div className="flex items-center md:absolute md:right-10">
+        <div className="flex items-center md:absolute md:pt-4 md:right-10">
           {authenticatedUser && (
             <div ref={profileMenuRef} className="relative">
               <button onClick={toggleProfileMenu} className="focus:outline-none">
