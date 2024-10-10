@@ -61,7 +61,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-900 text-white border-b-2 min-h-[80px] border-gray-800 p-4 sticky z-30 top-0 left-0 w-full shadow-md ">
+    <nav className="bg-gray-900 text-white border-b-2 min-h-[80px] border-gray-800 p-4 sticky z-30 top-0 left-0 w-full shadow-md">
       <div className="container  flex justify-between items-center">
         <div className="hidden md:block">
           <div className="flex space-x-4 mt-2 items-center">
@@ -71,7 +71,7 @@ const Navbar = () => {
 
           </div>
         </div>
-        <div className="ms-auto md:hidden">
+        <div className="ml-auto md:hidden">
           <button
             onClick={toggleMenu}
             className="text-white focus:outline-none"
@@ -80,7 +80,7 @@ const Navbar = () => {
 
           </button>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center md:absolute md:right-10">
           {authenticatedUser && (
             <div ref={profileMenuRef} className="relative">
               <button onClick={toggleProfileMenu} className="focus:outline-none">
