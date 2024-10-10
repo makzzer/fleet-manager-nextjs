@@ -63,6 +63,15 @@ const KanbanBoard = () => {
     })
   }
 
+  const updateColumn = (id: string | number, title: string ) => {
+    const newColumns = columns.map((col) => {
+      if(col.id !== id) return col;
+      return {...col, title};
+    })
+
+    setColumns(newColumns);
+  }
+
   return (
     <div className="min-h-screen w-full m-auto flex items-center overflow-x-auto overflow-y-hidden">
       <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
@@ -70,6 +79,7 @@ const KanbanBoard = () => {
           <SortableContext items={columnsId}>
             {columns.map((col) => (
               <ColumnContainer
+              updateColumn={updateColumn}
                 key={col.id}
                 column={col}
                 deleteColumn={deleteColumn}
@@ -82,6 +92,7 @@ const KanbanBoard = () => {
         <DragOverlay>
           {activeColumn && (
             <ColumnContainer
+            updateColumn={updateColumn}
               column={activeColumn}
               deleteColumn={deleteColumn}
             />
