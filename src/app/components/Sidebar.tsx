@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from "react";
-import { FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy,FaCalendarAlt } from "react-icons/fa";
+import { FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy, FaCalendarAlt, FaTools } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md"
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
@@ -112,6 +112,16 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                     <FaCar />
                     <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
                       Vehículos
+                    </span>
+                  </div>
+                </Link>)}
+
+                {hasModuleAccess("CONTROLS") && (
+                <Link href="/controles" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <FaTools />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Controles
                     </span>
                   </div>
                 </Link>)}
