@@ -1,11 +1,19 @@
 import { useSortable } from "@dnd-kit/sortable";
-import { useState } from "react";
 import { CSS } from "@dnd-kit/utilities"
+
+interface Control {
+  asunto: string;
+  tipo: string;
+  vehiculo: string;
+  fecha: string;
+  responsable: string;
+  prioridad: string;
+} 
 
 interface Task {
   id: string | number;
   columnId: string | number;
-  content: string;
+  content: Control;
 }
 
 interface TaskCardProps {
@@ -13,6 +21,8 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
+  const control: Control = task.content;
+
   const {
     isDragging,
     setNodeRef,
@@ -46,8 +56,25 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
     style={style}
     {...attributes}
     {...listeners}
-    className="bg-gray-900 p-4 h-[100px] min-h-[100px] items-center flex text-left rounded-xl hover:ring-2 hover:ring-inset hover:ring-blue-500 cursor-pointer justify-between relative">
-      {task.content}
+    className="bg-gray-900 p-4 flex flex-col text-left rounded-xl hover:ring-2 hover:ring-inset hover:ring-blue-500 cursor-pointer justify-between relative gap-4">
+      <div className="flex justify-between">
+        <p className="text-md font-bold">
+        {control.asunto}
+        </p>
+        {control.prioridad}
+      </div>
+      <div>
+        <div>
+        {control.tipo}
+        </div>
+        {control.vehiculo}
+      </div>
+      <div className="flex justify-between">
+        <p>
+        {control.fecha}
+        </p>
+        {control.responsable}
+      </div>
     </div>
   );
 };

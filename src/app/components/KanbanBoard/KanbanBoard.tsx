@@ -1,19 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
   DragOverlay,
   DragStartEvent,
-  DragEndEvent,
   useSensors,
   PointerSensor,
   useSensor,
   DragOverEvent,
 } from "@dnd-kit/core";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
+
+interface Control {
+  asunto: string;
+  tipo: string;
+  vehiculo: string;
+  fecha: string;
+  responsable: string;
+  prioridad: string;
+} 
 
 interface Column {
   id: string | number;
@@ -23,26 +31,50 @@ interface Column {
 interface Task {
   id: string | number;
   columnId: string | number;
-  content: string;
+  content: Control;
 }
 
 const KanbanBoard = () => {
-  const [columns, setColumns] = useState<Column[]>([
+  const controls: Control[] = [
+    {
+      asunto: "Pinchadura de rueda",
+      tipo: "CORRECTIVO",
+      vehiculo: "AAA-BBB",
+      fecha: "2024-11-24",
+      responsable: "Pepito",
+      prioridad: "ALTA"
+    },
+    {
+      asunto: "Mantenimiento",
+      tipo: "PREVENTIVO",
+      vehiculo: "AAA-CCC",
+      fecha: "2024-11-23",
+      responsable: "Pepita",
+      prioridad: "MEDIA"
+    },
+    {
+      asunto: "Control de caja de cambios",
+      tipo: "PREDICTIVO",
+      vehiculo: "AA-123-BC",
+      fecha: "2024-10-23",
+      responsable: "Pepe",
+      prioridad: "BAJA"
+    },
+  ];
+
+  const [columns] = useState<Column[]>([
     { id: "todo", title: "Por hacer" },
     { id: "inProgress", title: "En proceso" },
     { id: "done", title: "Terminado" },
   ]);
   
   const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, columnId: "todo", content: "Task 1: Preparar el informe" },
-    { id: 2, columnId: "todo", content: "Task 2: Diseñar el dashboard" },
-    { id: 3, columnId: "inProgress", content: "Task 3: Implementar el backend" },
-    { id: 4, columnId: "done", content: "Task 4: Revisar el diseño UI" },
+    { id: 1, columnId: "todo", content: controls[0] },
+    { id: 2, columnId: "todo", content: controls[1] },
+    { id: 3, columnId: "inProgress", content: controls[2] },
   ]);
 
-  const columnsId = columns.map((col) => col.id);
 
-  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -78,9 +110,12 @@ const KanbanBoard = () => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
         const overIndex = tasks.findIndex((t) => t.id === overId);
 
-        tasks[activeIndex].columnId = tasks[overIndex].columnId;
+        if (activeIndex !== overIndex && tasks[activeIndex].columnId === tasks[overIndex].columnId) { // Solo reordena si las posiciones son diferentes.
+          tasks[activeIndex].columnId = tasks[overIndex].columnId;
+          return arrayMove(tasks, activeIndex, overIndex);
+        }
 
-        return arrayMove(tasks, activeIndex, overIndex);
+        return tasks;
       });
     }
 
@@ -90,12 +125,18 @@ const KanbanBoard = () => {
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
 
-        tasks[activeIndex].columnId = overId;
-
-        return arrayMove(tasks, activeIndex, activeIndex);
+        if (tasks[activeIndex].columnId !== overId) {
+          tasks[activeIndex].columnId = overId;
+        }
+  
+        return tasks;
       });
     }
     
+  }
+
+  const onDragEnd = () => {
+    setActiveTask(null);
   }
 
   return (
@@ -104,6 +145,7 @@ const KanbanBoard = () => {
         sensors={sensors}
         onDragStart={onDragStart}
         onDragOver={onDragOver}
+        onDragEnd={onDragEnd}
       >
         <div className="m-auto flex gap-4">
             {columns.map((col) => (
@@ -116,12 +158,6 @@ const KanbanBoard = () => {
         </div>
 
         <DragOverlay>
-          {activeColumn && (
-            <ColumnContainer
-              column={activeColumn}
-              tasks={tasks.filter((task) => task.columnId === activeColumn.id)}
-            />
-          )}
           {activeTask && (
             <TaskCard
               task={activeTask}

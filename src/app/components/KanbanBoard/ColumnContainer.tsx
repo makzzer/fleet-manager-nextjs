@@ -1,7 +1,15 @@
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import TaskCard from "./TaskCard";
+
+interface Control {
+  asunto: string;
+  tipo: string;
+  vehiculo: string;
+  fecha: string;
+  responsable: string;
+  prioridad: string;
+} 
 
 interface Column {
   id: string | number;
@@ -11,7 +19,7 @@ interface Column {
 interface Task {
   id: string | number;
   columnId: string | number;
-  content: string;
+  content: Control;
 }
 
 
@@ -24,51 +32,26 @@ const ColumnContainer: React.FC<ColumnContainerProps> = ({
   column,
   tasks,
 }) => {
-  const [editMode, setEditMode] = useState(false);
   const tasksIds = useMemo(() => {
     return tasks.map((task) => task.id);
   }, [tasks]);
 
   const {
-    isDragging,
     setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
   } = useSortable({
     id: column.id,
     data: {
       type: "Column",
       column,
     },
-    disabled: editMode,
   });
-
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  };
-
-  if (isDragging) {
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        className="bg-gray-700 flex flex-col w-[350px] h-[500px] max-h-[500px] gap-4 border-blue-500 opacity-40 border-2"
-      ></div>
-    );
-  }
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className="bg-gray-700 flex flex-col w-[350px] h-[500px] max-h-[500px] gap-4"
     >
       <div
-        {...attributes}
-        {...listeners}
         className="flex items-center justify-between py-4 px-4 bg-blue-500"
       >
         <div className="flex gap-2">
