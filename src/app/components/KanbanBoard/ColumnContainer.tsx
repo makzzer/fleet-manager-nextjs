@@ -1,24 +1,43 @@
-import { useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import TaskCard from "./TaskCard";
 
 interface Column {
   id: string | number;
   title: string;
 }
 
+interface Task {
+  id: string | number;
+  columnId: string | number;
+  content: string;
+}
+
+
 interface ColumnContainerProps {
   column: Column;
   deleteColumn: (id: string | number) => void;
   updateColumn: (id: string | number, title: string) => void;
+  createTask: (columnId: string | number) => void;
+  deleteTask: (id: string | number) => void;
+  updateTask: (id: string | number, content: string) => void;
+  tasks: Task[];
 }
 
 const ColumnContainer: React.FC<ColumnContainerProps> = ({
   column,
   deleteColumn,
   updateColumn,
+  createTask,
+  tasks,
+  deleteTask,
+  updateTask,
 }) => {
   const [editMode, setEditMode] = useState(false);
+  const tasksIds = useMemo(() => {
+    return tasks.map((task) => task.id);
+  }, [tasks]);
 
   const {
     isDragging,
@@ -84,8 +103,18 @@ const ColumnContainer: React.FC<ColumnContainerProps> = ({
         </div>
         <button onClick={() => deleteColumn(column.id)}>Delete</button>
       </div>
-      <div className="flex flex-grow px-4 py-4">Content</div>
-      <div className="px-4 py-4">Footer</div>
+      <div className="flex flex-grow flex-col gap-4 overflow-x-hidden overflow-y-auto px-4 py-4">
+        <SortableContext items={tasksIds}>
+        {tasks.map((task) => (
+          <TaskCard key={task.id} task={task} deleteTask={deleteTask} updateTask={updateTask}/>
+        ))}
+        </SortableContext>
+      </div>
+      <button 
+      className="px-4 py-4 flex gap-2 items-center justify-center bg-blue-500"
+      onClick={() => createTask(column.id)}>
+            Add task
+      </button>
     </div>
   );
 };
