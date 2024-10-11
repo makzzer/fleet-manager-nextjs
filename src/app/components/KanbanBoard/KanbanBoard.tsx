@@ -140,14 +140,14 @@ const KanbanBoard = () => {
   }
 
   return (
-    <div className="min-h-screen w-full m-auto flex items-center overflow-x-auto overflow-y-hidden">
+    <div className="min-h-screen w-full overflow-x-auto overflow-y-hidden">
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
         onDragOver={onDragOver}
         onDragEnd={onDragEnd}
       >
-        <div className="m-auto flex gap-4">
+        <div className="flex gap-4">
             {columns.map((col) => (
               <ColumnContainer
                 key={col.id}
