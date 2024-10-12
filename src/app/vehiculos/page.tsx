@@ -72,58 +72,58 @@ const Vehiculos = () => {
 
   const handleAgregarVehiculo = () => {
     // Lista de marcas de vehículos
-  //const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
+    //const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
 
-  const camiones = {
-    marcas: [
-      {
-        marca: 'Toyota',
-        modelos: ['Hino 300', 'Dyna', 'Toyotace']
-      },
-      {
-        marca: 'Ford',
-        modelos: ['F-750', 'Cargo 1723', 'Transit Chasis']
-      },
-      {
-        marca: 'Chevrolet',
-        modelos: ['N-Series', 'T-Series', 'C4500 Kodiak']
-      },
-      {
-        marca: 'Volkswagen',
-        modelos: ['Constellation 24.280', 'Delivery 9.170', 'Worker 17.220']
-      },
-      {
-        marca: 'Mercedes-Benz',
-        modelos: ['Atego 1726', 'Accelo 1016', 'Actros 2545']
+    const camiones = {
+      marcas: [
+        {
+          marca: 'Toyota',
+          modelos: ['Hino 300', 'Dyna', 'Toyotace']
+        },
+        {
+          marca: 'Ford',
+          modelos: ['F-750', 'Cargo 1723', 'Transit Chasis']
+        },
+        {
+          marca: 'Chevrolet',
+          modelos: ['N-Series', 'T-Series', 'C4500 Kodiak']
+        },
+        {
+          marca: 'Volkswagen',
+          modelos: ['Constellation 24.280', 'Delivery 9.170', 'Worker 17.220']
+        },
+        {
+          marca: 'Mercedes-Benz',
+          modelos: ['Atego 1726', 'Accelo 1016', 'Actros 2545']
+        }
+      ]
+    };
+
+
+    const obtenerOpcionesAnios = () => {
+      const currentYear = new Date().getFullYear();
+      const startYear = currentYear - 30;
+      let opciones = '';
+
+      for (let i = currentYear; i >= startYear; i--) {
+        opciones += `<option value="${i}">${i}</option>`;
       }
-    ]
-  };
+
+      return opciones;
+    };
 
 
-  const obtenerOpcionesAnios = () => {
-    const currentYear = new Date().getFullYear();
-    const startYear = currentYear - 30;
-    let opciones = '';
+    // Construir las opciones del select
+    const opcionesMarcas = camiones.marcas.map(marca => `<option value="${marca.marca}">${marca.marca}</option>`).join('');
 
-    for (let i = currentYear; i >= startYear; i--) {
-      opciones += `<option value="${i}">${i}</option>`;
-    }
-
-    return opciones;
-  };
-
-
-   // Construir las opciones del select
-   const opcionesMarcas = camiones.marcas.map(marca => `<option value="${marca.marca}">${marca.marca}</option>`).join('');
-
-// Función que construye las opciones de modelos para una marca específica
-// const obtenerOpcionesModelos = (marcaSeleccionada: string) => {
-//   const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
-//   if (marca) {
-//     return marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
-//   }
-//   return '<option value="" disabled>No hay modelos disponibles</option>'; // Si no hay modelos
-// };
+    // Función que construye las opciones de modelos para una marca específica
+    // const obtenerOpcionesModelos = (marcaSeleccionada: string) => {
+    //   const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
+    //   if (marca) {
+    //     return marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
+    //   }
+    //   return '<option value="" disabled>No hay modelos disponibles</option>'; // Si no hay modelos
+    // };
 
     Swal.fire({
       title: 'Agregar Vehículo',
@@ -146,14 +146,30 @@ const Vehiculos = () => {
         <option value="" disabled selected>Seleccione una marca</option>
         ${opcionesMarcas}
         </select>
-    <select id="model" class="swal2-select" disabled>
-      <option value="" disabled selected>Seleccione una marca primero</option>
-    </select>
-
-    <select id="year" class="swal2-select">
-    <option value="" disabled selected>Selecciona un año</opcion>
-      ${obtenerOpcionesAnios()}
-      </select>
+        <select id="model" class="swal2-select" disabled>
+          <option value="" disabled selected>Seleccione una marca primero</option>
+        </select>
+        <select id="year" class="swal2-select">
+        <option value="" disabled selected>Selecciona un año</opcion>
+          ${obtenerOpcionesAnios()}
+        </select>
+        <select id="combustible" class="swal2-select">
+          <option value="" selected>Seleccione tipo de combustible</option>
+          <option value="Nafta">Nafta</option>
+          <option value="Gasoil">Gasoil</option>
+        </select>
+        <input type="number" id="consumo" class="swal2-input" placeholder="Consumo(Lts cada 100 km)" oninput="this.value">
+        <select id="tipoVehiculo" class="swal2-select">
+          <option value="" selected>Seleccione tipo de vehiculo</option>
+          <option value="Auto">Auto</option>
+          <option value="Camion">Camión</option>
+          <option value="Utilitario">Utilitario</option>
+        </select>
+        <input type="number" id="cargaMax" class="swal2-input" placeholder="Carga máxima(Ton)" oninput="this.value">
+        <label style="display: block; margin-top: 10px;">
+        <input type="checkbox" id="acoplado" />
+         Tiene acoplado
+        </label>
       `,
       confirmButtonText: 'Agregar',
       cancelButtonText: 'Cancelar',
@@ -164,19 +180,29 @@ const Vehiculos = () => {
         const brandElement = document.getElementById('brand') as HTMLInputElement;
         const modelElement = document.getElementById('model') as HTMLInputElement;
         const yearElement = document.getElementById('year') as HTMLInputElement;
-
+        const combustibleElement = document.getElementById('combustible') as HTMLInputElement;
+        const consumoElement = document.getElementById('consumo') as HTMLInputElement;
+        const tipoVehiculoElement = document.getElementById('tipoVehiculo') as HTMLInputElement;
+        const cargaMaxElement = document.getElementById('cargaMax') as HTMLInputElement;
+        const acopladoElement = document.getElementById('acoplado') as HTMLInputElement;
+        
         const id = idElement?.value;
         const brand = brandElement?.value;
         const model = modelElement?.value;
         const year = yearElement?.value;
+        const combustible = combustibleElement?.value;
+        const consumo = consumoElement?.value;
+        const tipoVehiculo = tipoVehiculoElement?.value;
+        const cargaMax = cargaMaxElement?.value;
+        const acoplado = acopladoElement?.value;
 
-         // Validación de la patente
+        // Validación de la patente
         const validarPatente = (patente: string) => {
           const regex = /^(?:[A-Z]{3}-\d{3}|[A-Z]{2}-\d{3}-[A-Z]{2})$/;
-        return regex.test(patente);
+          return regex.test(patente);
         }
 
-        if (!id || !brand || !model || !year) {
+        if (!id || !brand || !model || !year || !combustible || !consumo || !tipoVehiculo) {
           Swal.showValidationMessage('Completa todos los campos');
           return null;
         }
@@ -186,7 +212,7 @@ const Vehiculos = () => {
           return null;
         }
 
-        return { id, brand, model, year };
+        return { id, brand, model, year, combustible, consumo, tipoVehiculo, cargaMax, acoplado };
       },
       didOpen: () => {
         const brandSelect = document.getElementById('brand') as HTMLSelectElement;
@@ -195,7 +221,7 @@ const Vehiculos = () => {
         brandSelect.addEventListener('change', function () {
           const marcaSeleccionada = brandSelect.value;
           const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
-          
+
           if (marca) {
             const opcionesModelos = marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
             modelSelect.innerHTML = opcionesModelos;
@@ -206,7 +232,7 @@ const Vehiculos = () => {
           }
         });
       }
-            }).then(async (result) => {
+    }).then(async (result) => {
       if (result.isConfirmed && result.value) {
         const vehiculo = {
           id: result.value.id,
@@ -218,6 +244,11 @@ const Vehiculos = () => {
             "latitude": -34.5347879,
             "longitude": -58.7133719
           },
+          fuel_type : result.value.combustible,
+          fuel_comsumption : result.value.consumo,
+          type : result.value.tipoVehiculo,
+          max_load : result.value.cargaMax,
+          has_trailer : result.value.acoplado,
         };
 
         const { resultado, mensaje } = await createVehiculo(vehiculo);

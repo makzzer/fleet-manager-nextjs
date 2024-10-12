@@ -26,15 +26,18 @@ interface Vehiculo {
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
-  type: string;
-  fuel: string;
+  fuel_type : string,
+  fuel_comsumption : number,
+  type : string,
+  max_load : number,
+  has_trailer : boolean,
 }
 
 interface VehiculoContextProps {
   vehiculos: Vehiculo[];
   fetchVehiculos: () => void;
   createVehiculo: (
-    vehiculo: Omit<Vehiculo, "date_created" | "date_updated" | "type" | "fuel" >
+    vehiculo: Omit<Vehiculo, "date_created" | "date_updated" >
   ) => Promise<{ resultado: boolean, mensaje?: string }>;
   modifyVehiculo: (
     vehiculoEditado: Omit<Vehiculo, "date_created" | "date_updated">
@@ -93,8 +96,11 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
             },
             date_created: item.date_created,
             date_updated: item.date_updated,
-            type: getRandomType(),
-            fuel: getRandomFuel(),
+            type: item.type,
+            fuel_type : item.fuel_type,
+            fuel_comsumption : item.fuel_comsumption,
+            max_load : item.max_load,
+            has_trailer : item.has_trailer,
           })
         );
 
@@ -111,7 +117,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const createVehiculo = async (
-    vehiculo: Omit<Vehiculo, "date_created" | "date_updated" | "type" | "fuel">
+    vehiculo: Omit<Vehiculo, "date_created" | "date_updated">
   ): Promise<{ resultado: boolean, mensaje?: string}> => {
     try {
       await axios.post(apiVehiculosBackend, vehiculo);
