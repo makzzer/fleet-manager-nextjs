@@ -11,8 +11,9 @@ interface Control {
   tipo: string;
   vehiculo: string;
   fecha: string;
-  responsable: string;
+  responsable: string | null;
   prioridad: string;
+  descripcion: string;
 }
 
 interface Task {

@@ -20,8 +20,9 @@ interface Control {
   tipo: string;
   vehiculo: string;
   fecha: string;
-  responsable: string;
+  responsable: string | null;
   prioridad: string;
+  descripcion: string;
 }
 
 interface Column {
@@ -39,6 +40,7 @@ const KanbanBoard = () => {
   const controls: Control[] = [
     {
       asunto: "Pinchadura de rueda",
+      descripcion: "Pasó algo...",
       tipo: "CORRECTIVO",
       vehiculo: "AAA-BBB",
       fecha: "2024-11-24",
@@ -47,6 +49,7 @@ const KanbanBoard = () => {
     },
     {
       asunto: "Mantenimiento",
+      descripcion: "Pasó algo...",
       tipo: "PREVENTIVO",
       vehiculo: "AAA-CCC",
       fecha: "2024-11-23",
@@ -55,6 +58,7 @@ const KanbanBoard = () => {
     },
     {
       asunto: "Control de caja de cambios",
+      descripcion: "Pasó algo...",
       tipo: "PREDICTIVO",
       vehiculo: "AA-123-BC",
       fecha: "2024-10-23",
@@ -132,24 +136,25 @@ const KanbanBoard = () => {
     });
   
     //Acá se van a implementar forms perosnalizados dependiendo de que control se quiera crear
-    if (selectedTaskType) {
+    if (selectedTaskType === 'CORRECTIVO') {
       const { value: formValues } = await Swal.fire({
-        title: `Crear control ${selectedTaskType}`,
+        title: `Crear control Correctivo`,
+        background: 'rgb(55 65 81)',
+        color: 'white',
         html: `
-          <input id="asunto" class="swal2-input" placeholder="Asunto">
-          <input id="vehiculo" class="swal2-input" placeholder="Vehículo">
-          <input id="fecha" class="swal2-input" type="date" placeholder="Fecha">
-          <input id="responsable" class="swal2-input" placeholder="Responsable">
-          <input id="prioridad" class="swal2-input" placeholder="Prioridad (ALTA, MEDIA, BAJA)">
+            <input id="asunto" class="swal2-input" placeholder="Asunto">
+            <input id="vehiculo" class="swal2-input" placeholder="Vehículo">
+            <input id="descripcion" class="swal2-input" placeholder="Descripción">
         `,
         focusConfirm: false,
         preConfirm: () => {
           return {
             asunto: (document.getElementById('asunto') as HTMLInputElement).value,
+            descripcion: (document.getElementById('descripcion') as HTMLInputElement).value,
             vehiculo: (document.getElementById('vehiculo') as HTMLInputElement).value,
-            fecha: (document.getElementById('fecha') as HTMLInputElement).value,
-            responsable: (document.getElementById('responsable') as HTMLInputElement).value,
-            prioridad: (document.getElementById('prioridad') as HTMLInputElement).value,
+            fecha: new Date().toLocaleString(),
+            responsable: null,
+            prioridad: "ALTA",
             tipo: selectedTaskType
           };
         }
@@ -163,10 +168,88 @@ const KanbanBoard = () => {
         };
   
         setTasks((prevTasks) => [...prevTasks, newTask]);
-        Swal.fire('¡Control creado!', '', 'success');
+        Swal.fire('¡Control correctivo creado!', '', 'success');
       }
     }
-  };
+  
+    else if (selectedTaskType === 'PREVENTIVO') {
+      const { value: formValues } = await Swal.fire({
+        title: `Crear control Preventivo`,
+        background: 'rgb(55 65 81)',
+        color: 'white',
+        html: `
+            <input id="asunto" class="swal2-input" placeholder="Asunto">
+            <input id="vehiculo" class="swal2-input" placeholder="Vehículo">
+            <input id="descripcion" class="swal2-input" placeholder="Descripción">
+        `,
+        focusConfirm: false,
+        preConfirm: () => {
+          return {
+            asunto: (document.getElementById('asunto') as HTMLInputElement).value,
+            descripcion: (document.getElementById('descripcion') as HTMLInputElement).value,
+            vehiculo: (document.getElementById('vehiculo') as HTMLInputElement).value,
+            fecha: new Date().toLocaleString(),
+            responsable: null,
+            prioridad: "MEDIA",
+            tipo: selectedTaskType
+          };
+        }
+      });
+
+    if (formValues) {
+      const newTask: Task = {
+        id: Date.now().toString(),
+        columnId: 'todo',
+        content: formValues,
+      };
+
+      setTasks((prevTasks) => [...prevTasks, newTask]);
+      Swal.fire('¡Control preventivo creado!', '', 'success');
+    }
+  
+  }
+  else {
+    const { value: formValues } = await Swal.fire({
+      title: `Crear control Predictivo`,
+      background: 'rgb(55 65 81)',
+      color: 'white',
+      html: `
+          <input id="asunto" class="swal2-input" placeholder="Asunto">
+          <input id="vehiculo-marca" class="swal2-input" placeholder="Marca de vehiculo">
+          <input id="vehiculo-modelo" class="swal2-input" placeholder="Modelo de vehiculo">
+          <input id="vehiculo-anio" class="swal2-input" placeholder="Año de vehiculo">
+          <input id="descripcion" class="swal2-input" placeholder="Descripción">
+      `,
+      focusConfirm: false,
+      preConfirm: () => {
+        const vehiculoMarca = (document.getElementById('vehiculo-marca') as HTMLInputElement).value;
+        const vehiculoModelo = (document.getElementById('vehiculo-modelo') as HTMLInputElement).value;
+        const vehiculoAnio = (document.getElementById('vehiculo-anio') as HTMLInputElement).value;
+        return {
+          asunto: (document.getElementById('asunto') as HTMLInputElement).value,
+          descripcion: (document.getElementById('descripcion') as HTMLInputElement).value,
+          vehiculo: `${vehiculoMarca} ${vehiculoModelo} ${vehiculoAnio}`,
+          fecha: new Date().toLocaleString(),
+          responsable: null,
+          prioridad: "BAJA",
+          tipo: selectedTaskType
+        };
+      }
+    });
+
+    if (formValues) {
+      const newTask: Task = {
+        id: Date.now().toString(),
+        columnId: 'todo',
+        content: formValues,
+      };
+
+      setTasks((prevTasks) => [...prevTasks, newTask]);
+      Swal.fire('¡Control predictivo creado!', '', 'success');
+    }
+  
+  }
+  }
   
   
   const sensors = useSensors(
