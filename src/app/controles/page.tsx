@@ -2,8 +2,13 @@
 
 import KanbanBoard from "../components/KanbanBoard/KanbanBoard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
+import { useControl } from "../context/ControlContext";
 
 const Controles = () => {
+  const { controls } = useControl();
+
+  console.log(controls);
+
   return (
     <ProtectedRoute>
       <div className="p-6 bg-gray-900 min-h-screen text-white rounded-lg">
