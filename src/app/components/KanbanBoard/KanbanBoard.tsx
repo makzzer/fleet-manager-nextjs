@@ -15,14 +15,43 @@ import { arrayMove } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
 import Swal from "sweetalert2";
 
+interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+interface Vehiculo {
+  id: string;
+  status: string;
+  model: string;
+  brand: string;
+  year: number;
+  coordinates: Coordinates;
+  date_created: string;
+  date_updated: string;
+}
+
+interface Operador {
+  id: string;
+  username: string;
+  full_name: string;
+  roles: string[];
+  permissions: Permissions[];
+  date_created: string;
+  date_updated: string;
+}
+
 interface Control {
-  asunto: string;
-  tipo: string;
-  vehiculo: string;
-  fecha: string;
-  responsable: string | null;
-  prioridad: string;
-  descripcion: string;
+  id: string;
+  type: string;
+  subject: string;
+  description: string;
+  vehicle: Vehiculo;
+  priority: string;
+  date_created: string;
+  date_updated: string;
+  status: string;
+  operator: Operador;
 }
 
 interface Column {
@@ -36,48 +65,22 @@ interface Task {
   content: Control;
 }
 
-const KanbanBoard = () => {
-  const controls: Control[] = [
-    {
-      asunto: "Pinchadura de rueda",
-      descripcion: "Pasó algo...",
-      tipo: "CORRECTIVO",
-      vehiculo: "AAA-BBB",
-      fecha: "2024-11-24",
-      responsable: "Pepito",
-      prioridad: "ALTA",
-    },
-    {
-      asunto: "Mantenimiento",
-      descripcion: "Pasó algo...",
-      tipo: "PREVENTIVO",
-      vehiculo: "AAA-CCC",
-      fecha: "2024-11-23",
-      responsable: "Pepita",
-      prioridad: "MEDIA",
-    },
-    {
-      asunto: "Control de caja de cambios",
-      descripcion: "Pasó algo...",
-      tipo: "PREDICTIVO",
-      vehiculo: "AA-123-BC",
-      fecha: "2024-10-23",
-      responsable: "Pepe",
-      prioridad: "BAJA",
-    },
-  ];
+interface KanbanBoardProps {
+  initialTasks: Task[];
+}
+
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks }) => {
 
   const [columns] = useState<Column[]>([
-    { id: "todo", title: "Por hacer" },
-    { id: "inProgress", title: "En proceso" },
-    { id: "done", title: "Terminado" },
+    { id: "TODO", title: "Por hacer" },
+    { id: "DOING", title: "En proceso" },
+    { id: "DONE", title: "Terminado" },
   ]);
 
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, columnId: "todo", content: controls[0] },
-    { id: 2, columnId: "todo", content: controls[1] },
-    { id: 3, columnId: "inProgress", content: controls[2] },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
+  console.log(tasks);
+  console.log(columns);
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 

@@ -45,8 +45,8 @@ interface Control {
   description: string;
   vehicle: Vehiculo;
   priority: string;
-  dateCreated: string;
-  dateUpdated: string;
+  date_created: string;
+  date_updated: string;
   status: string;
   operator: Operador;
 }
