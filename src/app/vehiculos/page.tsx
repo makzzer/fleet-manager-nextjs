@@ -50,7 +50,7 @@ const Vehiculos = () => {
 
     // Filtro por tipo de combustible
     if (fuelFilter) {
-      filtered = filtered.filter((vehiculo) => vehiculo.fuel === fuelFilter);
+      filtered = filtered.filter((vehiculo) => vehiculo.fuel_type === fuelFilter);
     }
 
     if (searchTerm) {
@@ -128,29 +128,28 @@ const Vehiculos = () => {
     Swal.fire({
       title: 'Agregar Vehículo',
       html: `
-      <style>
-        input.swal2-input, select.swal2-select {
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          padding: 10px;
-          width: 80%;
-          height: 54px;
-          margin-top: 5px;
-          margin-bottom: 10px;
-          box-sizing: border-box;
-        }
-      
-      </style>
-        <input type="text" id="id" class="swal2-input" placeholder="Patente" oninput="this.value">
+        <style>
+          input.swal2-input, select.swal2-select {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            width: 80%;
+            height: 54px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+          }
+        </style>
+        <input type="text" id="id" class="swal2-input" placeholder="Patente" oninput="this.value"/>
         <select id="brand" class="swal2-select">
-        <option value="" disabled selected>Seleccione una marca</option>
-        ${opcionesMarcas}
+          <option value="" disabled selected>Seleccione una marca</option>
+          ${opcionesMarcas}
         </select>
         <select id="model" class="swal2-select" disabled>
           <option value="" disabled selected>Seleccione una marca primero</option>
         </select>
         <select id="year" class="swal2-select">
-        <option value="" disabled selected>Selecciona un año</opcion>
+          <option value="" disabled selected>Selecciona un año</option>
           ${obtenerOpcionesAnios()}
         </select>
         <select id="combustible" class="swal2-select">
@@ -158,14 +157,14 @@ const Vehiculos = () => {
           <option value="Nafta">Nafta</option>
           <option value="Gasoil">Gasoil</option>
         </select>
-        <input type="number" id="consumo" class="swal2-input" placeholder="Consumo(Lts cada 100 km)" oninput="this.value">
+        <input type="number" id="consumo" class="swal2-input" placeholder="Consumo(Lts cada 100 km)" oninput="this.value"/>
         <select id="tipoVehiculo" class="swal2-select">
           <option value="" selected>Seleccione tipo de vehiculo</option>
           <option value="Auto">Auto</option>
           <option value="Camion">Camión</option>
           <option value="Utilitario">Utilitario</option>
         </select>
-        <input type="number" id="cargaMax" class="swal2-input" placeholder="Carga máxima(Ton)" oninput="this.value">
+        <input type="number" id="cargaMax" class="swal2-input" placeholder="Carga máxima(Ton)" oninput="this.value" />
         <label style="display: block; margin-top: 10px;">
         <input type="checkbox" id="acoplado" />
          Tiene acoplado

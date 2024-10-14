@@ -53,6 +53,26 @@ const VehiculoDinamicoPage = () => {
           <p className="mb-2">
             <strong className="text-blue-300">Año:</strong> {vehiculoData.year}
           </p>
+          <p className="mb-2">
+            <strong className="text-blue-300">Tipo: </strong>
+            {vehiculoData.type}
+          </p>
+          <p className="mb-2">
+            <strong className="text-blue-300">Tipo de combustible: </strong>
+            {vehiculoData.fuel_type}
+          </p>
+          <p className="mb-2">
+            <strong className="text-blue-300">Consumo: </strong>
+            {vehiculoData.fuel_comsumption}
+          </p>
+          <p className="mb-2">
+            <strong className="text-blue-300">Carga máxima: </strong>
+            {vehiculoData.max_load}
+          </p>
+          <p className="mb-2">
+            <strong className="text-blue-300">Acoplado: </strong>
+            {vehiculoData.has_trailer}
+          </p>
         </div>
 
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg">

@@ -1,34 +1,13 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { useVehiculo } from "@/app/context/VehiculoContext";
+import { useVehiculo, Vehiculo } from "@/app/context/VehiculoContext";
 import { FiEdit, FiEye, FiTrash, FiCheckCircle } from "react-icons/fi"; // Feather Icons (más modernos)
 import { FaCar, FaTruck, FaShip } from "react-icons/fa";
-
-interface Coordinates {
-  latitude: number;
-  longitude: number;
-}
-
-interface Vehiculo {
-  id: string;
-  status: string;
-  model: string;
-  brand: string;
-  year: number;
-  coordinates: Coordinates;
-  date_created: string;
-  date_updated: string;
-  type: string;
-  fuel: string;
-}
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
 }
-
-
-
 
 const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const router = useRouter();
@@ -61,10 +40,10 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
 
   const typeIcons = (vehiculo: Vehiculo) => {
     return vehiculo.type === 'Auto'
-    ? <FaCar className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
+    ? <FaCar className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel_type === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
     : vehiculo.type === 'Camión'
-    ? <FaTruck className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
-    : <FaShip className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
+    ? <FaTruck className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel_type === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
+    : <FaShip className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel_type === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
   }
 
   // Función para generar el rango de años
@@ -127,27 +106,95 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
       Swal.fire({
         title: "Editar vehículo",
         html: `
-          <div class="flex flex-col space-y-4">
-            <div class="flex flex-col">
-              <label for="edit-vehicle-brand" class="text-left text-gray-700 font-medium">Marca</label>
-              <select id="edit-vehicle-brand" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="" disabled>Seleccione una marca</option>
-                ${opcionesMarcas}
-              </select>
-            </div>
-            <div class="flex flex-col">
-              <label for="edit-vehicle-model" class="text-left text-gray-700 font-medium">Modelo</label>
-              <select id="edit-vehicle-model" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
-                <option value="" disabled>Seleccione una marca primero</option>
-              </select>
-            </div>
-            <div class="flex flex-col">
-              <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
-              <select id="edit-vehicle-year" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                ${opcionesAños} <!-- Opciones de años -->
-              </select>
-            </div>
+          <style>
+            .form-container {
+              width: 100%; /* Set the form to take full width */
+              max-width: 600px; /* Limit the maximum width for larger screens */
+              margin: 0 auto; /* Center the form horizontally */
+            }
+
+            input.swal2-input, select.swal2-select {
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              padding: 10px;
+              width: 100%; /* Make the input/select take full width of the container */
+              height: 54px;
+              margin-top: 5px;
+              margin-bottom: 10px;
+              margin-left: 0px;
+              margin-right: 0px;
+              box-sizing: border-box;
+            }
+            
+            .input-container {
+              display: flex;
+              align-items: center; /* Align label and input vertically */
+              /* Space between label and input */
+              justify-content: space-between; 
+            }
+
+            label {
+              margin-right: 10px; /* Space between label and input */
+              width: 50%; /* Set label width */
+            }
+            
+            input[type="checkbox"] {
+              width: 24px; /* Increase the checkbox size */
+              height: 24px; /* Increase the checkbox size */
+            }
+          </style>
+
+          <div class="form-container">
+            <div class="flex flex-col space-y-4">
+              <div class="input-container">
+                <label for="edit-vehicle-brand" class="text-left text-gray-700 font-medium">Marca</label>
+                <select id="edit-vehicle-brand" class="swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="" disabled>Seleccione una marca</option>
+                  ${opcionesMarcas}
+                </select>
+              </div>
+              <div class="input-container">
+                <label for="edit-vehicle-model" class="text-left text-gray-700 font-medium">Modelo</label>
+                <select id="edit-vehicle-model" class="swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
+                  <option value="" disabled>Seleccione una marca primero</option>
+                </select>
+              </div>
+              <div class="input-container">
+                <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
+                <select id="edit-vehicle-year" class="swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  ${opcionesAños} <!-- Opciones de años -->
+                </select>
+              </div>
+              <div class="input-container">
+                <label for="edit-vehicle-fuel_type" class="text-left text-gray-700 font-medium">Combustible</label>
+                <select id="edit-vehicle-fuel_type" class="text-left swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="Nafta">Nafta</option>
+                  <option value="Gasoil">Gasoil</option>
+                </select>  
+              </div>     
+              <div class="input-container">
+                <label for="consumo" class="text-left text-gray-700 font-medium">Consumo</label>
+                <input type="number" id="consumo" class="swal2-input" placeholder="Consumo(Lts cada 100 km)" oninput="this.value"/>  
+              </div>
+              <div class="input-container">
+                <label for="edit-vehicle-type" class="text-left text-gray-700 font-medium">Tipo de vehiculo</label>
+                <select id="edit-vehicle-type" class="swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="" selected>Seleccione tipo de vehiculo</option>
+                  <option value="Auto">Auto</option>
+                  <option value="Camion">Camión</option>
+                  <option value="Utilitario">Utilitario</option>
+                </select>  
+              </div>  
+              <div class="input-container">
+                <label for="cargaMax" class="text-left text-gray-700 font-medium">Carga max.(Ton)</label>
+                <input type="number" id="cargaMax" class="swal2-input" placeholder="Carga max.(Ton)" oninput="this.value"/>  
+              </div>
+              <div class="input-container">
+                <label for="tieneAcoplado" class="text-left text-gray-700 font-medium">Tiene acoplado</label>
+                <input type="checkbox" id="tieneAcoplado">
+              </div> 
           </div>
+
         `,
         showCancelButton: true,
         confirmButtonText: "Guardar",
@@ -156,13 +203,18 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           const brand = (document.getElementById("edit-vehicle-brand") as HTMLInputElement).value;
           const model = (document.getElementById("edit-vehicle-model") as HTMLInputElement).value;
           const year = parseInt((document.getElementById("edit-vehicle-year") as HTMLInputElement).value);
+          const fuel_type = (document.getElementById("edit-vehicle-fuel_type") as HTMLInputElement).value;
+          const fuel_comsumption = (document.getElementById("edit-vehicle-consumo") as HTMLInputElement).value;
+          const type = (document.getElementById("edit-vehicle-type") as HTMLInputElement).value;
+          const max_load = parseInt((document.getElementById("edit-vehicle-type") as HTMLInputElement).value);
+          const has_trailer = (document.getElementById("edit-vehicle-tieneAcoplado") as HTMLInputElement).value;
 
-          if (!model || !brand || year < 1900 || year > new Date().getFullYear()) {
+          if (!model || !brand || year < 1900 || year > new Date().getFullYear() || !fuel_type || !fuel_comsumption || !type || !max_load || !has_trailer) {
             Swal.showValidationMessage("Por favor, complete todos los campos correctamente.");
             return false;
           }
 
-          return { model, brand, year };
+          return { model, brand, year, fuel_type, fuel_comsumption, type, max_load, has_trailer };
         },
         didOpen: () => {
           const brandSelect = document.getElementById('edit-vehicle-brand') as HTMLSelectElement;

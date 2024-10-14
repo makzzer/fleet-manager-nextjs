@@ -17,7 +17,7 @@ interface Coordinates {
   longitude: number;
 }
 
-interface Vehiculo {
+export interface Vehiculo {
   id: string;
   status: string;
   model: string;
