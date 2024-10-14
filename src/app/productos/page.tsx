@@ -30,6 +30,9 @@ const Stock = () => {
   const [loadMoreCount, setLoadMoreCount] = useState(5); // Para cargar de a 4
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState(""); // Estado para el filtro seleccionado
+  const [isSearchEnabled, setIsSearchEnabled] = useState(false); // Estado para habilitar o deshabilitar la barra de búsqueda
+
 
   // const [localProducts, setLocalProducts] = useState(productos);
 
@@ -59,6 +62,31 @@ const Stock = () => {
 
     setFilteredProductos(filtered.slice(0, loadMoreCount));
   }, [productos, searchTerm, selectedCategory, loadMoreCount]);
+
+  useEffect(() => {
+    let filtered = productos;
+
+    if (searchTerm && selectedFilter) {
+      filtered = productos.filter((producto) => {
+        if (selectedFilter === "name") {
+          return producto.name.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (selectedFilter === "brand") {
+          return producto.brand.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (selectedFilter === "category") {
+          return producto.category.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+        return false;
+      });
+    }
+
+    setFilteredProductos(filtered);
+  }, [productos, searchTerm, selectedFilter]);
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    setSelectedFilter(selected);
+    setIsSearchEnabled(!!selected); // Habilitar la barra de búsqueda si se selecciona un filtro
+  };
 
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 5); // Cargar 6 proveedores más
@@ -209,7 +237,26 @@ const Stock = () => {
         </div>
 
         {/* Barras de busqueda */}
+        {/* <FiltrosProducto onFilter={handleFilter} categorias={categorias} /> */}
+
+        {/* Combobox para seleccionar el filtro */}
+      <div className="mb-4">
+        <select
+          value={selectedFilter}
+          onChange={handleFilterChange}
+          className="bg-gray-800 text-white p-2 rounded"
+        >
+          <option value="">Selecciona un filtro</option>
+          <option value="name">Nombre</option>
+          <option value="brand">Marca</option>
+          <option value="category">Categoría</option>
+        </select>
+      </div>
+
+      {/* Barra de búsqueda habilitada cuando se selecciona un filtro */}
+      {isSearchEnabled && (
         <FiltrosProducto onFilter={handleFilter} categorias={categorias} />
+      )}
 
         {filteredProductos && filteredProductos.length > 0 ? (
           // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
