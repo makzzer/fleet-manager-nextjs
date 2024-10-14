@@ -14,6 +14,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 // Definimos el tema oscuro con Material UI
 const theme = createTheme({
@@ -74,108 +75,108 @@ const Login: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
-    <ThemeProvider theme={theme}>
-      <Container
-        maxWidth="xs"
-        sx={{
-          display: 'flex',
-          height: '70vh',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Paper
-          elevation={10}
+      <ThemeProvider theme={theme}>
+        <Container
+          maxWidth="xs"
           sx={{
-            padding: 3,
-            width: '100%',
-            borderRadius: '12px',
+            display: 'flex',
+            height: '70vh',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          <Typography
-            variant="h5"
-            gutterBottom
-            align="center"
-            sx={{ fontWeight: 'bold' }}
+          <Paper
+            elevation={10}
+            sx={{
+              padding: 3,
+              width: '100%',
+              borderRadius: '12px',
+            }}
           >
-            Iniciar Sesión
-          </Typography>
-
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-            <TextField
-              label="Username"
-              type="text"
-              fullWidth
-              variant="outlined"
-              margin="dense"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              InputLabelProps={{
-                style: { color: '#fff' },
-              }}
-              InputProps={{
-                style: { color: '#fff' },
-              }}
-              error={!!errorMessage && !username} // Mostrar error si no hay username
-              helperText={!!errorMessage && !username ? 'El campo de usuario es obligatorio' : ''}
-            />
-
-            <TextField
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              fullWidth
-              variant="outlined"
-              margin="dense"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              InputLabelProps={{
-                style: { color: '#fff' },
-              }}
-              InputProps={{
-                style: { color: '#fff' },
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleTogglePassword}
-                      edge="end"
-                      sx={{ color: '#fff' }}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              error={!!errorMessage && !password} // Mostrar error si no hay password
-              helperText={!!errorMessage && !password ? 'El campo de contraseña es obligatorio' : ''}
-            />
-
-            {errorMessage && ( // Mostrar mensaje de error global
-              <Typography variant="body2" color="error" align="center" sx={{ mt: 1 }}>
-                {errorMessage}
-              </Typography>
-            )}
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{
-                mt: 2,
-                mb: 1,
-                padding: '10px',
-                backgroundColor: '#1a73e8',
-                '&:hover': {
-                  backgroundColor: '#1765c0',
-                },
-                borderRadius: '10px',
-              }}
+            <Typography
+              variant="h5"
+              gutterBottom
+              align="center"
+              sx={{ fontWeight: 'bold' }}
             >
               Iniciar Sesión
-            </Button>
+            </Typography>
 
-            {/* <Typography variant="body2" align="center" sx={{ mt: 1, color: '#aaa' }}>
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+              <TextField
+                label="Username"
+                type="text"
+                fullWidth
+                variant="outlined"
+                margin="dense"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                InputLabelProps={{
+                  style: { color: '#fff' },
+                }}
+                InputProps={{
+                  style: { color: '#fff' },
+                }}
+                error={!!errorMessage && !username} // Mostrar error si no hay username
+                helperText={!!errorMessage && !username ? 'El campo de usuario es obligatorio' : ''}
+              />
+
+              <TextField
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                fullWidth
+                variant="outlined"
+                margin="dense"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                InputLabelProps={{
+                  style: { color: '#fff' },
+                }}
+                InputProps={{
+                  style: { color: '#fff' },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleTogglePassword}
+                        edge="end"
+                        sx={{ color: '#fff' }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                error={!!errorMessage && !password} // Mostrar error si no hay password
+                helperText={!!errorMessage && !password ? 'El campo de contraseña es obligatorio' : ''}
+              />
+
+              {errorMessage && ( // Mostrar mensaje de error global
+                <Typography variant="body2" color="error" align="center" sx={{ mt: 1 }}>
+                  {errorMessage}
+                </Typography>
+              )}
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  mb: 1,
+                  padding: '10px',
+                  backgroundColor: '#1a73e8',
+                  '&:hover': {
+                    backgroundColor: '#1765c0',
+                  },
+                  borderRadius: '10px',
+                }}
+              >
+                Iniciar Sesión
+              </Button>
+
+              {/* <Typography variant="body2" align="center" sx={{ mt: 1, color: '#aaa' }}>
               ¿No tienes cuenta?{' '}
               <a
                 href="#"
@@ -188,10 +189,22 @@ const Login: React.FC = () => {
               </a>
             </Typography>
             */}
-          </Box>
-        </Paper>
-      </Container>
-    </ThemeProvider>
+
+              <Typography variant="body2" align="center" sx={{ mt: 1, color: '#aaa' }}>
+              ¿Olvidó su contraseña?{' '}
+              <a href="#"
+                style={{
+                  color: '#1a73e8',
+                  textDecoration: 'none',
+                }}>
+                  Recuperar
+              </a>
+            </Typography>
+
+            </Box>
+          </Paper>
+        </Container>
+      </ThemeProvider>
     </div>
   );
 };
