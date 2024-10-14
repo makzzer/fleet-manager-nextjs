@@ -6,13 +6,43 @@ import { IoPulse } from "react-icons/io5";
 import { FaRegCalendarAlt, FaUserCircle } from "react-icons/fa";
 
 
+interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+interface Vehiculo {
+  id: string;
+  status: string;
+  model: string;
+  brand: string;
+  year: number;
+  coordinates: Coordinates;
+  date_created: string;
+  date_updated: string;
+}
+
+interface Operador {
+  id: string;
+  username: string;
+  full_name: string;
+  roles: string[];
+  permissions: Permissions[];
+  date_created: string;
+  date_updated: string;
+}
+
 interface Control {
-  asunto: string;
-  tipo: string;
-  vehiculo: string;
-  fecha: string;
-  responsable: string;
-  prioridad: string;
+  id: string;
+  type: string;
+  subject: string;
+  description: string;
+  vehicle: Vehiculo;
+  priority: string;
+  date_created: string;
+  date_updated: string;
+  status: string;
+  operator: Operador;
 }
 
 interface Task {
@@ -29,11 +59,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
   const control: Control = task.content;
 
   const priorityLogo = (priority: string) => {
-    console.log(priority)
     switch (priority) {
-      case "ALTA":
+      case "HIGH":
         return <IoIosArrowUp className="w-8 h-8 text-red-500"/>
-      case "MEDIA":
+      case "MEDIUM":
         return <IoIosRemove className="w-8 h-8 text-yellow-500"/>
       default:
         return <IoIosArrowDown className="w-8 h-8 text-blue-500"/>
@@ -43,14 +72,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
   const typeLogo = (type: string) => {
     const typeStyles = "flex inline-flex items-center gap-2   px-4 py-0.5 text-gray-200 font-semibold rounded-full mb-2 "
     switch (type) {
-      case "CORRECTIVO":
+      case "CORRECTIVE":
         return (
           <div className={`${typeStyles} bg-red-500`}>
             <FiTool />
             <p>Correctivo</p>
           </div>
       );
-      case "PREVENTIVO":
+      case "PREVENTIVE":
         return (
           <div className={`${typeStyles} bg-green-500`}>
             <FiAlertCircle />
@@ -106,20 +135,20 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
       className="bg-gray-900 p-4 flex flex-col text-left rounded-xl hover:ring-2 hover:ring-inset hover:ring-blue-500 cursor-pointer justify-between relative gap-4"
     >
       <div className="flex justify-between items-center">
-        <p className="text-md font-bold">{control.asunto}</p>
-        {priorityLogo(control.prioridad)}
+        <p className="text-md font-bold">{control.subject}</p>
+        {priorityLogo(control.priority)}
       </div>
       <div>
-        {typeLogo(control.tipo)}
+        {typeLogo(control.type)}
         <div className="flex items-center gap-2 text-gray-300">
           <FiTruck />
-          <p>{control.vehiculo}</p>
+          <p>{control.vehicle.id}</p>
         </div>
       </div>
       <div className="flex justify-between items-center border-t pt-3 border-gray-700">
         <div className="flex items-center gap-2 text-gray-300">
           <FaRegCalendarAlt />
-        <p>{control.fecha}</p>
+        <p>{control.date_created.slice(0, 10)}</p>
         </div>
         <FaUserCircle className="w-5 h-5"/>
       </div>

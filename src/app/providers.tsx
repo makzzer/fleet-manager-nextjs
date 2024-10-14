@@ -7,21 +7,24 @@ import { OrdenDeCompraProvider } from "./context/OrdenesCompraContext";
 import { AuthProvider } from "./context/AuthContext";
 import { UserProvider } from "./context/UserContext";
 import { AnalyticsProvider } from "./context/AnalyticsContext";
+import { ControlProvider } from "./context/ControlContext";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <AnalyticsProvider>
-      <OrdenDeCompraProvider>
-        <ProductoProvider>
-          <ProveedorProvider>
-            <VehiculoProvider>
-              <AuthProvider>
-                <UserProvider>{children}</UserProvider>
-              </AuthProvider>
-            </VehiculoProvider>
-          </ProveedorProvider>
-        </ProductoProvider>
-      </OrdenDeCompraProvider>
+      <ControlProvider>
+        <OrdenDeCompraProvider>
+          <ProductoProvider>
+            <ProveedorProvider>
+              <VehiculoProvider>
+                <AuthProvider>
+                  <UserProvider>{children}</UserProvider>
+                </AuthProvider>
+              </VehiculoProvider>
+            </ProveedorProvider>
+          </ProductoProvider>
+        </OrdenDeCompraProvider>
+      </ControlProvider>
     </AnalyticsProvider>
   );
 };
