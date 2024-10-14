@@ -51,9 +51,18 @@ interface Task {
 }
 
 const Controles = () => {
-  const { controls } = useControl();
+  const { controls, fetchControls } = useControl();
   const [controlTaskCards, setControlTaskCards] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadControls = async () => {
+      await fetchControls();
+    };
+
+    loadControls();
+
+  }, [fetchControls]);
 
   useEffect(() => {
     if (controls && controls.length > 0) {
@@ -81,7 +90,7 @@ const Controles = () => {
           </h1>
         </div>
         <div>
-          <KanbanBoard initialTasks={controlTaskCards} />
+          <KanbanBoard initialTasks={controlTaskCards} setTasks={setControlTaskCards} />
         </div>
       </div>
     </ProtectedRoute>

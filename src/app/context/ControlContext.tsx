@@ -51,9 +51,18 @@ interface Control {
   operator: Operador;
 }
 
+interface POSTCorrectiveControl {
+  type: string;
+  subject: string;
+  description: string;
+  vehicle_id: string;
+  operator_id: string;
+}
+
 interface ControlContextProps {
   controls: Control[];
   fetchControls: () => void;
+  createCorrectiveControl: (controlCorrectivo: POSTCorrectiveControl) => void;
 }
 
 const ControlContext = createContext<ControlContextProps | undefined>(undefined);
@@ -61,7 +70,7 @@ const ControlContext = createContext<ControlContextProps | undefined>(undefined)
 export const useControl = () => {
   const context = useContext(ControlContext);
   if (!context) {
-    throw new Error("useContext debe ser usado dentro de un UserProvider");
+    throw new Error("useContext debe ser usado dentro de un ControlProvider");
   }
   return context;
 };
@@ -79,12 +88,22 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const createCorrectiveControl = async (controlCorrectivo: POSTCorrectiveControl) => {
+    try {
+      await axios.post(apiControles, controlCorrectivo);
+      fetchControls();
+    } catch (error) {
+      console.error("Error creating corrective control:", error);
+    }
+  };
+
+
   useEffect(() => {
     fetchControls();
   }, []);
 
   return (
-    <ControlContext.Provider value={{ controls, fetchControls }}>
+    <ControlContext.Provider value={{ controls, fetchControls, createCorrectiveControl }}>
       {children}
     </ControlContext.Provider>
   );
