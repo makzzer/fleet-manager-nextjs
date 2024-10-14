@@ -3,6 +3,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import React from 'react';
+/*coment para push test*/
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
