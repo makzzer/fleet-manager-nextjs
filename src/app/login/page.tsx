@@ -73,6 +73,26 @@ const Login: React.FC = () => {
     }
   };
 
+  const handlePasswordReset = async (email: string) => {
+    try {
+      const response = await fetch('/api/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al enviar el correo de recuperación');
+      }
+
+      Swal.fire('¡Hecho!', 'Hemos enviado un correo de recuperación a tu email', 'success');
+    } catch (error) {
+      console.error('Error', error);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
       <ThemeProvider theme={theme}>
@@ -191,15 +211,34 @@ const Login: React.FC = () => {
             */}
 
               <Typography variant="body2" align="center" sx={{ mt: 1, color: '#aaa' }}>
-              ¿Olvidó su contraseña?{' '}
-              <a href="#"
-                style={{
-                  color: '#1a73e8',
-                  textDecoration: 'none',
-                }}>
+                ¿Olvidó su contraseña?{' '}
+                <a
+                  href="#"
+                  onClick={() => {
+                    Swal.fire({
+                      title: 'Recuperar contraseña',
+                      input: 'email',
+                      inputLabel: 'Introduce tu correo electrónico',
+                      inputPlaceholder: 'Correo electrónico',
+                      showCancelButton: true,
+                      confirmButtonText: 'Enviar',
+                      preConfirm: (email) => {
+                        if (!email) {
+                          Swal.showValidationMessage('El correo no puede estar vacío');
+                        } else {
+                          handlePasswordReset(email);
+                        }
+                      },
+                    });
+                  }}
+                  style={{
+                    color: '#1a73e8',
+                    textDecoration: 'none',
+                  }}
+                >
                   Recuperar
-              </a>
-            </Typography>
+                </a>
+              </Typography>
 
             </Box>
           </Paper>
