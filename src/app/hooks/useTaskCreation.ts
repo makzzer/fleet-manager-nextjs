@@ -104,7 +104,7 @@ const useTaskCreation = (
             </svg>
             <span class="font-semibold">Preventivo</span>
           </button>
-          <button id="predictivo" disabled class="flex flex-col items-center justify-center w-40 h-40 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-500">
+          <button id="predictivo" class="flex flex-col items-center justify-center w-40 h-40 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-500">
             <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
@@ -188,44 +188,7 @@ const useTaskCreation = (
       }
     }
     if (selectedTaskType === "PREVENTIVO") {
-      const { value: formValues } = await Swal.fire({
-        title: `Crear control Preventivo`,
-        background: "rgb(55 65 81)",
-        color: "white",
-        html: `
-            <input id="asunto" class="swal2-input" placeholder="Asunto">
-            <input id="vehiculo" class="swal2-input" placeholder="Vehículo">
-            <input id="descripcion" class="swal2-input" placeholder="Descripción">
-        `,
-        focusConfirm: false,
-        preConfirm: () => {
-          return {
-            asunto: (document.getElementById("asunto") as HTMLInputElement)
-              .value,
-            descripcion: (
-              document.getElementById("descripcion") as HTMLInputElement
-            ).value,
-            vehiculo: (document.getElementById("vehiculo") as HTMLInputElement)
-              .value,
-            fecha: new Date().toLocaleString(),
-            responsable: null,
-            prioridad: "MEDIA",
-            tipo: selectedTaskType,
-          };
-        },
-      });
-
-      if (formValues) {
-        setTasks((prevTasks) => [
-          ...prevTasks,
-          {
-            id: String(prevTasks.length + 1),
-            columnId: "TODO",
-            content: formValues 
-          },
-        ]);
-        Swal.fire("¡Control preventivo creado!", "", "success");
-      }
+      
     }
     if (selectedTaskType === "PREDICTIVO") {
       const { value: formValues } = await Swal.fire({
