@@ -59,7 +59,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
   const control: Control = task.content;
 
   const priorityLogo = (priority: string) => {
-    console.log(priority)
     switch (priority) {
       case "HIGH":
         return <IoIosArrowUp className="w-8 h-8 text-red-500"/>

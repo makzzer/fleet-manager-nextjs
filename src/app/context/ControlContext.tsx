@@ -63,6 +63,7 @@ interface ControlContextProps {
   controls: Control[];
   fetchControls: () => void;
   createCorrectiveControl: (controlCorrectivo: POSTCorrectiveControl) => void;
+  setControlStatus: (control_id: string, new_status: string) => void;
 }
 
 const ControlContext = createContext<ControlContextProps | undefined>(undefined);
@@ -97,13 +98,21 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const setControlStatus = async (control_id: string, new_status: string) => {
+    try {
+      await axios.put(`${apiControles}/${control_id}/status/${new_status}`)
+      fetchControls();
+    } catch (error) {
+      console.error("Error changing control status:", error);
+    }
+  }
 
   useEffect(() => {
     fetchControls();
   }, []);
 
   return (
-    <ControlContext.Provider value={{ controls, fetchControls, createCorrectiveControl }}>
+    <ControlContext.Provider value={{ controls, fetchControls, createCorrectiveControl, setControlStatus }}>
       {children}
     </ControlContext.Provider>
   );
