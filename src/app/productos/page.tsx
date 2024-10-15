@@ -254,7 +254,7 @@ const Stock = () => {
               onClick={exportProductoToExcel}
               className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
             >
-              <FaDownload className="mr-2" /> Exportar a Excel
+              <FaDownload className="mr-2" /> Descargar XML
             </button>
           </div>
         </div>

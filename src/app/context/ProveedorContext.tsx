@@ -1,14 +1,8 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
 
@@ -27,7 +21,7 @@ interface ProveedorContextProps {
   proveedores: Proveedor[];
   fetchProveedores: () => void;
   createProveedor: (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => Promise<void>;
-  // createProveedor: (proveedor: Proveedor) => Promise<void>;
+  exportProveedorToExcel: () => void;
 }
 
 const ProveedorContext = createContext<ProveedorContextProps | undefined>(
@@ -82,6 +76,12 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
     }
   };
   
+  const exportProveedorToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(proveedores);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Proveedores');
+    XLSX.writeFile(workbook, 'Proveedores.xlsx');
+  }
 
   useEffect(() => {
     fetchProveedores();
@@ -89,7 +89,7 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ProveedorContext.Provider
-      value={{ proveedores, fetchProveedores, createProveedor }}
+      value={{ proveedores, fetchProveedores, createProveedor, exportProveedorToExcel }}
     >
       {children}
     </ProveedorContext.Provider>

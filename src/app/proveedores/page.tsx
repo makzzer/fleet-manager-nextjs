@@ -6,9 +6,10 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import Swal from "sweetalert2";
 import ProveedorCard from "../components/Cards/ProveedorCards";
 import { useProveedor } from "../context/ProveedorContext";
+import { FaDownload } from "react-icons/fa";
 
 const Proveedores = () => {
-  const { proveedores, fetchProveedores, createProveedor } = useProveedor();
+  const { proveedores, fetchProveedores, createProveedor, exportProveedorToExcel } = useProveedor();
   const [isLoading, setIsLoading] = useState(true);
   const [filteredProveedores, setFilteredProveedores] = useState([]);
   const [loadMoreCount, setLoadMoreCount] = useState(6); // Para cargar de a 6
@@ -121,6 +122,12 @@ const Proveedores = () => {
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
             Agregar Proveedor
+          </button>
+          <button
+            onClick={exportProveedorToExcel}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
+          >
+            <FaDownload className="mr-2" /> Descargar XML
           </button>
         </div>
 
