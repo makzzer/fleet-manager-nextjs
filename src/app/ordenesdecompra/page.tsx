@@ -10,7 +10,7 @@ import { FaCircleCheck, FaCircleXmark } from "react-icons/fa6";
 import { MdPlaylistAddCheckCircle } from "react-icons/md";
 
 const OrdenesDeCompra = () => {
-  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra } = useOrdenesDeCompra();
+  const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra, exportOrdenesDeCompraToExcel } = useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [estadoFiltro, setEstadoFiltro] = useState(""); // Estado para el filtro de estado
@@ -196,9 +196,13 @@ const OrdenesDeCompra = () => {
           </h1>
           <button
             onClick={handleAgregarOrdenCompra}
-            className="m-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          >
+            className="m-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
             Agregar Orden de Compra
+          </button>
+          <button
+            onClick={exportOrdenesDeCompraToExcel}
+            className="m-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+            Exportar a Excel
           </button>
         </div>
 

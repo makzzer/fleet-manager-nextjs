@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import axios from "axios";
+import * as XLSX from 'xlsx';
 
 const apiOrdenesDeCompraBackend = `https://fleet-manager-gzui.onrender.com/api/orders`;
 const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
@@ -58,6 +59,7 @@ interface OrdenDeCompraContextProps {
   fetchProveedores: () => void;
   createOrdenDeCompra: (ordenDeCompra: CreacionOrdenDeCompra) => Promise<void>;
   actualizarEstadoOrdenDeCompra: (id: string, estado: string) => Promise<void>;
+  exportOrdenesDeCompraToExcel: () => void;
 }
 
 // Creo el context
@@ -134,13 +136,20 @@ export const OrdenDeCompraProvider = ({
     fetchOrdenesDeCompra();//despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
   };
 
+  const exportOrdenesDeCompraToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(ordenesDeCompra);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'ordenesDeCompra');
+    XLSX.writeFile(workbook, 'ordenesDeCompra.xlsx');
+  }
+
   useEffect(() => {
     fetchOrdenesDeCompra();
   }, [fetchOrdenesDeCompra]);
 
   return (
     <OrdenDeCompraContext.Provider
-      value={{ ordenesDeCompra, proveedores, productos, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra }}
+      value={{ ordenesDeCompra, proveedores, productos, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra, exportOrdenesDeCompraToExcel }}
     >
       {children}
     </OrdenDeCompraContext.Provider>
