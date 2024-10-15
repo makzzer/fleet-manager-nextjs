@@ -71,7 +71,7 @@ interface KanbanBoardProps {
   setStatusTask: (control_id: string, new_status: string) => void;
 }
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => {
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks, setStatusTask }) => {
 
   const [columns] = useState<Column[]>([
     { id: "TODO", title: "Por hacer" },
@@ -143,17 +143,15 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => 
   };
   
   const compareTasks = () => {
-    internalTasks.forEach((task, index) => {
-      const originalTask = initialTasks[index];
-  
-      // Si la columna cambió, actualizamos el estado de la tarea en el backend.
-      if (task.columnId !== originalTask.columnId) {
-        console.log(`Cambiando estado de la tarea ${task.content.subject}`);
-        console.log(`De columna ${originalTask.columnId} a columna ${task.columnId}`);
-  
-        // Llamar a setStatusTask para actualizar el backend
-        //setStatusTask(task.content.id as string, task.columnId as string);
-      }
+    internalTasks.forEach((task) => {
+      initialTasks.forEach((OGtask) => {
+        if(task.content.id !== OGtask.content.id){
+          return;
+        }
+        if(task.columnId !== OGtask.columnId){
+          setStatusTask(OGtask.content.id as string, task.columnId as string);
+        }
+      })
     });
   };
   
