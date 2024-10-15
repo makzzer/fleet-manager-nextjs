@@ -90,14 +90,16 @@ const MiReserva = () => {
         </div>
       </div>
 
-      <div className="flex-auto w-64 mt-8">
+      <div className="flex-auto w-full sm:w-64 mt-2">
         <button
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
           onClick={() => router.push("/reservas")}
         >
           Volver
         </button>
       </div>
+
+
     </div>
   );
 };
