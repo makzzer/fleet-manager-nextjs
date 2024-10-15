@@ -18,8 +18,8 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 //Lista de categorias de repuestos en productos
 const categorias = ['Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas',
   'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Lubricantes', 'Luces',
-  'Motores', 'Neumático', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores',
-  'Suspensión', 'Transmisión'
+  'Motores', 'Motor', 'Neumáticos ', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores',
+  'Suspensión', 'Transmisión',
 ];
 
 const Stock = () => {
@@ -45,24 +45,6 @@ const Stock = () => {
     loadProductos();
   }, [fetchProductos]);
 
-  useEffect(() => {
-    let filtered = productos;
-
-    if (searchTerm) {
-      filtered = filtered.filter((producto) =>
-        producto.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (selectedCategory) {
-      filtered = filtered.filter((producto) =>
-        producto.category.toLowerCase() === selectedCategory.toLowerCase()
-      );
-    }
-
-    setFilteredProductos(filtered.slice(0, loadMoreCount));
-  }, [productos, searchTerm, selectedCategory, loadMoreCount]);
-
   // función para filtrar tildes y caracteres especiales en el buscador.
   const removeAccents = (str: string) => {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -70,25 +52,47 @@ const Stock = () => {
 
   useEffect(() => {
     let filtered = productos;
+  
+    if (searchTerm) {
+      filtered = filtered.filter((producto) =>
+        removeAccents(producto.name.toLowerCase()).includes(removeAccents(searchTerm.toLowerCase()))
+      );
+    }
+  
+    if (selectedCategory) {
+      filtered = filtered.filter((producto) =>
+        removeAccents(producto.category.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
+      );
+    }
+  
+    setFilteredProductos(filtered.slice(0, loadMoreCount));
+  }, [productos, searchTerm, selectedCategory, loadMoreCount]);
 
+  useEffect(() => {
+    let filtered = productos;
+
+    // filtrar por categoría primero si hay una seleccionada.
+    if (selectedCategory) {
+      filtered = filtered.filter((producto) =>
+        removeAccents(producto.category.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
+      );
+    }
+
+    // luego el filtro por nombre o marca.
     if (searchTerm && selectedFilter) {
-      filtered = productos.filter((producto) => {
+      const normalizedSearchTerm = removeAccents(searchTerm.toLowerCase());
 
-        const normalizedSearchTerm = removeAccents(searchTerm.toLowerCase()); // llamo función para filtrar tildes en el buscador.
-        
+      filtered = filtered.filter((producto) => {
         if (selectedFilter === "name") {
           return removeAccents(producto.name.toLowerCase()).includes(normalizedSearchTerm);
         } else if (selectedFilter === "brand") {
           return removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm);
-        } else if (selectedFilter === "category") {
-          return removeAccents(producto.category.toLowerCase()).includes(normalizedSearchTerm);
         }
         return false;
       });
     }
-
-    setFilteredProductos(filtered);
-  }, [productos, searchTerm, selectedFilter]);
+    setFilteredProductos(filtered.slice(0, loadMoreCount));
+  }, [productos, searchTerm, selectedCategory, selectedFilter, loadMoreCount]);
 
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 5); // Cargar 6 proveedores más
@@ -114,6 +118,14 @@ const Stock = () => {
     const selected = e.target.value;
     setSelectedFilter(selected);
     setIsSearchEnabled(!!selected); // Habilitar la barra de búsqueda si se selecciona un filtro
+
+    // Actualizar productos filtrados cuando seleccionas la categoría
+    if (selected === "category" && selectedCategory) {
+      const filtered = productos.filter((producto) =>
+        producto.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
+      setFilteredProductos(filtered);
+    }
   };
 
   const handleFilter = (filters: {
@@ -254,7 +266,6 @@ const Stock = () => {
             <option value="">Selecciona un filtro</option>
             <option value="name">Nombre</option>
             <option value="brand">Marca</option>
-            <option value="category">Categoría</option>
           </select>
         </div>
 
