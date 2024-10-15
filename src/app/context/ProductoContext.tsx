@@ -1,15 +1,8 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-} from "react";
-
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import axios from "axios";
+import * as XLSX from 'xlsx';
 
 const apiProductosBackend = `https://fleet-manager-gzui.onrender.com/api/products`;
 
@@ -28,6 +21,7 @@ interface ProductoContextProps {
   fetchProductos: () => void;
   fetchProducto: (id: string) => void;
   createProducto: (producto: Producto) => Promise<void>;
+  exportProductoToExcel: () => void;
 }
 
 const ProductoContext = createContext<ProductoContextProps | undefined>(
@@ -85,13 +79,20 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const exportProductoToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(productos);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Productos');
+    XLSX.writeFile(workbook, 'Productos.xlsx');
+  }
+
   useEffect(() => {
     fetchProductos();
   }, [fetchProductos]);
 
   return (
     <ProductoContext.Provider
-      value={{ productos, producto, fetchProductos, fetchProducto, createProducto }}
+      value={{ productos, producto, fetchProductos, fetchProducto, createProducto, exportProductoToExcel }}
     >
       {children}
     </ProductoContext.Provider>

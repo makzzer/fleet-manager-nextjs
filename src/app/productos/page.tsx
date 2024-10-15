@@ -24,7 +24,7 @@ const categorias = ['Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carroc
 
 const Stock = () => {
   const router = useRouter();
-  const { productos, fetchProductos, createProducto } = useProducto();
+  const { productos, fetchProductos, createProducto, exportProductoToExcel } = useProducto();
   const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
   const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
   const [loadMoreCount, setLoadMoreCount] = useState(5); // Para cargar de a 4
@@ -33,8 +33,6 @@ const Stock = () => {
   const [selectedFilter, setSelectedFilter] = useState(""); // Estado para el filtro seleccionado
   const [isSearchEnabled, setIsSearchEnabled] = useState(false); // Estado para habilitar o deshabilitar la barra de búsqueda
 
-
-  // const [localProducts, setLocalProducts] = useState(productos);
 
   useEffect(() => {
     const loadProductos = async () => {
@@ -52,19 +50,19 @@ const Stock = () => {
 
   useEffect(() => {
     let filtered = productos;
-  
+
     if (searchTerm) {
       filtered = filtered.filter((producto) =>
         removeAccents(producto.name.toLowerCase()).includes(removeAccents(searchTerm.toLowerCase()))
       );
     }
-  
+
     if (selectedCategory) {
       filtered = filtered.filter((producto) =>
         removeAccents(producto.category.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
       );
     }
-  
+
     setFilteredProductos(filtered.slice(0, loadMoreCount));
   }, [productos, searchTerm, selectedCategory, loadMoreCount]);
 
@@ -117,9 +115,9 @@ const Stock = () => {
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value;
     setSelectedFilter(selected);
-    setIsSearchEnabled(!!selected); // Habilitar la barra de búsqueda si se selecciona un filtro
+    setIsSearchEnabled(!!selected); // habilitar las barras de búsqueda si se selecciona un filtro de nombre o marca.
 
-    // Actualizar productos filtrados cuando seleccionas la categoría
+    // actualizar productos filtrados cuando seleccionas la categoría
     if (selected === "category" && selectedCategory) {
       const filtered = productos.filter((producto) =>
         producto.category.toLowerCase() === selectedCategory.toLowerCase()
@@ -155,7 +153,6 @@ const Stock = () => {
   };
 
   const handleAgregarProducto = () => {
-
     // Construir las opciones del select
     const opcionesCategorias = categorias.map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
 
@@ -253,6 +250,11 @@ const Stock = () => {
             >
               <FaQrcode className="mr-2" /> Scanear QR
             </Link>
+            <button
+              onClick={exportProductoToExcel}
+              className="m-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+              Exportar a Excel
+            </button>
           </div>
         </div>
 
