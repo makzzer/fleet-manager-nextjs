@@ -9,6 +9,7 @@ import React, {
   useCallback,
 } from "react";
 import axios from "axios";
+import * as XLSX from 'xlsx';
 
 const apiVehiculosBackend = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
 
@@ -44,6 +45,7 @@ interface VehiculoContextProps {
   ) => Promise<void>;
   deleteVehiculo: (vehiculoEliminado: Vehiculo) => Promise<void>;
   enableVehiculo: (id: string) => Promise<void>;
+  exportVehiculosToExcel: () => void;
 }
 
 const VehiculoContext = createContext<VehiculoContextProps | undefined>(
@@ -188,6 +190,14 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error habilitando vehículo en el backend:", error);
     }
   };
+
+  const exportVehiculosToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(vehiculos);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Vehículos');
+    XLSX.writeFile(workbook, 'vehiculos.xlsx');
+  };
+  
   
   useEffect(() => {
     fetchVehiculos();
@@ -195,7 +205,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <VehiculoContext.Provider
-      value={{ vehiculos, fetchVehiculos, createVehiculo, modifyVehiculo, deleteVehiculo, enableVehiculo }}
+      value={{ vehiculos, fetchVehiculos, createVehiculo, modifyVehiculo, deleteVehiculo, enableVehiculo, exportVehiculosToExcel, }}
     >
       {children}
     </VehiculoContext.Provider>

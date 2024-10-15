@@ -9,7 +9,7 @@ import SearchBar from "../../app/components/SearchBar/SearchBar";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
 const Vehiculos = () => {
-  const { vehiculos, fetchVehiculos, createVehiculo } = useVehiculo();
+  const { vehiculos, fetchVehiculos, createVehiculo, exportVehiculosToExcel } = useVehiculo();
   const [isLoading, setIsLoading] = useState(true);
   const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos);
   const [showUnavailable, setShowUnavailable] = useState(false); // Filtro para ocultar/mostrar vehículos deshabilitados
@@ -288,6 +288,11 @@ const Vehiculos = () => {
             onClick={handleAgregarVehiculo}
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
             Agregar Vehículo
+          </button>
+          <button
+            onClick={exportVehiculosToExcel}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+            Exportar a Excel
           </button>
         </div>
 
