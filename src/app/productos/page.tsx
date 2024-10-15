@@ -15,12 +15,12 @@ import { useProducto } from "../context/ProductoContext";
 
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
-  //Lista de categorias de repuestos en productos
-  const categorias = ['Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas', 
-    'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Lubricantes', 'Luces', 
-    'Motores', 'Neumático', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores', 
-    'Suspensión', 'Transmisión'
-  ];
+//Lista de categorias de repuestos en productos
+const categorias = ['Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas',
+  'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Lubricantes', 'Luces',
+  'Motores', 'Neumático', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores',
+  'Suspensión', 'Transmisión'
+];
 
 const Stock = () => {
   const router = useRouter();
@@ -63,17 +63,25 @@ const Stock = () => {
     setFilteredProductos(filtered.slice(0, loadMoreCount));
   }, [productos, searchTerm, selectedCategory, loadMoreCount]);
 
+  // función para filtrar tildes y caracteres especiales en el buscador.
+  const removeAccents = (str: string) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  };
+
   useEffect(() => {
     let filtered = productos;
 
     if (searchTerm && selectedFilter) {
       filtered = productos.filter((producto) => {
+
+        const normalizedSearchTerm = removeAccents(searchTerm.toLowerCase()); // llamo función para filtrar tildes en el buscador.
+        
         if (selectedFilter === "name") {
-          return producto.name.toLowerCase().includes(searchTerm.toLowerCase());
+          return removeAccents(producto.name.toLowerCase()).includes(normalizedSearchTerm);
         } else if (selectedFilter === "brand") {
-          return producto.brand.toLowerCase().includes(searchTerm.toLowerCase());
+          return removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm);
         } else if (selectedFilter === "category") {
-          return producto.category.toLowerCase().includes(searchTerm.toLowerCase());
+          return removeAccents(producto.category.toLowerCase()).includes(normalizedSearchTerm);
         }
         return false;
       });
@@ -81,12 +89,6 @@ const Stock = () => {
 
     setFilteredProductos(filtered);
   }, [productos, searchTerm, selectedFilter]);
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = e.target.value;
-    setSelectedFilter(selected);
-    setIsSearchEnabled(!!selected); // Habilitar la barra de búsqueda si se selecciona un filtro
-  };
 
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 5); // Cargar 6 proveedores más
@@ -107,6 +109,12 @@ const Stock = () => {
   //   );
   //   setFilteredProductos(filtered);
   // };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    setSelectedFilter(selected);
+    setIsSearchEnabled(!!selected); // Habilitar la barra de búsqueda si se selecciona un filtro
+  };
 
   const handleFilter = (filters: {
     searchTerm: string;
@@ -136,8 +144,8 @@ const Stock = () => {
 
   const handleAgregarProducto = () => {
 
-  // Construir las opciones del select
-  const opcionesCategorias = categorias.map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
+    // Construir las opciones del select
+    const opcionesCategorias = categorias.map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
 
     Swal.fire({
       title: "Agregar Producto",
@@ -236,27 +244,24 @@ const Stock = () => {
           </div>
         </div>
 
-        {/* Barras de busqueda */}
-        {/* <FiltrosProducto onFilter={handleFilter} categorias={categorias} /> */}
-
         {/* Combobox para seleccionar el filtro */}
-      <div className="mb-4">
-        <select
-          value={selectedFilter}
-          onChange={handleFilterChange}
-          className="bg-gray-800 text-white p-2 rounded"
-        >
-          <option value="">Selecciona un filtro</option>
-          <option value="name">Nombre</option>
-          <option value="brand">Marca</option>
-          <option value="category">Categoría</option>
-        </select>
-      </div>
+        <div className="mb-4">
+          <select
+            value={selectedFilter}
+            onChange={handleFilterChange}
+            className="bg-gray-800 text-white p-2 rounded"
+          >
+            <option value="">Selecciona un filtro</option>
+            <option value="name">Nombre</option>
+            <option value="brand">Marca</option>
+            <option value="category">Categoría</option>
+          </select>
+        </div>
 
-      {/* Barra de búsqueda habilitada cuando se selecciona un filtro */}
-      {isSearchEnabled && (
-        <FiltrosProducto onFilter={handleFilter} categorias={categorias} />
-      )}
+        {/* Barra de búsqueda habilitada cuando se selecciona un filtro */}
+        {isSearchEnabled && (
+          <FiltrosProducto onFilter={handleFilter} categorias={categorias} />
+        )}
 
         {filteredProductos && filteredProductos.length > 0 ? (
           // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
@@ -274,15 +279,15 @@ const Stock = () => {
       </div>
 
       {filteredProductos.length < productos.length && (
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={handleLoadMore}
-              className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-            >
-              Ver más
-            </button>
-          </div>
-        )}
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleLoadMore}
+            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Ver más
+          </button>
+        </div>
+      )}
     </ProtectedRoute>
   );
 };
