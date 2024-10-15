@@ -99,6 +99,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const setControlStatus = async (control_id: string, new_status: string) => {
+    console.log("Entró acá con:", control_id, " - ", new_status);
     try {
       await axios.put(`${apiControles}/${control_id}/status/${new_status}`)
       fetchControls();
