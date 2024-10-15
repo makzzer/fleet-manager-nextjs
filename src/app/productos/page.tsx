@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import ProductTable from "../components/Stock/ProductTable";
-import { FaPlusCircle, FaQrcode } from "react-icons/fa";
+import { FaDownload, FaPlusCircle, FaQrcode } from "react-icons/fa";
 import Link from "next/link";
 import { useState } from "react";
 import FiltrosProducto from "../components/Stock/FiltrosProducto";
@@ -236,7 +236,7 @@ const Stock = () => {
             Gestión de Productos
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button
               onClick={handleAgregarProducto}
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
@@ -252,8 +252,9 @@ const Stock = () => {
             </Link>
             <button
               onClick={exportProductoToExcel}
-              className="m-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-              Exportar a Excel
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
+            >
+              <FaDownload className="mr-2" /> Exportar a Excel
             </button>
           </div>
         </div>
