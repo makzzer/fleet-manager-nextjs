@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { UserProvider } from "./context/UserContext";
 import { AnalyticsProvider } from "./context/AnalyticsContext";
 import { ControlProvider } from "./context/ControlContext";
+import { ReservaProvider } from "./context/ReservesContext";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -18,7 +19,11 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
             <ProveedorProvider>
               <VehiculoProvider>
                 <AuthProvider>
-                  <UserProvider>{children}</UserProvider>
+                  <ReservaProvider>
+                    <UserProvider>
+                      {children}
+                    </UserProvider>
+                  </ReservaProvider>
                 </AuthProvider>
               </VehiculoProvider>
             </ProveedorProvider>
