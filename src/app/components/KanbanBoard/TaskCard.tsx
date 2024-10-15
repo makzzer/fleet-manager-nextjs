@@ -121,7 +121,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
       <div
         ref={setNodeRef}
         style={style}
-        className="opacity-30 bg-gray-900 p-4 h-[100px] min-h-[100px] items-center flex text-left rounded-xl border-2 ring-blue-500 cursor-pointer justify-between relative"
+        className="opacity-30 bg-gray-900 p-4 h-[200px] min-h-[200px] items-center flex text-left rounded-xl border-2 ring-blue-500 cursor-pointer justify-between relative"
       ></div>
     );
   }

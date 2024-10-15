@@ -68,9 +68,10 @@ interface Task {
 interface KanbanBoardProps {
   initialTasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  setStatusTask: (control_id: string, new_status: string) => void;
 }
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => {
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks, setStatusTask }) => {
 
   const [columns] = useState<Column[]>([
     { id: "TODO", title: "Por hacer" },
@@ -78,10 +79,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => 
     { id: "DONE", title: "Terminado" },
   ]);
 
-  const tasks = initialTasks;
-
-  console.log(tasks);
-  console.log(columns);
+  const [internalTasks, setInternalTasks] = useState(initialTasks);
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   
@@ -117,41 +115,46 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => 
 
     //Dropeando una tarea encima de otra
     if (isActiveATask && isOverATask) {
-      setTasks((tasks) => {
+      setInternalTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
         const overIndex = tasks.findIndex((t) => t.id === overId);
 
-        if (
-          activeIndex !== overIndex &&
-          tasks[activeIndex].columnId === tasks[overIndex].columnId
-        ) {
-          // Solo reordena si las posiciones son diferentes.
-          tasks[activeIndex].columnId = tasks[overIndex].columnId;
-          return arrayMove(tasks, activeIndex, overIndex);
-        }
+        tasks[activeIndex].columnId = tasks[overIndex].columnId;
 
-        return tasks;
+        return arrayMove(tasks, activeIndex, overIndex);
       });
     }
 
     const isOverAColumn = over.data.current?.type === "Column";
     //Dropeando una tarea encima de una columna
     if (isActiveATask && isOverAColumn) {
-      setTasks((tasks) => {
+      setInternalTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
 
-        if (tasks[activeIndex].columnId !== overId) {
-          tasks[activeIndex].columnId = overId;
-        }
+        tasks[activeIndex].columnId = overId;
 
-        return tasks;
+        return arrayMove(tasks, activeIndex, activeIndex);
       });
     }
   };
 
   const onDragEnd = () => {
-    setActiveTask(null);
+    compareTasks();
   };
+  
+  const compareTasks = () => {
+    internalTasks.forEach((task) => {
+      initialTasks.forEach((OGtask) => {
+        if(task.content.id !== OGtask.content.id){
+          return;
+        }
+        if(task.columnId !== OGtask.columnId){
+          setStatusTask(OGtask.content.id as string, task.columnId as string);
+        }
+      })
+    });
+  };
+  
 
   return (
     <div className="min-h-screen w-full overflow-x-auto overflow-y-hidden">
@@ -168,13 +171,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => 
                 key={col.id}
                 column={col}
                 createTask={createTask}
-                tasks={tasks.filter((task) => task.columnId === col.id)}
+                tasks={internalTasks.filter((task) => task.columnId === col.id)}
               />
             ) : (
               <ColumnContainer
                 key={col.id}
                 column={col}
-                tasks={tasks.filter((task) => task.columnId === col.id)}
+                tasks={internalTasks.filter((task) => task.columnId === col.id)}
               />
             )
           )}
