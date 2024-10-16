@@ -7,12 +7,26 @@ import Swal from "sweetalert2";
 import ProveedorCard from "../components/Cards/ProveedorCards";
 import { useProveedor } from "../context/ProveedorContext";
 import { FaDownload, FaPlusCircle } from "react-icons/fa";
+import FiltrosProveedor from "../components/SearchBar/FiltrosProveedor";
+
+interface Proveedor {
+  id: string,
+  name: string,
+  email: string,
+  cuit: string,
+  phone_number: string,
+  address: string
+}
+
 
 const Proveedores = () => {
   const { proveedores, fetchProveedores, createProveedor, exportProveedorToExcel } = useProveedor();
   const [isLoading, setIsLoading] = useState(true);
-  const [filteredProveedores, setFilteredProveedores] = useState([]);
+  const [filteredProveedores, setFilteredProveedores] = useState<Proveedor[]>([]);
   const [loadMoreCount, setLoadMoreCount] = useState(6); // Para cargar de a 6
+  const [selectedFilter, setSelectedFilter] = useState(""); // Estado para el filtro seleccionado
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el término de búsqueda
+  const [isSearchEnabled, setIsSearchEnabled] = useState(false); // Estado para habilitar o deshabilitar la barra de búsqueda
 
   useEffect(() => {
     const loadProveedores = async () => {
@@ -27,9 +41,56 @@ const Proveedores = () => {
     setFilteredProveedores(proveedores.slice(0, loadMoreCount)); // Mostrar los primeros 6 proveedores
   }, [proveedores, loadMoreCount]);
 
+  useEffect(() => {
+    let filtered = proveedores;
+
+    if (searchTerm && selectedFilter) {
+      filtered = proveedores.filter((proveedor) => {
+        if (selectedFilter === "name") {
+          return proveedor.name.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (selectedFilter === "brand") {
+          return proveedor.email.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (selectedFilter === "category") {
+          return proveedor.address.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+        return false;
+      });
+    }
+
+    setFilteredProveedores(filtered);
+  }, [proveedores, searchTerm, selectedFilter]);
+
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 6); // Cargar 6 proveedores más
   };
+
+  // Actualizar el filtro cuando cambia la opción seleccionada
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    setSelectedFilter(selected);
+    setIsSearchEnabled(!!selected); // habilitar la barra de búsqueda si hay filtro seleccionado
+  };
+
+  // Filtrar proveedores por email o dirección
+  const handleFilter = (filters: { searchTerm: string }) => {
+    const { searchTerm } = filters;
+    let filtered = proveedores; // Filtrar sobre la lista completa de proveedores
+
+    if (selectedFilter && searchTerm) {
+      if (selectedFilter === "email") {
+        filtered = proveedores.filter(proveedor =>
+          proveedor.email.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      } else if (selectedFilter === "address") {
+        filtered = proveedores.filter(proveedor =>
+          proveedor.address.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+    }
+
+    setFilteredProveedores(filtered);
+  };
+
 
   const handleAgregarProveedor = () => {
     Swal.fire({
@@ -132,6 +193,25 @@ const Proveedores = () => {
             </button>
           </div>
         </div>
+
+        {/* Combobox para seleccionar el filtro */}
+        <div className="mb-4">
+          <select
+            value={selectedFilter}
+            onChange={handleFilterChange}
+            className="bg-gray-800 text-white p-2 rounded"
+          >
+            <option value="">Selecciona un filtro</option>
+            <option value="email">Email</option>
+            <option value="address">Dirección</option>
+          </select>
+        </div>
+
+        {/* Barra de búsqueda habilitada cuando se selecciona un filtro */}
+        {isSearchEnabled && (
+          <FiltrosProveedor onFilter={handleFilter} // Pasar el término de búsqueda a la función de filtrado
+          />
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {isLoading ? (
