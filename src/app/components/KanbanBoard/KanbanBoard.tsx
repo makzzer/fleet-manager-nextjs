@@ -65,13 +65,24 @@ interface Task {
   content: Control;
 }
 
+interface POSTPredictiveControl {
+  subject: string;
+  description: string;
+  brand: string;
+  model: string;
+  year: number;
+  priority: string;
+  operator_id: string;
+}
+
 interface KanbanBoardProps {
   initialTasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   setStatusTask: (control_id: string, new_status: string) => void;
+  addControlTask: (newControl: POSTPredictiveControl) => void;
 }
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks, setStatusTask }) => {
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, addControlTask }) => {
 
   const [columns] = useState<Column[]>([
     { id: "TODO", title: "Por hacer" },
@@ -81,9 +92,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks, setSt
 
   const [internalTasks, setInternalTasks] = useState(initialTasks);
 
+  
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   
-  const { createTask } = useTaskCreation(setTasks);
+  const { createTask } = useTaskCreation(addControlTask);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

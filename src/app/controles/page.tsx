@@ -50,8 +50,18 @@ interface Task {
   content: Control;
 }
 
+interface POSTPredictiveControl {
+  subject: string;
+  description: string;
+  brand: string;
+  model: string;
+  year: number;
+  priority: string;
+  operator_id: string;
+}
+
 const Controles = () => {
-  const { controls, fetchControls, setControlStatus } = useControl();
+  const { controls, fetchControls, setControlStatus, createPredictiveControl } = useControl();
   const [controlTaskCards, setControlTaskCards] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -77,6 +87,11 @@ const Controles = () => {
     }
   }, [controls]);
 
+  const handleAddControlTask = (newControl: POSTPredictiveControl) => {
+    createPredictiveControl(newControl);
+    fetchControls();
+  }
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -90,7 +105,7 @@ const Controles = () => {
           </h1>
         </div>
         <div>
-          <KanbanBoard initialTasks={controlTaskCards} setTasks={setControlTaskCards} setStatusTask={setControlStatus}/>
+          <KanbanBoard initialTasks={controlTaskCards} setTasks={setControlTaskCards} setStatusTask={setControlStatus} addControlTask={handleAddControlTask}/>
         </div>
       </div>
     </ProtectedRoute>
