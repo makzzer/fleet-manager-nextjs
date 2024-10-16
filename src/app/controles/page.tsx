@@ -216,7 +216,10 @@ const Controles = () => {
           />
         </div>
         <div className="md:hidden grid grid-cols-1 gap-6 mt-6">
-          <TaskList tasks={controlTaskCards}/>
+          <TaskList 
+          tasks={controlTaskCards}
+          addControlTask={handleCreatePredictiveControl}
+          />
         </div>
       </div>
     </ProtectedRoute>

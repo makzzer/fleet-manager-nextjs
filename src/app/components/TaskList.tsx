@@ -48,9 +48,10 @@ interface Task {
 
 interface TaskListProps {
   tasks: Task[];
+  addControlTask: () => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask }) => {
   const [internalListTasks, setInternalListTasks] = useState(tasks);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
@@ -72,8 +73,9 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
   };
 
   return (
-    <>
-      <div className="flex gap-2 text-xs mb-4">
+    <div className="flex flex-col gap-4">
+      <button onClick={addControlTask} className="bg-blue-500 rounded-md py-2 hover:bg-blue-600 w-full h-full">Crear control</button>
+      <div className="flex gap-2 text-xs">
         <button
           className={`px-4 py-1 rounded-full ${
             activeFilter === "TODO"
@@ -110,7 +112,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
           <TaskCard key={task.id} task={task} />
         ))}
       </div>
-    </>
+    </div>
   );
 };
 
