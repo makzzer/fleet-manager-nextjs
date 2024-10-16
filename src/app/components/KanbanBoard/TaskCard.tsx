@@ -152,12 +152,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile, setStatusTask }) =>
           <FiTruck />
           <p>{control.vehicle.id}</p>
         </div>
-        <div>
+        <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
             className="relative z-10"
           >
             <TbArrowsExchange className="w-6 h-6 text-gray-300 hover:text-gray-100"/>
+          </button>
             {showDropdown && (
                 <div className="absolute z-20 top-8 right-0 bg-gray-800 shadow-lg rounded-md p-2">
                   <button
@@ -183,7 +184,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile, setStatusTask }) =>
                   </button>
                 </div>
               )}
-          </button>
         </div>
         </div>
       </div>
