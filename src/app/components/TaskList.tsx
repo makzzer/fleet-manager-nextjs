@@ -49,9 +49,10 @@ interface Task {
 interface TaskListProps {
   tasks: Task[];
   addControlTask: () => void;
+  setStatusTask: (control_id: string, new_status: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask, setStatusTask }) => {
   const [internalListTasks, setInternalListTasks] = useState(tasks);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
@@ -109,7 +110,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask }) => {
       </div>
       <div className="grid grid-col-1 gap-4 bg-gray-800 p-2 rounded-md">
         {internalListTasks.map((task) => (
-          <TaskCard isMobile key={task.id} task={task} />
+          <TaskCard isMobile key={task.id} task={task} setStatusTask={setStatusTask}/>
         ))}
       </div>
     </div>

@@ -57,9 +57,10 @@ interface Task {
 interface TaskCardProps {
   task: Task;
   isMobile?: boolean;
+  setStatusTask?: (control_id: string, new_status: string) => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile, setStatusTask }) => {
   const control: Control = task.content;
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -123,12 +124,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile }) => {
 
   const handleStatusChange = (newStatus: string) => {
     setShowDropdown(false);
-    console.log(newStatus);
-    /*
-    if (onStatusChange) {
-      onStatusChange(task.id, newStatus);
+    
+    if (setStatusTask) {
+      setStatusTask(control.id, newStatus);
     }
-    */
+    
   };
 
   if (isMobile) {

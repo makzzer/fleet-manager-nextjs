@@ -93,6 +93,11 @@ const Controles = () => {
     }
   }, [controls]);
 
+  const handleSetStatus = async (control_id: string, new_status: string) => {
+    await setControlStatus(control_id, new_status);
+    await fetchControls();
+  }
+
   const handleCreatePredictiveControl = async () => {
     const coches = vehiculos;
     const usuarios = users;
@@ -211,7 +216,7 @@ const Controles = () => {
           <KanbanBoard
             initialTasks={controlTaskCards}
             setTasks={setControlTaskCards}
-            setStatusTask={setControlStatus}
+            setStatusTask={handleSetStatus}
             addControlTask={handleCreatePredictiveControl}
           />
         </div>
@@ -219,6 +224,7 @@ const Controles = () => {
           <TaskList 
           tasks={controlTaskCards}
           addControlTask={handleCreatePredictiveControl}
+          setStatusTask={handleSetStatus}
           />
         </div>
       </div>
