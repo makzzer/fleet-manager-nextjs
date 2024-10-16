@@ -1,75 +1,111 @@
 "use client";
-import React, { useState } from "react";
-import dynamic from "next/dynamic"; // Para cargar el mapa dinámicamente
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-// Cargar el componente Map solo en el cliente (sin SSR)
-const MapComponent = dynamic(() => import("../components/Maps/MapGoogleComponent"), { ssr: false });
+import { useVehiculo } from "../context/VehiculoContext"; // Usamos el context de vehículos para traer los vehículos disponibles
+import { useAuth } from "../context/AuthContext"; // Usamos el context de autenticación para obtener el usuario autenticado
+import Swal from "sweetalert2";
 
 const ReservaViaje = () => {
   const router = useRouter();
+  const { vehiculos, fetchVehiculos } = useVehiculo(); // Obtener vehículos del context
+  const { authenticatedUser } = useAuth(); // Obtener el usuario autenticado
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
-  const [selectedCoordinates, setSelectedCoordinates] = useState<{ lat: number; lng: number } | null>(null); // Para las coordenadas
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    // Cargar los vehículos al montar el componente
+    const loadVehiculos = async () => {
+      setIsLoading(true);
+      await fetchVehiculos();
+      setIsLoading(false);
+    };
+    loadVehiculos();
+  }, [fetchVehiculos]);
+
+  // Función para manejar la selección del vehículo
   const handleSelectVehicle = (vehicleId: string) => {
     setSelectedVehicle(vehicleId);
   };
 
-  const handleSelectCoordinates = (coordinates: { lat: number; lng: number }) => {
-    setSelectedCoordinates(coordinates);
-  };
+  // Función para crear la reserva
+  const handleCreateReserva = async () => {
+    if (!selectedVehicle) {
+      alert("Por favor, selecciona un vehículo.");
+      return;
+    }
 
-  const handleContinue = () => {
-    if (selectedVehicle && selectedCoordinates) {
-      console.log(`Vehículo: ${selectedVehicle}`);
-      console.log(`Coordenadas: ${JSON.stringify(selectedCoordinates)}`);
-      router.push(`/reservar/confirmacion?vehicle=${selectedVehicle}&lat=${selectedCoordinates.lat}&lng=${selectedCoordinates.lng}`);
-    } else {
-      alert("Por favor selecciona un vehículo y un destino.");
+    if (!authenticatedUser) {
+      alert("Debes estar autenticado para reservar un vehículo.");
+      return;
+    }
+
+    try {
+      const response = await fetch("https://fleet-manager-gzui.onrender.com/api/reserves", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          vehicleId: selectedVehicle,
+          userId: authenticatedUser.id,
+          destination: {
+            latitude: -34.53041058614282, // Valores de ejemplo
+            longitude: -58.70297600284797,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        Swal.fire("Reserva creada", "Tu reserva se ha creado exitosamente.", "success");
+        router.push("/reservas");
+      } else {
+        Swal.fire("Error", "No se pudo crear la reserva. Inténtalo nuevamente.", "error");
+      }
+    } catch (error) {
+      console.error("Error al crear la reserva:", error);
+      Swal.fire("Error", "Ocurrió un error al crear la reserva.", "error");
     }
   };
 
   return (
     <div className="bg-gray-900 text-white min-h-screen rounded-xl flex flex-col p-4">
       {/* Encabezado */}
-      <div className="flex-shrink-0">
-        <h1 className="text-4xl font-bold mb-6 text-blue-400">Reservar Viaje</h1>
+      <div className="flex-shrink-0 mb-4">
+        <h1 className="text-4xl font-bold text-blue-400">Reservar Viaje</h1>
       </div>
 
       {/* Seleccionar Vehículo */}
       <div className="flex-shrink-0 mb-4">
         <h2 className="text-2xl font-semibold mb-3">Seleccionar Vehículo</h2>
-        <div className="flex space-x-4">
-          <button
-            className={`py-2 px-4 rounded ${selectedVehicle === "AAA-001" ? "bg-blue-600" : "bg-gray-700"}`}
-            onClick={() => handleSelectVehicle("AAA-001")}
+        {isLoading ? (
+          <p className="text-gray-400">Cargando vehículos...</p>
+        ) : (
+          <select
+            className="bg-gray-800 text-white py-2 px-4 rounded w-full"
+            value={selectedVehicle || ""}
+            onChange={(e) => handleSelectVehicle(e.target.value)}
           >
-            Vehículo 1
-          </button>
-          <button
-            className={`py-2 px-4 rounded ${selectedVehicle === "BBB-002" ? "bg-blue-600" : "bg-gray-700"}`}
-            onClick={() => handleSelectVehicle("BBB-002")}
-          >
-            Vehículo 2
-          </button>
-        </div>
+            <option value="" disabled>
+              Selecciona un vehículo disponible
+            </option>
+            {vehiculos
+              .filter((vehiculo) => vehiculo.status === "AVAILABLE")
+              .map((vehiculo) => (
+                <option key={vehiculo.id} value={vehiculo.id}>
+                  {vehiculo.brand} {vehiculo.model} - {vehiculo.id}
+                </option>
+              ))}
+          </select>
+        )}
       </div>
 
-      {/* Mapa para seleccionar destino */}
-      <div className="flex-grow mb-4">
-        <h2 className="text-2xl font-semibold mb-3">Seleccionar Destino</h2>
-        <div className="w-full h-48 md:h-64">
-          <MapComponent onSelectCoordinates={handleSelectCoordinates} />
-        </div>
-      </div>
-
-      {/* Botón para continuar */}
+      {/* Botón para crear la reserva */}
       <div className="flex-shrink-0 mt-4">
         <button
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
-          onClick={handleContinue}
+          onClick={handleCreateReserva}
         >
-          Continuar
+          Reservar
         </button>
       </div>
     </div>
