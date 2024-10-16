@@ -109,7 +109,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask }) => {
       </div>
       <div className="grid grid-col-1 gap-4 bg-gray-800 p-2 rounded-md">
         {internalListTasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard isMobile key={task.id} task={task} />
         ))}
       </div>
     </div>

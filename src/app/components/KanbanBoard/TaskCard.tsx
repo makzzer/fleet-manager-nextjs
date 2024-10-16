@@ -3,7 +3,10 @@ import { CSS } from "@dnd-kit/utilities";
 import { IoIosArrowUp, IoIosArrowDown, IoIosRemove } from "react-icons/io";
 import { FiTool, FiAlertCircle, FiTruck } from "react-icons/fi";
 import { IoPulse } from "react-icons/io5";
-import { FaRegCalendarAlt, FaUserCircle } from "react-icons/fa";
+import { FaRegCalendarAlt, FaUserCircle, FaRegEye  } from "react-icons/fa";
+import { TbArrowsExchange } from "react-icons/tb";
+import { useState } from "react";
+
 
 
 interface Coordinates {
@@ -53,10 +56,12 @@ interface Task {
 
 interface TaskCardProps {
   task: Task;
+  isMobile?: boolean;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile }) => {
   const control: Control = task.content;
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const priorityLogo = (priority: string) => {
     switch (priority) {
@@ -115,6 +120,83 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
     transition,
     transform: CSS.Transform.toString(transform),
   };
+
+  const handleStatusChange = (newStatus: string) => {
+    setShowDropdown(false);
+    console.log(newStatus);
+    /*
+    if (onStatusChange) {
+      onStatusChange(task.id, newStatus);
+    }
+    */
+  };
+
+  if (isMobile) {
+    return (
+      <div
+      className="bg-gray-900 p-4 flex flex-col text-left rounded-xl hover:ring-2 hover:ring-inset hover:ring-blue-500 justify-between relative gap-4"
+    >
+      <div className="flex justify-between items-center">
+        <p className="text-md font-bold">{control.subject}</p>
+        {priorityLogo(control.priority)}
+      </div>
+      <div>
+        <div className="flex justify-between items-center">
+        {typeLogo(control.type)}
+        <button>
+          <FaRegEye className="w-6 h-6 text-gray-300 hover:text-gray-100"/>
+        </button>
+        </div>
+        <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2 text-gray-300">
+          <FiTruck />
+          <p>{control.vehicle.id}</p>
+        </div>
+        <div>
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="relative z-10"
+          >
+            <TbArrowsExchange className="w-6 h-6 text-gray-300 hover:text-gray-100"/>
+            {showDropdown && (
+                <div className="absolute z-20 top-8 right-0 bg-gray-800 shadow-lg rounded-md p-2">
+                  <button
+                    onClick={() => handleStatusChange("TODO")}
+                    className={`block text-left w-full px-4 py-2 text-sm ${control.status === "TODO" ? "cursor-not-allowed text-gray-700" : "hover:bg-gray-700 text-white"}`}
+                    disabled={control.status === "TODO"}
+                  >
+                    Pendientes
+                  </button>
+                  <button
+                    onClick={() => handleStatusChange("DOING")}
+                    className={`block text-left w-full px-4 py-2 text-sm ${control.status === "DOING" ? "cursor-not-allowed text-gray-700" : "hover:bg-gray-700 text-white"}`}
+                    disabled={control.status === "DOING"}
+                  >
+                    En proceso
+                  </button>
+                  <button
+                    onClick={() => handleStatusChange("DONE")}
+                    className={`block text-left w-full px-4 py-2 text-sm ${control.status === "DONE" ? "cursor-not-allowed text-gray-700" : "hover:bg-gray-700 text-white"}`}
+                    disabled={control.status === "DONE"}
+                  >
+                    Terminados
+                  </button>
+                </div>
+              )}
+          </button>
+        </div>
+        </div>
+      </div>
+      <div className="flex justify-between items-center border-t pt-3 border-gray-700">
+        <div className="flex items-center gap-2 text-gray-300">
+          <FaRegCalendarAlt />
+        <p>{control.date_created.slice(0, 10)}</p>
+        </div>
+        <FaUserCircle className="w-5 h-5"/>
+      </div>
+    </div>
+    );
+  }
 
   if (isDragging) {
     return (
