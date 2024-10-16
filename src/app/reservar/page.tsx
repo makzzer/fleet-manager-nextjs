@@ -102,10 +102,17 @@ const ReservaViaje = () => {
       {/* Botón para crear la reserva */}
       <div className="flex-shrink-0 mt-4">
         <button
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
+          className="w-full bg-green-600 mb-4 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
           onClick={handleCreateReserva}
         >
           Reservar
+        </button>
+
+        <button
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all duration-300 transform "
+          onClick={() => router.push("/reservas")}
+        >
+          Volver
         </button>
       </div>
     </div>

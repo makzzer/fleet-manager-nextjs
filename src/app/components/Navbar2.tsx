@@ -52,7 +52,7 @@ const Navbar = () => {
   // Simulación de carga de notificaciones
   useEffect(() => {
     // Aquí podrías hacer un fetch para obtener el número de notificaciones no leídas
-    setUnreadNotifications(1); // Por ahora, estableceremos un valor fijo
+    setUnreadNotifications(1); // Por ahora, estableceremos un valor fijo para simular
   }, []);
 
   const handleLogout = () => {
@@ -97,8 +97,9 @@ const Navbar = () => {
                     </svg>
                   </button>
                   {unreadNotifications > 0 && (
-                    <span className="absolute top-0 right-0 inline-block w-4 h-4 bg-red-600 text-white text-xs font-bold rounded-full text-center">
-                      {unreadNotifications}
+                    <span className="absolute top-0 right-0 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                     </span>
                   )}
                 </div>
