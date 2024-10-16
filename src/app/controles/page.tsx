@@ -72,9 +72,6 @@ const Controles = () => {
   const { vehiculos } = useVehiculo();
   const { users } = useUser();
 
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
-
   useEffect(() => {
     const loadControls = async () => {
       await fetchControls();
@@ -92,23 +89,9 @@ const Controles = () => {
       }));
 
       setControlTaskCards(tasks);
-      setFilteredTasks(tasks);
       setLoading(false); // Detenemos el estado de carga cuando los datos estén listos.
     }
   }, [controls]);
-
-  const handleFilterChange = (filter: string | null) => {
-    if(filter === activeFilter){
-      setActiveFilter(null);
-      setFilteredTasks(controlTaskCards);
-    }
-
-    else {
-      setActiveFilter(filter);
-      const filtered = controlTaskCards.filter((task) => task.columnId === filter);
-      setFilteredTasks(filtered);
-    }
-  }
 
   const handleCreatePredictiveControl = async () => {
     const coches = vehiculos;
@@ -233,28 +216,7 @@ const Controles = () => {
           />
         </div>
         <div className="md:hidden grid grid-cols-1 gap-6 mt-6">
-          <div className="flex gap-2 text-xs">
-          <button
-              className={`bg-gray-700/50 rounded-full text-white/80 px-4 py-1 focus:bg-blue-500/25 focus:text-blue-500/80 ${
-                activeFilter === "TODO" ? "bg-blue-500/25 text-blue-500/80" : ""
-              }`}
-              onClick={() => handleFilterChange("TODO")}
-            >
-              Pendientes
-            </button>
-            <button className={`bg-gray-700/50 rounded-full text-white/80 px-4 py-1 focus:bg-blue-500/25 focus:text-blue-500/80 ${
-              activeFilter === "DOING" ? "bg-blue-500/25 text-blue-500/80" : ""
-            }`}
-            onClick={() => handleFilterChange("DOING")
-
-            }>En proceso</button>
-            <button className={`bg-gray-700/50 rounded-full text-white/80 px-4 py-1 focus:bg-blue-500/25 focus:text-blue-500/80 ${
-              activeFilter === "DONE" ? "bg-blue-500/25 text-blue-500/80" : ""
-            }`}
-            onClick={() => handleFilterChange("DONE")}
-            >Terminados</button>
-          </div>
-          <TaskList tasks={filteredTasks}/>
+          <TaskList tasks={controlTaskCards}/>
         </div>
       </div>
     </ProtectedRoute>
