@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
@@ -10,10 +10,10 @@ import {
   PointerSensor,
   useSensor,
   DragOverEvent,
+  TouchSensor,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
-import useTaskCreation from "@/app/hooks/useTaskCreation";
 
 interface Coordinates {
   latitude: number;
@@ -65,21 +65,11 @@ interface Task {
   content: Control;
 }
 
-interface POSTPredictiveControl {
-  subject: string;
-  description: string;
-  brand: string;
-  model: string;
-  year: number;
-  priority: string;
-  operator_id: string;
-}
-
 interface KanbanBoardProps {
   initialTasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   setStatusTask: (control_id: string, new_status: string) => void;
-  addControlTask: (newControl: POSTPredictiveControl) => void;
+  addControlTask: () => void;
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, addControlTask }) => {
@@ -92,15 +82,25 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
 
   const [internalTasks, setInternalTasks] = useState(initialTasks);
 
+  useEffect(() => {
+    if(initialTasks.length !== internalTasks.length){
+      setInternalTasks(initialTasks);
+    }
+  }, [initialTasks, internalTasks]);
   
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   
-  const { createTask } = useTaskCreation(addControlTask);
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 2,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 2,
+        delay: 250,
+        tolerance: 5,
       },
     })
   );
@@ -182,7 +182,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
               <ColumnContainer
                 key={col.id}
                 column={col}
-                createTask={createTask}
+                createTask={addControlTask}
                 tasks={internalTasks.filter((task) => task.columnId === col.id)}
               />
             ) : (
