@@ -6,7 +6,7 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import Swal from "sweetalert2";
 import ProveedorCard from "../components/Cards/ProveedorCards";
 import { useProveedor } from "../context/ProveedorContext";
-import { FaDownload } from "react-icons/fa";
+import { FaDownload, FaPlusCircle } from "react-icons/fa";
 
 const Proveedores = () => {
   const { proveedores, fetchProveedores, createProveedor, exportProveedorToExcel } = useProveedor();
@@ -117,18 +117,20 @@ const Proveedores = () => {
           <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
             Gestión de Proveedores
           </h1>
-          <button
-            onClick={handleAgregarProveedor}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Agregar Proveedor
-          </button>
-          <button
-            onClick={exportProveedorToExcel}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
-          >
-            <FaDownload className="mr-2" /> Descargar XML
-          </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button
+              onClick={handleAgregarProveedor}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
+            >
+              <FaPlusCircle className="mr-2" /> Agregar Proveedor
+            </button>
+            <button
+              onClick={exportProveedorToExcel}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
+            >
+              <FaDownload className="mr-2" /> Descargar XML
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
