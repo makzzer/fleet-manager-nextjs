@@ -9,6 +9,7 @@ import { UserProvider } from "./context/UserContext";
 import { AnalyticsProvider } from "./context/AnalyticsContext";
 import { ControlProvider } from "./context/ControlContext";
 import { ReservaProvider } from "./context/ReservesContext";
+import { AlertProvider } from "./context/AlertsContext";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -21,7 +22,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                 <AuthProvider>
                   <ReservaProvider>
                     <UserProvider>
-                      {children}
+                      <AlertProvider>
+                        {children}
+                      </AlertProvider>
                     </UserProvider>
                   </ReservaProvider>
                 </AuthProvider>
