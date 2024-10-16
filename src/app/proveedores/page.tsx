@@ -48,9 +48,9 @@ const Proveedores = () => {
       filtered = proveedores.filter((proveedor) => {
         if (selectedFilter === "name") {
           return proveedor.name.toLowerCase().includes(searchTerm.toLowerCase());
-        } else if (selectedFilter === "brand") {
+        } else if (selectedFilter === "email") {
           return proveedor.email.toLowerCase().includes(searchTerm.toLowerCase());
-        } else if (selectedFilter === "category") {
+        } else if (selectedFilter === "address") {
           return proveedor.address.toLowerCase().includes(searchTerm.toLowerCase());
         }
         return false;
@@ -77,11 +77,17 @@ const Proveedores = () => {
     let filtered = proveedores; // Filtrar sobre la lista completa de proveedores
 
     if (selectedFilter && searchTerm) {
+      if (selectedFilter === "name") {
+        filtered = proveedores.filter(proveedor =>
+          proveedor.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
       if (selectedFilter === "email") {
         filtered = proveedores.filter(proveedor =>
           proveedor.email.toLowerCase().includes(searchTerm.toLowerCase())
         );
-      } else if (selectedFilter === "address") {
+      } 
+      else if (selectedFilter === "address") {
         filtered = proveedores.filter(proveedor =>
           proveedor.address.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -202,6 +208,7 @@ const Proveedores = () => {
             className="bg-gray-800 text-white p-2 rounded"
           >
             <option value="">Selecciona un filtro</option>
+            <option value="name">Nombre</option>
             <option value="email">Email</option>
             <option value="address">Dirección</option>
           </select>
