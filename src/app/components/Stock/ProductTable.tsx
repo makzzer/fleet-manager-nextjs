@@ -60,6 +60,14 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
     };
   }, []);
 
+  const getUnidadMedida = (category: string) => {
+    const lowerCategory = category.toLowerCase();
+    if (lowerCategory  === 'aceite' || lowerCategory === 'lubricantes' || lowerCategory === 'líquido de frenos') {
+      return 'litros';
+    }
+    return 'unidades'; 
+  };
+
   return (
     <div
       className="bg-gray-800 shadow-md rounded-lg p-6 overflow-x-auto relative"
@@ -110,6 +118,9 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
               Cantidad
             </th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
+              Unidad de medida
+            </th>
             <th className="px-6 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
               Acciones
             </th>
@@ -120,12 +131,9 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
             <tr key={product.id} className={""}>
               <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
               <td className="px-6 py-4 whitespace-nowrap">{product.brand}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {product.category}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-center">
-                {product.quantity}
-              </td>
+              <td className="px-6 py-4 whitespace-nowrap">{product.category}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-center">{product.quantity}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-center">{getUnidadMedida(product.category)}</td>
               <td className="px-6 py-4 whitespace-nowrap flex space-x-2 justify-end">
                 <IconButton
                   aria-label="Ver producto"

@@ -16,8 +16,8 @@ import { useProducto } from "../context/ProductoContext";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
   //Lista de categorias de repuestos en productos
-  const categorias = ['Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas', 
-    'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Lubricantes', 'Luces', 
+  const categorias = ['Aceite', 'Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas', 
+    'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Líquido de frenos', 'Lubricantes', 'Luces', 
     'Motores', 'Neumático', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores', 
     'Suspensión', 'Transmisión'
   ];
