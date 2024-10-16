@@ -6,6 +6,7 @@ import { IoPulse } from "react-icons/io5";
 import { FaRegCalendarAlt, FaUserCircle, FaRegEye  } from "react-icons/fa";
 import { TbArrowsExchange } from "react-icons/tb";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 
 
@@ -131,6 +132,22 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile, setStatusTask }) =>
     
   };
 
+  const handleViewDetails = (control: Control) => {
+    Swal.fire({
+      title: `Detalles del control ${control.type.toLowerCase()}`,
+      html: `
+          <div>
+            <strong>${control.subject}:</strong>
+            <span>${control.description}</span>
+          </div>`
+          ,
+      confirmButtonText: "Cerrar",
+      customClass: {
+        popup: "bg-gray-900 text-white",
+      },
+    });
+  };
+
   if (isMobile) {
     return (
       <div
@@ -143,7 +160,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile, setStatusTask }) =>
       <div>
         <div className="flex justify-between items-center">
         {typeLogo(control.type)}
-        <button>
+        <button onClick={() => handleViewDetails(control)}>
           <FaRegEye className="w-6 h-6 text-gray-300 hover:text-gray-100"/>
         </button>
         </div>
@@ -215,6 +232,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isMobile, setStatusTask }) =>
       {...attributes}
       {...listeners}
       className="bg-gray-900 p-4 flex flex-col text-left rounded-xl hover:ring-2 hover:ring-inset hover:ring-blue-500 cursor-pointer justify-between relative gap-4"
+      onClick={() => handleViewDetails(control)}
     >
       <div className="flex justify-between items-center">
         <p className="text-md font-bold">{control.subject}</p>
