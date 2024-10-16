@@ -10,6 +10,7 @@ import {
   PointerSensor,
   useSensor,
   DragOverEvent,
+  TouchSensor,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
@@ -93,6 +94,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 2,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 2,
+        delay: 250,
+        tolerance: 5,
       },
     })
   );
