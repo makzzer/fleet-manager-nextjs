@@ -6,19 +6,15 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 
-
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState<number>(0); // Número de notificaciones no leídas
   const menuRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const { authenticatedUser, logoutUser } = useAuth(); // Usamos el contexto para saber si el usuario está autenticado
-
-
-
-
+  const { authenticatedUser, logoutUser } = useAuth();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -36,7 +32,6 @@ const Navbar = () => {
     setProfileMenuOpen(false);
   };
 
-  // Manejar clic fuera del menú o perfil
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -54,10 +49,15 @@ const Navbar = () => {
     };
   }, []);
 
-  // Función para manejar el cierre de sesión
+  // Simulación de carga de notificaciones
+  useEffect(() => {
+    // Aquí podrías hacer un fetch para obtener el número de notificaciones no leídas
+    setUnreadNotifications(1); // Por ahora, estableceremos un valor fijo para simular
+  }, []);
+
   const handleLogout = () => {
-    logoutUser(); // Cerrar sesión
-    router.push("/login"); // Redirigir al login
+    logoutUser();
+    router.push('/login');
   };
 
   return (
@@ -68,48 +68,69 @@ const Navbar = () => {
             <Link href="/" className="text-3xl ms-20 font-bold text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Fleet Manager
             </Link>
-
           </div>
         </div>
         <div className="ml-auto md:hidden">
           <button
             onClick={toggleMenu}
             className="text-white focus:outline-none"
-            style={{ padding: '0', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} // Aumentar el área de clic y centrar el contenido
+            style={{ padding: '0', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
-
           </button>
         </div>
-        <div className="flex items-center md:absolute md:pt-4 md:right-10">
+        <div className="flex items-center md:absolute md:pt-4 md:right-10 space-x-4">
           {authenticatedUser && (
-            <div ref={profileMenuRef} className="relative">
-              <button onClick={toggleProfileMenu} className="focus:outline-none">
-                <Image
-                  src="/ironman.jpg"
-                  width={20}
-                  height={20}
-                  alt="User Profile"
-                  className="w-8 h-8 rounded-full md:w-10 md:h-10"
-                />
-              </button>
-              {profileMenuOpen && (
-                <div className="absolute right-0 mt-0 w-48 bg-gray-600 rounded-md shadow-lg py-1">
-                  {/*} <Link href="/perfil" className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-500">
-                    Perfil
-                  </Link>*/}
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-500"
-                  >
-                    Cerrar sesión
+            <>
+              {/* Icono de la campanita con el indicador de notificación */}
+              <Link href="/alertas">
+                <div className="relative">
+                  <button className="relative focus:outline-none">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-gray-200 hover:text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
                   </button>
+                  {unreadNotifications > 0 && (
+                    <span className="absolute top-0 right-0 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
+              </Link>
+
+              {/* Menú de perfil */}
+              <div ref={profileMenuRef} className="relative">
+                <button onClick={toggleProfileMenu} className="focus:outline-none">
+                  <Image
+                    src="/ironman.jpg"
+                    width={20}
+                    height={20}
+                    alt="User Profile"
+                    className="w-8 h-8 rounded-full md:w-10 md:h-10"
+                  />
+                </button>
+                {profileMenuOpen && (
+                  <div className="absolute right-0 mt-0 w-48 bg-gray-600 rounded-md shadow-lg py-1">
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-500"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
-
     </nav>
   );
 };

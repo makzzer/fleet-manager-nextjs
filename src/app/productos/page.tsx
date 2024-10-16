@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import ProductTable from "../components/Stock/ProductTable";
-import { FaPlusCircle, FaQrcode } from "react-icons/fa";
+import { FaDownload, FaPlusCircle, FaQrcode } from "react-icons/fa";
 import Link from "next/link";
 import { useState } from "react";
 import FiltrosProducto from "../components/Stock/FiltrosProducto";
@@ -15,16 +15,16 @@ import { useProducto } from "../context/ProductoContext";
 
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
-  //Lista de categorias de repuestos en productos
-  const categorias = ['Aceite', 'Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas', 
-    'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Líquido de frenos', 'Lubricantes', 'Luces', 
-    'Motores', 'Neumático', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores', 
-    'Suspensión', 'Transmisión'
-  ];
+//Lista de categorias de repuestos en productos
+const categorias = ['Aceite', 'Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas',
+  'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Líquido de frenos', 'Lubricantes', 'Luces',
+  'Motores', 'Motor', 'Neumáticos ', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores',
+  'Suspensión', 'Transmisión',
+];
 
 const Stock = () => {
   const router = useRouter();
-  const { productos, fetchProductos, createProducto } = useProducto();
+  const { productos, fetchProductos, createProducto, exportProductoToExcel } = useProducto();
   const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
   const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
   const [loadMoreCount, setLoadMoreCount] = useState(5); // Para cargar de a 4
@@ -33,8 +33,6 @@ const Stock = () => {
   const [selectedFilter, setSelectedFilter] = useState(""); // Estado para el filtro seleccionado
   const [isSearchEnabled, setIsSearchEnabled] = useState(false); // Estado para habilitar o deshabilitar la barra de búsqueda
 
-
-  // const [localProducts, setLocalProducts] = useState(productos);
 
   useEffect(() => {
     const loadProductos = async () => {
@@ -45,18 +43,23 @@ const Stock = () => {
     loadProductos();
   }, [fetchProductos]);
 
+  // función para filtrar tildes y caracteres especiales en el buscador.
+  const removeAccents = (str: string) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  };
+
   useEffect(() => {
     let filtered = productos;
 
     if (searchTerm) {
       filtered = filtered.filter((producto) =>
-        producto.name.toLowerCase().includes(searchTerm.toLowerCase())
+        removeAccents(producto.name.toLowerCase()).includes(removeAccents(searchTerm.toLowerCase()))
       );
     }
 
     if (selectedCategory) {
       filtered = filtered.filter((producto) =>
-        producto.category.toLowerCase() === selectedCategory.toLowerCase()
+        removeAccents(producto.category.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
       );
     }
 
@@ -66,27 +69,28 @@ const Stock = () => {
   useEffect(() => {
     let filtered = productos;
 
+    // filtrar por categoría primero si hay una seleccionada.
+    if (selectedCategory) {
+      filtered = filtered.filter((producto) =>
+        removeAccents(producto.category.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
+      );
+    }
+
+    // luego el filtro por nombre o marca.
     if (searchTerm && selectedFilter) {
-      filtered = productos.filter((producto) => {
+      const normalizedSearchTerm = removeAccents(searchTerm.toLowerCase());
+
+      filtered = filtered.filter((producto) => {
         if (selectedFilter === "name") {
-          return producto.name.toLowerCase().includes(searchTerm.toLowerCase());
+          return removeAccents(producto.name.toLowerCase()).includes(normalizedSearchTerm);
         } else if (selectedFilter === "brand") {
-          return producto.brand.toLowerCase().includes(searchTerm.toLowerCase());
-        } else if (selectedFilter === "category") {
-          return producto.category.toLowerCase().includes(searchTerm.toLowerCase());
+          return removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm);
         }
         return false;
       });
     }
-
-    setFilteredProductos(filtered);
-  }, [productos, searchTerm, selectedFilter]);
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = e.target.value;
-    setSelectedFilter(selected);
-    setIsSearchEnabled(!!selected); // Habilitar la barra de búsqueda si se selecciona un filtro
-  };
+    setFilteredProductos(filtered.slice(0, loadMoreCount));
+  }, [productos, searchTerm, selectedCategory, selectedFilter, loadMoreCount]);
 
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 5); // Cargar 6 proveedores más
@@ -107,6 +111,20 @@ const Stock = () => {
   //   );
   //   setFilteredProductos(filtered);
   // };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    setSelectedFilter(selected);
+    setIsSearchEnabled(!!selected); // habilitar las barras de búsqueda si se selecciona un filtro de nombre o marca.
+
+    // actualizar productos filtrados cuando seleccionas la categoría
+    if (selected === "category" && selectedCategory) {
+      const filtered = productos.filter((producto) =>
+        producto.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
+      setFilteredProductos(filtered);
+    }
+  };
 
   const handleFilter = (filters: {
     searchTerm: string;
@@ -135,9 +153,8 @@ const Stock = () => {
   };
 
   const handleAgregarProducto = () => {
-
-  // Construir las opciones del select
-  const opcionesCategorias = categorias.map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
+    // Construir las opciones del select
+    const opcionesCategorias = categorias.map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
 
     Swal.fire({
       title: "Agregar Producto",
@@ -219,7 +236,7 @@ const Stock = () => {
             Gestión de Productos
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button
               onClick={handleAgregarProducto}
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
@@ -233,30 +250,32 @@ const Stock = () => {
             >
               <FaQrcode className="mr-2" /> Scanear QR
             </Link>
+            <button
+              onClick={exportProductoToExcel}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
+            >
+              <FaDownload className="mr-2" /> Descargar XML
+            </button>
           </div>
         </div>
 
-        {/* Barras de busqueda */}
-        {/* <FiltrosProducto onFilter={handleFilter} categorias={categorias} /> */}
-
         {/* Combobox para seleccionar el filtro */}
-      <div className="mb-4">
-        <select
-          value={selectedFilter}
-          onChange={handleFilterChange}
-          className="bg-gray-800 text-white p-2 rounded"
-        >
-          <option value="">Selecciona un filtro</option>
-          <option value="name">Nombre</option>
-          <option value="brand">Marca</option>
-          <option value="category">Categoría</option>
-        </select>
-      </div>
+        <div className="mb-4">
+          <select
+            value={selectedFilter}
+            onChange={handleFilterChange}
+            className="bg-gray-800 text-white p-2 rounded"
+          >
+            <option value="">Selecciona un filtro</option>
+            <option value="name">Nombre</option>
+            <option value="brand">Marca</option>
+          </select>
+        </div>
 
-      {/* Barra de búsqueda habilitada cuando se selecciona un filtro */}
-      {isSearchEnabled && (
-        <FiltrosProducto onFilter={handleFilter} categorias={categorias} />
-      )}
+        {/* Barra de búsqueda habilitada cuando se selecciona un filtro */}
+        {isSearchEnabled && (
+          <FiltrosProducto onFilter={handleFilter} categorias={categorias} />
+        )}
 
         {filteredProductos && filteredProductos.length > 0 ? (
           // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
@@ -274,15 +293,15 @@ const Stock = () => {
       </div>
 
       {filteredProductos.length < productos.length && (
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={handleLoadMore}
-              className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-            >
-              Ver más
-            </button>
-          </div>
-        )}
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleLoadMore}
+            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Ver más
+          </button>
+        </div>
+      )}
     </ProtectedRoute>
   );
 };

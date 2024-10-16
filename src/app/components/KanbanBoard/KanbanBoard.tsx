@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
@@ -10,10 +10,10 @@ import {
   PointerSensor,
   useSensor,
   DragOverEvent,
+  TouchSensor,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
-import useTaskCreation from "@/app/hooks/useTaskCreation";
 
 interface Coordinates {
   latitude: number;
@@ -68,9 +68,11 @@ interface Task {
 interface KanbanBoardProps {
   initialTasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  setStatusTask: (control_id: string, new_status: string) => void;
+  addControlTask: () => void;
 }
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => {
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, addControlTask }) => {
 
   const [columns] = useState<Column[]>([
     { id: "TODO", title: "Por hacer" },
@@ -78,19 +80,27 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => 
     { id: "DONE", title: "Terminado" },
   ]);
 
-  const tasks = initialTasks;
+  const [internalTasks, setInternalTasks] = useState(initialTasks);
 
-  console.log(tasks);
-  console.log(columns);
-
+  useEffect(() => {
+    if(initialTasks.length !== internalTasks.length){
+      setInternalTasks(initialTasks);
+    }
+  }, [initialTasks, internalTasks]);
+  
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   
-  const { createTask } = useTaskCreation(setTasks);
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 2,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 2,
+        delay: 250,
+        tolerance: 5,
       },
     })
   );
@@ -117,41 +127,46 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => 
 
     //Dropeando una tarea encima de otra
     if (isActiveATask && isOverATask) {
-      setTasks((tasks) => {
+      setInternalTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
         const overIndex = tasks.findIndex((t) => t.id === overId);
 
-        if (
-          activeIndex !== overIndex &&
-          tasks[activeIndex].columnId === tasks[overIndex].columnId
-        ) {
-          // Solo reordena si las posiciones son diferentes.
-          tasks[activeIndex].columnId = tasks[overIndex].columnId;
-          return arrayMove(tasks, activeIndex, overIndex);
-        }
+        tasks[activeIndex].columnId = tasks[overIndex].columnId;
 
-        return tasks;
+        return arrayMove(tasks, activeIndex, overIndex);
       });
     }
 
     const isOverAColumn = over.data.current?.type === "Column";
     //Dropeando una tarea encima de una columna
     if (isActiveATask && isOverAColumn) {
-      setTasks((tasks) => {
+      setInternalTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
 
-        if (tasks[activeIndex].columnId !== overId) {
-          tasks[activeIndex].columnId = overId;
-        }
+        tasks[activeIndex].columnId = overId;
 
-        return tasks;
+        return arrayMove(tasks, activeIndex, activeIndex);
       });
     }
   };
 
   const onDragEnd = () => {
-    setActiveTask(null);
+    compareTasks();
   };
+  
+  const compareTasks = () => {
+    internalTasks.forEach((task) => {
+      initialTasks.forEach((OGtask) => {
+        if(task.content.id !== OGtask.content.id){
+          return;
+        }
+        if(task.columnId !== OGtask.columnId){
+          setStatusTask(OGtask.content.id as string, task.columnId as string);
+        }
+      })
+    });
+  };
+  
 
   return (
     <div className="min-h-screen w-full overflow-x-auto overflow-y-hidden">
@@ -167,14 +182,14 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setTasks }) => 
               <ColumnContainer
                 key={col.id}
                 column={col}
-                createTask={createTask}
-                tasks={tasks.filter((task) => task.columnId === col.id)}
+                createTask={addControlTask}
+                tasks={internalTasks.filter((task) => task.columnId === col.id)}
               />
             ) : (
               <ColumnContainer
                 key={col.id}
                 column={col}
-                tasks={tasks.filter((task) => task.columnId === col.id)}
+                tasks={internalTasks.filter((task) => task.columnId === col.id)}
               />
             )
           )}

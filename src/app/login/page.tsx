@@ -94,7 +94,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
+    <div className=" flex  p-6 bg-gray-900 rounded-xl text-white  min-h-[70vh]">
       <ThemeProvider theme={theme}>
         <Container
           maxWidth="xs"
