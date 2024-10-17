@@ -132,7 +132,7 @@ const Controles = () => {
     let selectedModel = "";
 
     const { value: formValues } = await Swal.fire({
-      title: `Crear control Correctivo`,
+      title: `Crear control Predictivo`,
       color: "white",
       html: `
             <div class="flex flex-col md:flex-row justify-center gap-6 w-full max-w-4xl mx-auto">
