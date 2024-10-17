@@ -102,15 +102,19 @@ const Controles = () => {
     const coches = vehiculos;
     const usuarios = users;
 
-    const opcionesMarcasVehiculos = coches.map(
-      (coches) => `<option value="${coches.brand}">${coches.brand}</option>`
-    );
-    const opcionesModelosVehiculos = coches.map(
-      (coches) => `<option value="${coches.model}">${coches.model}</option>`
-    );
-    const opcionesAniosVehiculos = coches.map(
-      (coches) => `<option value="${coches.year}">${coches.year}</option>`
-    );
+    const brandModelMap = new Map()
+    coches.forEach((coche) => {
+      if (!brandModelMap.has(coche.brand)) {
+        brandModelMap.set(coche.brand, new Map())
+      }
+      if (!brandModelMap.get(coche.brand).has(coche.model)) {
+        brandModelMap.get(coche.brand).set(coche.model, new Set())
+      }
+      brandModelMap.get(coche.brand).get(coche.model).add(coche.year)
+    })
+
+    // Convert the map to an array of unique brands
+    const uniqueBrands = Array.from(brandModelMap.keys())
 
     const opcionesOperadores = usuarios
       .filter((usuario) => usuario.roles.includes("OPERATOR"))
@@ -119,6 +123,9 @@ const Controles = () => {
           `<option value="${usuario.id}">${usuario.full_name}</option>`
       )
       .join("");
+
+      let selectedBrand = "";
+      let selectedModel = "";
 
     const { value: formValues } = await Swal.fire({
       title: `Crear control Correctivo`,
@@ -135,17 +142,15 @@ const Controles = () => {
             <input id="asunto" class="swal2-input" placeholder="Asunto">
             <input id="descripcion" class="swal2-input" placeholder="Descripción">
             <select id="vehiculo-brand" class="swal2-select">
-            <option value="" disabled selected>Seleccione una marca</option>
-            ${opcionesMarcasVehiculos}
-            </select>
-            <select id="vehiculo-model" class="swal2-select">
-            <option value="" disabled selected>Seleccione un modelo</option>
-            ${opcionesModelosVehiculos}
-            </select>
-            <select id="vehiculo-year" class="swal2-select">
-            <option value="" disabled selected>Seleccione un año</option>
-            ${opcionesAniosVehiculos}
-            </select>
+          <option value="" disabled selected>Seleccione una marca</option>
+          ${uniqueBrands.map(brand => `<option value="${brand}">${brand}</option>`).join('')}
+        </select>
+        <select id="vehiculo-model" class="swal2-select" disabled>
+          <option value="" disabled selected>Seleccione un modelo</option>
+        </select>
+        <select id="vehiculo-year" class="swal2-select" disabled>
+          <option value="" disabled selected>Seleccione un año</option>
+        </select>
 
             <div class="swal2-input mt-4">
               <label >Prioridad:</label><br>
@@ -164,6 +169,50 @@ const Controles = () => {
             ${opcionesOperadores}
         `,
       focusConfirm: false,
+      didOpen: () => {
+        const brandSelect = document.getElementById('vehiculo-brand') as HTMLSelectElement
+        const modelSelect = document.getElementById('vehiculo-model') as HTMLSelectElement
+        const yearSelect = document.getElementById('vehiculo-year') as HTMLSelectElement
+
+        brandSelect.addEventListener('change', (e) => {
+          selectedBrand = (e.target as HTMLSelectElement).value
+          modelSelect.innerHTML = '<option value="" disabled selected>Seleccione un modelo</option>'
+          yearSelect.innerHTML = '<option value="" disabled selected>Seleccione un año</option>'
+          
+          if (selectedBrand) {
+            const models: string[] = Array.from(brandModelMap.get(selectedBrand).keys())
+            models.forEach(model => {
+              const option = document.createElement('option')
+              option.value = model
+              option.textContent = model
+              modelSelect.appendChild(option)
+            })
+            modelSelect.disabled = false
+            yearSelect.disabled = true
+          } else {
+            modelSelect.disabled = true
+            yearSelect.disabled = true
+          }
+        })
+
+        modelSelect.addEventListener('change', (e) => {
+          selectedModel = (e.target as HTMLSelectElement).value
+          yearSelect.innerHTML = '<option value="" disabled selected>Seleccione un año</option>'
+          
+          if (selectedModel) {
+            const years: number[] = Array.from(brandModelMap.get(selectedBrand).get(selectedModel))
+            years.forEach(year => {
+              const option = document.createElement('option')
+              option.value = year.toString()
+              option.textContent = year.toString()
+              yearSelect.appendChild(option)
+            })
+            yearSelect.disabled = false
+          } else {
+            yearSelect.disabled = true
+          }
+        })
+      },
       preConfirm: () => {
         return {
           subject: (document.getElementById("asunto") as HTMLInputElement)
