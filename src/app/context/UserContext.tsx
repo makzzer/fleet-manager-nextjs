@@ -34,6 +34,7 @@ interface UserContextProps {
   fetchUsers: () => void;
   createUser: (usuario: NewUserRequest) => void;
   setRoles: (id: string, role: string) => void;
+  setPassword: (id: string, password: string) => void;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -81,12 +82,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const setPassword = async (id: string, password: string) => {
+    try {
+      await axios.put(`${apiUsuarios}/${id}/passwords`, {password})
+    } catch (error) {
+      console.error("Error assigning new password: ", error);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
   return (
-    <UserContext.Provider value={{ users, fetchUsers, createUser, setRoles }}>
+    <UserContext.Provider value={{ users, fetchUsers, createUser, setRoles, setPassword }}>
       {children}
     </UserContext.Provider>
   );
