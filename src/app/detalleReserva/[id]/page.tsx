@@ -1,8 +1,5 @@
-// app/detalleReserva/[id]/page.tsx
-
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import DetalleReserva from "@/app/components/Reservas/DetalleReserva";
 import { useReserva } from "@/app/context/ReservesContext";
 import { Reserva } from "@/app/context/ReservesContext";

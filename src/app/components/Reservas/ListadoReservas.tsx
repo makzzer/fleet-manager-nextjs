@@ -1,27 +1,40 @@
 "use client";
 import { useReserva } from "@/app/context/ReservesContext";
+import { useAuth } from "@/app/context/AuthContext";
 import { useEffect, useState } from "react";
 import ReservaCard from "./ReservaCard";
 import ProtectedRoute from "../Routes/ProtectedRoutes";
-import { useRouter } from "next/navigation";
+import { Reserva } from "@/app/context/ReservesContext";
 
 const ListadoReservas = () => {
   const { reservas, fetchReservas } = useReserva();
+  const { authenticatedUser } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter()
+  const [userReservas, setUserReservas] = useState<Reserva[]>([]);
 
+  // Fetch reservas when authenticatedUser changes
   useEffect(() => {
     const loadReservas = async () => {
       setIsLoading(true);
       await fetchReservas();
-      setIsLoading(false);
     };
-    loadReservas();
-  }, [fetchReservas]);
 
-  const handleVerDetalles = (id: string) => {
-    router.push(`/detalleReserva/${id}`);
-  };
+    if (authenticatedUser) {
+      loadReservas();
+    }
+  }, [fetchReservas, authenticatedUser]);
+
+  // Filter reservas when reservas change
+  useEffect(() => {
+    if (authenticatedUser && reservas.length > 0) {
+      const reservasFiltradas = reservas.filter(
+        (reserva) => reserva.user_id === authenticatedUser.id
+      );
+      setUserReservas(reservasFiltradas);
+      console.log("Reservas filtradas para el usuario:", reservasFiltradas);
+      setIsLoading(false);
+    }
+  }, [authenticatedUser, reservas]);
 
   return (
     <ProtectedRoute>
@@ -29,9 +42,9 @@ const ListadoReservas = () => {
         <h1 className="text-4xl font-bold text-blue-400 mb-8">Mis Reservas</h1>
         {isLoading ? (
           <p className="text-gray-400">Cargando reservas...</p>
-        ) : reservas.length > 0 ? (
+        ) : userReservas.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reservas.map((reserva) => (
+            {userReservas.map((reserva) => (
               <ReservaCard key={reserva.id} reserva={reserva} />
             ))}
           </div>
