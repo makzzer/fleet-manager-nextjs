@@ -7,6 +7,7 @@ import { useControl } from "../context/ControlContext";
 import { useVehiculo } from "../context/VehiculoContext";
 import { useUser } from "../context/UserContext";
 import Swal from "sweetalert2";
+import TaskList from "../components/TaskList";
 
 interface Coordinates {
   latitude: number;
@@ -64,7 +65,7 @@ interface POSTPredictiveControl {
 }
 
 const Controles = () => {
-  const { controls, fetchControls, setControlStatus, createPredictiveControl } =
+  const { controls, fetchControls, setControlStatus, createPredictiveControl, exportControlesToExcel } =
     useControl();
   const [controlTaskCards, setControlTaskCards] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,19 +93,28 @@ const Controles = () => {
     }
   }, [controls]);
 
+  const handleSetStatus = async (control_id: string, new_status: string) => {
+    await setControlStatus(control_id, new_status);
+    await fetchControls();
+  }
+
   const handleCreatePredictiveControl = async () => {
     const coches = vehiculos;
     const usuarios = users;
 
-    const opcionesMarcasVehiculos = coches.map(
-      (coches) => `<option value="${coches.brand}">${coches.brand}</option>`
-    );
-    const opcionesModelosVehiculos = coches.map(
-      (coches) => `<option value="${coches.model}">${coches.model}</option>`
-    );
-    const opcionesAniosVehiculos = coches.map(
-      (coches) => `<option value="${coches.year}">${coches.year}</option>`
-    );
+    const brandModelMap = new Map()
+    coches.forEach((coche) => {
+      if (!brandModelMap.has(coche.brand)) {
+        brandModelMap.set(coche.brand, new Map())
+      }
+      if (!brandModelMap.get(coche.brand).has(coche.model)) {
+        brandModelMap.get(coche.brand).set(coche.model, new Set())
+      }
+      brandModelMap.get(coche.brand).get(coche.model).add(coche.year)
+    })
+
+    // Convert the map to an array of unique brands
+    const uniqueBrands = Array.from(brandModelMap.keys())
 
     const opcionesOperadores = usuarios
       .filter((usuario) => usuario.roles.includes("OPERATOR"))
@@ -113,6 +123,9 @@ const Controles = () => {
           `<option value="${usuario.id}">${usuario.full_name}</option>`
       )
       .join("");
+
+      let selectedBrand = "";
+      let selectedModel = "";
 
     const { value: formValues } = await Swal.fire({
       title: `Crear control Correctivo`,
@@ -129,17 +142,15 @@ const Controles = () => {
             <input id="asunto" class="swal2-input" placeholder="Asunto">
             <input id="descripcion" class="swal2-input" placeholder="Descripción">
             <select id="vehiculo-brand" class="swal2-select">
-            <option value="" disabled selected>Seleccione una marca</option>
-            ${opcionesMarcasVehiculos}
-            </select>
-            <select id="vehiculo-model" class="swal2-select">
-            <option value="" disabled selected>Seleccione un modelo</option>
-            ${opcionesModelosVehiculos}
-            </select>
-            <select id="vehiculo-year" class="swal2-select">
-            <option value="" disabled selected>Seleccione un año</option>
-            ${opcionesAniosVehiculos}
-            </select>
+          <option value="" disabled selected>Seleccione una marca</option>
+          ${uniqueBrands.map(brand => `<option value="${brand}">${brand}</option>`).join('')}
+        </select>
+        <select id="vehiculo-model" class="swal2-select" disabled>
+          <option value="" disabled selected>Seleccione un modelo</option>
+        </select>
+        <select id="vehiculo-year" class="swal2-select" disabled>
+          <option value="" disabled selected>Seleccione un año</option>
+        </select>
 
             <div class="swal2-input mt-4">
               <label >Prioridad:</label><br>
@@ -158,6 +169,50 @@ const Controles = () => {
             ${opcionesOperadores}
         `,
       focusConfirm: false,
+      didOpen: () => {
+        const brandSelect = document.getElementById('vehiculo-brand') as HTMLSelectElement
+        const modelSelect = document.getElementById('vehiculo-model') as HTMLSelectElement
+        const yearSelect = document.getElementById('vehiculo-year') as HTMLSelectElement
+
+        brandSelect.addEventListener('change', (e) => {
+          selectedBrand = (e.target as HTMLSelectElement).value
+          modelSelect.innerHTML = '<option value="" disabled selected>Seleccione un modelo</option>'
+          yearSelect.innerHTML = '<option value="" disabled selected>Seleccione un año</option>'
+          
+          if (selectedBrand) {
+            const models: string[] = Array.from(brandModelMap.get(selectedBrand).keys())
+            models.forEach(model => {
+              const option = document.createElement('option')
+              option.value = model
+              option.textContent = model
+              modelSelect.appendChild(option)
+            })
+            modelSelect.disabled = false
+            yearSelect.disabled = true
+          } else {
+            modelSelect.disabled = true
+            yearSelect.disabled = true
+          }
+        })
+
+        modelSelect.addEventListener('change', (e) => {
+          selectedModel = (e.target as HTMLSelectElement).value
+          yearSelect.innerHTML = '<option value="" disabled selected>Seleccione un año</option>'
+          
+          if (selectedModel) {
+            const years: number[] = Array.from(brandModelMap.get(selectedBrand).get(selectedModel))
+            years.forEach(year => {
+              const option = document.createElement('option')
+              option.value = year.toString()
+              option.textContent = year.toString()
+              yearSelect.appendChild(option)
+            })
+            yearSelect.disabled = false
+          } else {
+            yearSelect.disabled = true
+          }
+        })
+      },
       preConfirm: () => {
         return {
           subject: (document.getElementById("asunto") as HTMLInputElement)
@@ -201,17 +256,29 @@ const Controles = () => {
   return (
     <ProtectedRoute>
       <div className="p-6 bg-gray-900 min-h-screen text-white rounded-lg">
-        <div className="mb-6">
-          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
+        <div className="mb-6 flex flex-col md:flex-row md:justify-between">
+          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-4">
             Gestión de controles
           </h1>
+          <button
+           onClick={exportControlesToExcel}
+           className="md:px-4 bg-green-500 hover:bg-green-600 rounded-md font-bold">
+            Descargar XML
+          </button>
         </div>
-        <div>
+        <div className="hidden md:block overflow-x-auto">
           <KanbanBoard
             initialTasks={controlTaskCards}
             setTasks={setControlTaskCards}
-            setStatusTask={setControlStatus}
+            setStatusTask={handleSetStatus}
             addControlTask={handleCreatePredictiveControl}
+          />
+        </div>
+        <div className="md:hidden grid grid-cols-1 gap-6 mt-6">
+          <TaskList 
+          tasks={controlTaskCards}
+          addControlTask={handleCreatePredictiveControl}
+          setStatusTask={handleSetStatus}
           />
         </div>
       </div>

@@ -16,10 +16,10 @@ const Home_reservas = () => {
             Reservar
           </Link>
           <Link
-            href="/mireserva"
+            href="/misreservas"
             className="w-full text-xl bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105"
           >
-            Mi Reserva
+            Mis Reservas
           </Link>
           <Link
             href="/solicitarasistencia"
