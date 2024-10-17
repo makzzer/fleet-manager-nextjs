@@ -8,6 +8,7 @@ import UserCard from "../components/Cards/UserCard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { FaEye } from "react-icons/fa";
 import { MdGroupAdd } from "react-icons/md";
+import LockResetIcon from '@mui/icons-material/LockReset';
 
 interface NewUserRequest {
   username: string;
@@ -51,7 +52,7 @@ const rolColors: { [key: string]: string } = {
 };
 
 const ListaUsuarios = () => {
-  const { users, createUser, setRoles } = useUser(); // Accede al contexto de usuario
+  const { users, createUser, setRoles, setPassword } = useUser(); // Accede al contexto de usuario
   const { hasRole } = useAuth()
   const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para la barra de búsqueda
   const [selectedRole, setSelectedRole] = useState<string>(""); // Estado para el filtro por rol
@@ -240,6 +241,57 @@ const ListaUsuarios = () => {
     });
   };
 
+  const handleSetPassword = (user: User) => {
+    Swal.fire({
+      title: `Cambiar contraseña para ${user.full_name}`,
+      html: `
+        <div class="flex flex-col space-y-4">
+          <div class="flex flex-col">
+            <input id="new-password" type="password" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Nueva contraseña">
+          </div>
+          <div class="flex flex-col">
+            <input id="confirm-password" type="password" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Confirmar contraseña">
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Guardar",
+      focusConfirm: false,
+      preConfirm: () => {
+        const newPassword = (
+          document.getElementById("new-password") as HTMLInputElement
+        ).value;
+        const confirmPassword = (
+          document.getElementById("confirm-password") as HTMLInputElement
+        ).value;
+
+        if (!newPassword || !confirmPassword) {
+          Swal.showValidationMessage("Ambos campos son obligatorios");
+          return false;
+        }
+
+        if (newPassword !== confirmPassword) {
+          Swal.showValidationMessage("Las contraseñas no coinciden");
+          return false;
+        }
+
+        return { newPassword };
+      },
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const newPassword = result.value.newPassword;
+        setPassword(user.id, newPassword); // Llamada a la función que maneja la actualización de la contraseña
+
+        Swal.fire({
+          title: "Contraseña actualizada",
+          text: "La contraseña ha sido cambiada exitosamente.",
+          icon: "success",
+        });
+      }
+    });
+  };
+
   return (
     <ProtectedRoute requiredModule="USERS">
       <div className="min-h-screen bg-gray-900 rounded-xl p-8">
@@ -323,19 +375,24 @@ const ListaUsuarios = () => {
                       <FaEye className="w-5 h-5" />
                     </button>
 
-
-
                     {/* Mostrar este botón solo si el usuario autenticado es SUPERVISOR */}
                     {hasRole("SUPERVISOR") && (
-                      <button
-                        onClick={() => handleSetUser(user)}
-                        className="text-yellow-600 hover:text-yellow-800 p-2 rounded-full flex justify-center items-center"
-                      >
-                        <MdGroupAdd className="w-5 h-5" />
-                      </button>
+                      <>
+                        <button
+                          onClick={() => handleSetUser(user)}
+                          className="text-yellow-600 hover:text-yellow-800 p-2 rounded-full flex justify-center items-center"
+                        >
+                          <MdGroupAdd className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleSetPassword(user)}
+                          className="text-red-500 hover:text-red-700 p-2 rounded-full flex justify-center items-center"
+                        >
+                          <LockResetIcon className="w-5 h-5"/>
+                          {/* <span className="text-sm font-medium">Cambiar Contraseña</span> */}
+                        </button>
+                      </>
                     )}
-
-
                   </td>
                 </tr>
               ))}

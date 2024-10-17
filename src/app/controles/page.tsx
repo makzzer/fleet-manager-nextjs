@@ -65,8 +65,13 @@ interface POSTPredictiveControl {
 }
 
 const Controles = () => {
-  const { controls, fetchControls, setControlStatus, createPredictiveControl, exportControlesToExcel } =
-    useControl();
+  const {
+    controls,
+    fetchControls,
+    setControlStatus,
+    createPredictiveControl,
+    exportControlesToExcel,
+  } = useControl();
   const [controlTaskCards, setControlTaskCards] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const { vehiculos } = useVehiculo();
@@ -96,21 +101,24 @@ const Controles = () => {
   const handleSetStatus = async (control_id: string, new_status: string) => {
     await setControlStatus(control_id, new_status);
     await fetchControls();
-  }
+  };
 
   const handleCreatePredictiveControl = async () => {
     const coches = vehiculos;
     const usuarios = users;
 
-    const opcionesMarcasVehiculos = coches.map(
-      (coches) => `<option value="${coches.brand}">${coches.brand}</option>`
-    );
-    const opcionesModelosVehiculos = coches.map(
-      (coches) => `<option value="${coches.model}">${coches.model}</option>`
-    );
-    const opcionesAniosVehiculos = coches.map(
-      (coches) => `<option value="${coches.year}">${coches.year}</option>`
-    );
+    const brandModelMap = new Map();
+    coches.forEach((coche) => {
+      if (!brandModelMap.has(coche.brand)) {
+        brandModelMap.set(coche.brand, new Map());
+      }
+      if (!brandModelMap.get(coche.brand).has(coche.model)) {
+        brandModelMap.get(coche.brand).set(coche.model, new Set());
+      }
+      brandModelMap.get(coche.brand).get(coche.model).add(coche.year);
+    });
+
+    const uniqueBrands = Array.from(brandModelMap.keys());
 
     const opcionesOperadores = usuarios
       .filter((usuario) => usuario.roles.includes("OPERATOR"))
@@ -120,50 +128,127 @@ const Controles = () => {
       )
       .join("");
 
+    let selectedBrand = "";
+    let selectedModel = "";
+
     const { value: formValues } = await Swal.fire({
-      title: `Crear control Correctivo`,
-      background: "rgb(55 65 81)",
+      title: `Crear control Predictivo`,
       color: "white",
       html: `
-            <style>
-            select.swal2-select {
-              background-color: rgb(55, 65, 81);
-              color: white;
-            }
-            </style>
+            <div class="flex flex-col md:flex-row justify-center gap-6 w-full max-w-4xl mx-auto">
+      <div class="flex flex-col gap-4 w-full md:w-1/2">
+        <h3 class="text-left font-bold text-sm">Informe</h3>
+        <input id="asunto" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Asunto">
+        <textarea id="descripcion" class="w-full h-40 px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Descripción"></textarea>
+      </div>
 
-            <input id="asunto" class="swal2-input" placeholder="Asunto">
-            <input id="descripcion" class="swal2-input" placeholder="Descripción">
-            <select id="vehiculo-brand" class="swal2-select">
-            <option value="" disabled selected>Seleccione una marca</option>
-            ${opcionesMarcasVehiculos}
-            </select>
-            <select id="vehiculo-model" class="swal2-select">
-            <option value="" disabled selected>Seleccione un modelo</option>
-            ${opcionesModelosVehiculos}
-            </select>
-            <select id="vehiculo-year" class="swal2-select">
-            <option value="" disabled selected>Seleccione un año</option>
-            ${opcionesAniosVehiculos}
-            </select>
+      <div class="hidden md:block w-px bg-gray-600 mx-2"></div>
 
-            <div class="swal2-input mt-4">
-              <label >Prioridad:</label><br>
-              <div class="flex gap-2 align-center justify-center">
-              <input type="radio" id="priority-high" name="priority" value="HIGH">
-              <label for="priority-high">Alta</label><br>
-              <input type="radio" id="priority-medium" name="priority" value="MEDIUM">
-              <label for="priority-medium">Media</label><br>
-              <input type="radio" id="priority-low" name="priority" value="LOW">
-              <label for="priority-low">Baja</label>
-              </div>
+      <div class="flex flex-col gap-4 w-full md:w-1/2">
+      <h3 class="text-left font-bold text-sm">Vehículo</h3>
+        <select id="vehiculo-brand" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="" disabled selected>Seleccione una marca</option>
+          ${uniqueBrands
+            .map((brand) => `<option value="${brand}">${brand}</option>`)
+            .join("")}
+        </select>
+        <select id="vehiculo-model" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
+          <option value="" disabled selected>Seleccione un modelo</option>
+        </select>
+        <select id="vehiculo-year" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
+          <option value="" disabled selected>Seleccione un año</option>
+        </select>
+
+        <div class="mt-4">
+          <h3 class="text-left font-bold mb-4 text-sm">Prioridad:</h3>
+          <div class="flex gap-4 items-center">
+            <div class="flex items-center">
+              <input type="radio" id="priority-high" name="priority" value="HIGH" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500">
+              <label for="priority-high" class="ml-2 text-sm font-medium text-gray-300">Alta</label>
             </div>
-            
-            <select id="operador" class="swal2-select">
-            <option value="" disabled selected>Seleccione un operador</option>
-            ${opcionesOperadores}
+            <div class="flex items-center">
+              <input type="radio" id="priority-medium" name="priority" value="MEDIUM" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500">
+              <label for="priority-medium" class="ml-2 text-sm font-medium text-gray-300">Media</label>
+            </div>
+            <div class="flex items-center">
+              <input type="radio" id="priority-low" name="priority" value="LOW" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500">
+              <label for="priority-low" class="ml-2 text-sm font-medium text-gray-300">Baja</label>
+            </div>
+          </div>
+        </div>
+        
+        <h3 class="text-left font-bold text-sm">Responsable</h3>
+        <select id="operador" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="" disabled selected>Seleccione un operador</option>
+          ${opcionesOperadores}
+        </select>
+      </div>
+    </div>
         `,
       focusConfirm: false,
+      customClass: {
+        popup: "bg-gray-800 text-white w-full max-w-4xl p-6 rounded-lg",
+        title: "text-2xl font-bold mb-4",
+        confirmButton:
+          "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline",
+      },
+      didOpen: () => {
+        const brandSelect = document.getElementById(
+          "vehiculo-brand"
+        ) as HTMLSelectElement;
+        const modelSelect = document.getElementById(
+          "vehiculo-model"
+        ) as HTMLSelectElement;
+        const yearSelect = document.getElementById(
+          "vehiculo-year"
+        ) as HTMLSelectElement;
+
+        brandSelect.addEventListener("change", (e) => {
+          selectedBrand = (e.target as HTMLSelectElement).value;
+          modelSelect.innerHTML =
+            '<option value="" disabled selected>Seleccione un modelo</option>';
+          yearSelect.innerHTML =
+            '<option value="" disabled selected>Seleccione un año</option>';
+
+          if (selectedBrand) {
+            const models: string[] = Array.from(
+              brandModelMap.get(selectedBrand).keys()
+            );
+            models.forEach((model) => {
+              const option = document.createElement("option");
+              option.value = model;
+              option.textContent = model;
+              modelSelect.appendChild(option);
+            });
+            modelSelect.disabled = false;
+            yearSelect.disabled = true;
+          } else {
+            modelSelect.disabled = true;
+            yearSelect.disabled = true;
+          }
+        });
+
+        modelSelect.addEventListener("change", (e) => {
+          selectedModel = (e.target as HTMLSelectElement).value;
+          yearSelect.innerHTML =
+            '<option value="" disabled selected>Seleccione un año</option>';
+
+          if (selectedModel) {
+            const years: number[] = Array.from(
+              brandModelMap.get(selectedBrand).get(selectedModel)
+            );
+            years.forEach((year) => {
+              const option = document.createElement("option");
+              option.value = year.toString();
+              option.textContent = year.toString();
+              yearSelect.appendChild(option);
+            });
+            yearSelect.disabled = false;
+          } else {
+            yearSelect.disabled = true;
+          }
+        });
+      },
       preConfirm: () => {
         return {
           subject: (document.getElementById("asunto") as HTMLInputElement)
@@ -212,8 +297,9 @@ const Controles = () => {
             Gestión de controles
           </h1>
           <button
-           onClick={exportControlesToExcel}
-           className="md:px-4 bg-green-500 hover:bg-green-600 rounded-md font-bold">
+            onClick={exportControlesToExcel}
+            className="md:px-4 bg-green-500 hover:bg-green-600 rounded-md font-bold"
+          >
             Descargar XML
           </button>
         </div>
@@ -226,10 +312,10 @@ const Controles = () => {
           />
         </div>
         <div className="md:hidden grid grid-cols-1 gap-6 mt-6">
-          <TaskList 
-          tasks={controlTaskCards}
-          addControlTask={handleCreatePredictiveControl}
-          setStatusTask={handleSetStatus}
+          <TaskList
+            tasks={controlTaskCards}
+            addControlTask={handleCreatePredictiveControl}
+            setStatusTask={handleSetStatus}
           />
         </div>
       </div>

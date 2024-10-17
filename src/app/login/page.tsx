@@ -14,7 +14,6 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
-import Swal from 'sweetalert2';
 
 // Definimos el tema oscuro con Material UI
 const theme = createTheme({
@@ -70,26 +69,6 @@ const Login: React.FC = () => {
       setErrorMessage(''); // Limpiamos los errores si autenticamos correctamente
       router.push("/dashboard")
       console.log('Usuario autenticado:', user); // Debug del usuario autenticado
-    }
-  };
-
-  const handlePasswordReset = async (email: string) => {
-    try {
-      const response = await fetch('/api/forgot-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al enviar el correo de recuperación');
-      }
-
-      Swal.fire('¡Hecho!', 'Hemos enviado un correo de recuperación a tu email', 'success');
-    } catch (error) {
-      console.error('Error', error);
     }
   };
 
@@ -195,51 +174,6 @@ const Login: React.FC = () => {
               >
                 Iniciar Sesión
               </Button>
-
-              {/* <Typography variant="body2" align="center" sx={{ mt: 1, color: '#aaa' }}>
-              ¿No tienes cuenta?{' '}
-              <a
-                href="#"
-                style={{
-                  color: '#1a73e8',
-                  textDecoration: 'none',
-                }}
-              >
-                Regístrate
-              </a>
-            </Typography>
-            */}
-
-              <Typography variant="body2" align="center" sx={{ mt: 1, color: '#aaa' }}>
-                ¿Olvidó su contraseña?{' '}
-                <a
-                  href="#"
-                  onClick={() => {
-                    Swal.fire({
-                      title: 'Recuperar contraseña',
-                      input: 'email',
-                      inputLabel: 'Introduce tu correo electrónico',
-                      inputPlaceholder: 'Correo electrónico',
-                      showCancelButton: true,
-                      confirmButtonText: 'Enviar',
-                      preConfirm: (email) => {
-                        if (!email) {
-                          Swal.showValidationMessage('El correo no puede estar vacío');
-                        } else {
-                          handlePasswordReset(email);
-                        }
-                      },
-                    });
-                  }}
-                  style={{
-                    color: '#1a73e8',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Recuperar
-                </a>
-              </Typography>
-
             </Box>
           </Paper>
         </Container>
