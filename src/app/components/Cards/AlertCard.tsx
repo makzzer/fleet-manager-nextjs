@@ -43,10 +43,10 @@ const AlertCard: React.FC<AlertCardProps> = ({
       </p>
       {!acknowledge && (
         <button
-          className="mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded"
+          className="mt-3 bg-cyan-600 hover:bg-cyan-700 text-white text-sm py-1 px-3 rounded"
           onClick={onAcknowledge}
         >
-          Reconocer
+          Marcar como leída
         </button>
       )}
     </div>

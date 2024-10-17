@@ -25,47 +25,61 @@ const ReservaViaje = () => {
   // Función para manejar la selección del vehículo
   const handleSelectVehicle = (vehicleId: string) => {
     setSelectedVehicle(vehicleId);
+    console.log(vehicleId)
   };
 
-  // Función para crear la reserva
-  const handleCreateReserva = async () => {
-    if (!selectedVehicle) {
-      alert("Por favor, selecciona un vehículo.");
-      return;
-    }
+// Función para crear la reserva
+const handleCreateReserva = async () => {
+  if (!selectedVehicle) {
+    alert("Por favor, selecciona un vehículo.");
+    return;
+  }
 
-    if (!authenticatedUser) {
-      alert("Debes estar autenticado para reservar un vehículo.");
-      return;
-    }
+  if (!authenticatedUser) {
+    alert("Debes estar autenticado para reservar un vehículo.");
+    return;
+  }
 
-    try {
-      const response = await fetch("https://fleet-manager-gzui.onrender.com/api/reserves", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          vehicleId: selectedVehicle,
-          userId: authenticatedUser.id,
-          destination: {
-            latitude: -34.53041058614282, // Valores de ejemplo
-            longitude: -58.70297600284797,
-          },
-        }),
-      });
-
-      if (response.ok) {
-        Swal.fire("Reserva creada", "Tu reserva se ha creado exitosamente.", "success");
-        router.push("/reservas");
-      } else {
-        Swal.fire("Error", "No se pudo crear la reserva. Inténtalo nuevamente.", "error");
-      }
-    } catch (error) {
-      console.error("Error al crear la reserva:", error);
-      Swal.fire("Error", "Ocurrió un error al crear la reserva.", "error");
-    }
+  const requestData = {
+    vehicle_id: selectedVehicle,
+    user_id: authenticatedUser.id,
+    destination: {
+      latitude: -34.532493826811276, // Valores de ejemplo
+      longitude: -58.70447301819182,
+    },
   };
+
+  // Imprimir la request en la consola
+  console.log("Datos de la solicitud:", JSON.stringify(requestData, null, 2));
+
+  try {
+    const response = await fetch("https://fleet-manager-gzui.onrender.com/api/reserves", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    // Imprimir la response en la consola
+    console.log("Respuesta del servidor:", response);
+
+    if (response.ok) {
+      const responseData = await response.json(); // Parsear el JSON si la respuesta es correcta
+      console.log("Datos de la respuesta:", responseData); // Mostrar los datos obtenidos
+      Swal.fire("Reserva creada", "Tu reserva se ha creado exitosamente.", "success");
+      router.push("/reservas");
+    } else {
+      console.log("ID del usuario:", authenticatedUser.id);
+      Swal.fire("Error", "No se pudo crear la reserva. Inténtalo nuevamente.", "error");
+    }
+  } catch (error) {
+    console.error("Error al crear la reserva:", error);
+    Swal.fire("Error", "Ocurrió un error al crear la reserva.", "error");
+  }
+};
+
+
 
   return (
     <div className="bg-gray-900 text-white min-h-screen rounded-xl flex flex-col p-4">
