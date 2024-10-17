@@ -8,6 +8,7 @@ import UserCard from "../components/Cards/UserCard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { FaEye } from "react-icons/fa";
 import { MdGroupAdd } from "react-icons/md";
+import LockResetIcon from '@mui/icons-material/LockReset';
 
 interface NewUserRequest {
   username: string;
@@ -387,7 +388,8 @@ const ListaUsuarios = () => {
                           onClick={() => handleSetPassword(user)}
                           className="text-red-500 hover:text-red-700 p-2 rounded-full flex justify-center items-center"
                         >
-                          <span className="text-sm font-medium">Cambiar Contraseña</span>
+                          <LockResetIcon className="w-5 h-5"/>
+                          {/* <span className="text-sm font-medium">Cambiar Contraseña</span> */}
                         </button>
                       </>
                     )}
