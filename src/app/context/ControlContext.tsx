@@ -138,10 +138,29 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const exportControlesToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(controls);
+    const controlesAplanados = controls.map(control => ({
+      id: control.id,
+      subject: control.subject,
+      description: control.description,
+      type: control.type,
+      priority: control.priority,
+      status: control.status,
+      date_created: control.date_created,
+      date_updated: control.date_updated,
+      vehicle_id: control.vehicle?.id,
+      vehicle_model: control.vehicle?.model,
+      vehicle_brand: control.vehicle?.brand,
+      vehicle_year: control.vehicle?.year,
+      operator_id: control.operator?.id,
+      operator_name: control.operator?.full_name,
+      operator_username: control.operator?.username,
+      operator_roles: control.operator?.roles.join(', '),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(controlesAplanados);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Controles');
-    XLSX.writeFile(workbook, 'controles.xlsx');
+    XLSX.writeFile(workbook, `controles-(${new Date().toLocaleDateString()}).xlsx`);
   };
 
   useEffect(() => {
