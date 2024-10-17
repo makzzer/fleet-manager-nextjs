@@ -142,19 +142,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
         ? `<div class="bg-green-500/50 px-2 rounded-md">Preventivo</div>`
         : `<div class="bg-blue-500/50 px-2 rounded-md">Predictivo</div>`;
 
-    const estadoControlEsp = 
+    const estadoControlEsp =
       control.status === "TODO"
-      ? `<div class="text-gray-400">Pendiente</div>`
-      : control.status === "DOING"
-      ? `<div class="text-blue-500">En proceso</div>`
-      : `<div class="text-emerald-500">Hecho</div>`;
+        ? `<div class="text-gray-400">Pendiente</div>`
+        : control.status === "DOING"
+        ? `<div class="text-blue-500">En proceso</div>`
+        : `<div class="text-emerald-500">Hecho</div>`;
 
-    const prioridadControlEsp = 
+    const prioridadControlEsp =
       control.priority === "HIGH"
-      ? "Alta"
-      : control.priority === "MEDIUM"
-      ? "Media"
-      : "Baja";
+        ? "Alta"
+        : control.priority === "MEDIUM"
+        ? "Media"
+        : "Baja";
 
     Swal.fire({
       html: `
@@ -163,19 +163,27 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <div class="flex gap-2 md:gap-5 text-xs justify-start align-start">
               ${tipoControlEsp}
               /
-              <p>(${control.vehicle.id}) - ${control.vehicle.brand} ${control.vehicle.model} ${control.vehicle.year}</p>
+              <p>(${control.vehicle.id}) - ${control.vehicle.brand} ${
+        control.vehicle.model
+      } ${control.vehicle.year}</p>
             </div>
 
           <div class="flex flex-col gap-4 md:flex-row md:justify-between">
             <div class="flex flex-col gap-2 items-start">
-              <h3 class="text-3xl mb-6 font-bold text-left">${control.subject}</h3>
+              <h3 class="text-3xl mb-6 font-bold text-left">${
+                control.subject
+              }</h3>
               <h4 class="text-xl font-semibold text-left">Descripción</h4>
               <p class="text-base text-left">${control.description}</p>
             </div>
 
             <div class="flex flex-col gap-2 items-start md:px-4 md:border-l-2 border-gray-700">
               <h4 class="text-xl font-semibold">Detalles</h4>
-              <p class="text-left">Persona asignada: ${control.operator.full_name}</p>
+              ${
+                control.operator
+                  ? `<p class="text-left">Persona asignada: ${control.operator.full_name}</p>`
+                  : ""
+              }
               <div class="flex gap-2 justify-start">
               <p class="text-left">Estado:</p>
               ${estadoControlEsp}
@@ -305,7 +313,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <FaRegCalendarAlt />
           <p>{control.date_created.slice(0, 10)}</p>
         </div>
-        <FaUserCircle className="w-5 h-5" />
+        {control.operator ? <FaUserCircle className="w-5 h-5" /> : ""}
       </div>
     </div>
   );
