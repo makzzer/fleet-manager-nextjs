@@ -8,6 +8,8 @@ import {
   ReactNode,
   useEffect,
 } from "react";
+import * as XLSX from 'xlsx';
+
 
 // API para autenticación de usuarios
 const apiControles = "https://fleet-manager-gzui.onrender.com/api/controls";
@@ -75,6 +77,7 @@ interface ControlContextProps {
   createCorrectiveControl: (controlCorrectivo: POSTCorrectiveControl) => void;
   createPredictiveControl: (controlPredictivo: POSTPredictiveControl) => void;
   setControlStatus: (control_id: string, new_status: string) => void;
+  exportControlesToExcel: () => void;
 }
 
 const ControlContext = createContext<ControlContextProps | undefined>(
@@ -134,6 +137,13 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const exportControlesToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(controls);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Controles');
+    XLSX.writeFile(workbook, 'controles.xlsx');
+  };
+
   useEffect(() => {
     fetchControls();
   }, []);
@@ -146,6 +156,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
         createCorrectiveControl,
         createPredictiveControl,
         setControlStatus,
+        exportControlesToExcel
       }}
     >
       {children}

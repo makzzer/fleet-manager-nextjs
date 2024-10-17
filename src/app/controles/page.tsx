@@ -65,7 +65,7 @@ interface POSTPredictiveControl {
 }
 
 const Controles = () => {
-  const { controls, fetchControls, setControlStatus, createPredictiveControl } =
+  const { controls, fetchControls, setControlStatus, createPredictiveControl, exportControlesToExcel } =
     useControl();
   const [controlTaskCards, setControlTaskCards] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -207,10 +207,15 @@ const Controles = () => {
   return (
     <ProtectedRoute>
       <div className="p-6 bg-gray-900 min-h-screen text-white rounded-lg">
-        <div className="mb-6">
-          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
+        <div className="mb-6 flex flex-col md:flex-row md:justify-between">
+          <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-4">
             Gestión de controles
           </h1>
+          <button
+           onClick={exportControlesToExcel}
+           className="md:px-4 bg-green-500 hover:bg-green-600 rounded-md font-bold">
+            Descargar XML
+          </button>
         </div>
         <div className="hidden md:block overflow-x-auto">
           <KanbanBoard
