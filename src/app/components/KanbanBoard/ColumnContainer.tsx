@@ -1,5 +1,5 @@
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import { useMemo } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import TaskCard from "./TaskCard";
 
 interface Coordinates {
@@ -55,12 +55,16 @@ interface ColumnContainerProps {
   column: Column;
   tasks: Task[];
   createTask?: () => void;
+  assignOperator: (control_id: string, operator_id: string) => Promise<void>;
+  setOnSetOperator: Dispatch<SetStateAction<boolean>>;
 }
 
 const ColumnContainer: React.FC<ColumnContainerProps> = ({
   column,
   tasks,
   createTask,
+  assignOperator,
+  setOnSetOperator,
 }) => {
   const tasksIds = useMemo(() => {
     return tasks.map((task) => task.id);
@@ -90,7 +94,7 @@ const ColumnContainer: React.FC<ColumnContainerProps> = ({
       <div className="flex flex-grow flex-col gap-4 overflow-x-hidden overflow-y-auto px-4 py-4">
         <SortableContext items={tasksIds}>
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={task.id} task={task} assignOperator={assignOperator} setOnSetOperator={setOnSetOperator}/>
           ))}
         </SortableContext>
       </div>

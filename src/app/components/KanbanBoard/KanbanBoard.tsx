@@ -70,9 +70,10 @@ interface KanbanBoardProps {
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   setStatusTask: (control_id: string, new_status: string) => void;
   addControlTask: () => void;
+  assignOperator: (control_id: string, operator_id: string) => Promise<void>;
 }
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, addControlTask }) => {
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, addControlTask, assignOperator }) => {
 
   const [columns] = useState<Column[]>([
     { id: "TODO", title: "Por hacer" },
@@ -81,12 +82,15 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
   ]);
 
   const [internalTasks, setInternalTasks] = useState(initialTasks);
+  const [onSetOperator, setOnSetOperator] = useState(false);
 
   useEffect(() => {
-    if(initialTasks.length !== internalTasks.length){
+    if(initialTasks.length !== internalTasks.length || onSetOperator){
+      console.log("refresh")
       setInternalTasks(initialTasks);
+      setOnSetOperator(false);
     }
-  }, [initialTasks, internalTasks]);
+  }, [initialTasks, internalTasks, onSetOperator]);
   
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   
@@ -184,12 +188,16 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
                 column={col}
                 createTask={addControlTask}
                 tasks={internalTasks.filter((task) => task.columnId === col.id)}
+                assignOperator={assignOperator}
+                setOnSetOperator={setOnSetOperator}
               />
             ) : (
               <ColumnContainer
                 key={col.id}
                 column={col}
                 tasks={internalTasks.filter((task) => task.columnId === col.id)}
+                assignOperator={assignOperator}
+                setOnSetOperator={setOnSetOperator}
               />
             )
           )}

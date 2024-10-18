@@ -71,6 +71,7 @@ const Controles = () => {
     setControlStatus,
     createPredictiveControl,
     exportControlesToExcel,
+    assignOperator,
   } = useControl();
   const [controlTaskCards, setControlTaskCards] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -285,6 +286,15 @@ const Controles = () => {
     }
   };
 
+  const handleAssignOperator = async (control_id: string, operator_id: string) => {
+    try {
+      await assignOperator(control_id, operator_id);
+    } catch (error) {
+      console.error("Error in handleAssignOperator:", error);
+      Swal.fire('Error', 'No se pudo asignar el operador. Por favor, inténtelo de nuevo.', 'error');
+    }
+  }
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -309,6 +319,7 @@ const Controles = () => {
             setTasks={setControlTaskCards}
             setStatusTask={handleSetStatus}
             addControlTask={handleCreatePredictiveControl}
+            assignOperator={handleAssignOperator}
           />
         </div>
         <div className="md:hidden grid grid-cols-1 gap-6 mt-6">
@@ -316,6 +327,7 @@ const Controles = () => {
             tasks={controlTaskCards}
             addControlTask={handleCreatePredictiveControl}
             setStatusTask={handleSetStatus}
+            assignOperator={handleAssignOperator}
           />
         </div>
       </div>
