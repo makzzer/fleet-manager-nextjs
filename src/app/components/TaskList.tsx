@@ -50,9 +50,10 @@ interface TaskListProps {
   tasks: Task[];
   addControlTask: () => void;
   setStatusTask: (control_id: string, new_status: string) => void;
+  assignOperator: (control_id: string, operator_id: string) => Promise<void>;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask, setStatusTask }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask, setStatusTask, assignOperator }) => {
   const [internalListTasks, setInternalListTasks] = useState(tasks);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
@@ -110,7 +111,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask, setStatusTas
       </div>
       <div className="grid grid-col-1 gap-4 bg-gray-800 p-2 rounded-md">
         {internalListTasks.map((task) => (
-          <TaskCard isMobile key={task.id} task={task} setStatusTask={setStatusTask}/>
+          <TaskCard isMobile key={task.id} task={task} setStatusTask={setStatusTask} assignOperator={assignOperator}/>
         ))}
       </div>
     </div>

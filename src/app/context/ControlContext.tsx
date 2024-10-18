@@ -77,6 +77,7 @@ interface ControlContextProps {
   createCorrectiveControl: (controlCorrectivo: POSTCorrectiveControl) => void;
   createPredictiveControl: (controlPredictivo: POSTPredictiveControl) => void;
   setControlStatus: (control_id: string, new_status: string) => void;
+  assignOperator: (control_id: string, operator_id: string) => Promise<void>;
   exportControlesToExcel: () => void;
 }
 
@@ -137,6 +138,15 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const assignOperator = async (control_id: string, operator_id: string) => {
+    try {
+      await axios.put(`${apiControles}/${control_id}/operator/${operator_id}`);
+      fetchControls();
+    } catch (error) {
+      console.error("Error changing control status:", error);
+    }
+  }
+
   const exportControlesToExcel = () => {
     const controlesAplanados = controls.map(control => ({
       id: control.id,
@@ -175,6 +185,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
         createCorrectiveControl,
         createPredictiveControl,
         setControlStatus,
+        assignOperator,
         exportControlesToExcel
       }}
     >

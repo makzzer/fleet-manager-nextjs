@@ -5,8 +5,9 @@ import { FiTool, FiAlertCircle, FiTruck } from "react-icons/fi";
 import { IoPulse } from "react-icons/io5";
 import { FaRegCalendarAlt, FaUserCircle, FaRegEye } from "react-icons/fa";
 import { TbArrowsExchange } from "react-icons/tb";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Swal from "sweetalert2";
+import { useUser } from "@/app/context/UserContext";
 
 interface Coordinates {
   latitude: number;
@@ -57,15 +58,28 @@ interface TaskCardProps {
   task: Task;
   isMobile?: boolean;
   setStatusTask?: (control_id: string, new_status: string) => void;
+  assignOperator?: (control_id: string, operator_id: string) => Promise<void>;
+  setOnSetOperator?: Dispatch<SetStateAction<boolean>>;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
   task,
   isMobile,
   setStatusTask,
+  assignOperator,
+  setOnSetOperator,
 }) => {
   const control: Control = task.content;
   const [showDropdown, setShowDropdown] = useState(false);
+  const hasOperator = control.operator;
+  const { users } = useUser();
+  const usuarios = users;
+  const operadores = usuarios
+    .filter((usuario) => usuario.roles.includes("OPERATOR"))
+    .map(
+      (usuario) => `<option value="${usuario.id}">${usuario.full_name}</option>`
+    )
+    .join("");
 
   const priorityLogo = (priority: string) => {
     switch (priority) {
@@ -180,9 +194,15 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <div class="flex flex-col gap-2 items-start md:px-4 md:border-l-2 border-gray-700">
               <h4 class="text-xl font-semibold">Detalles</h4>
               ${
-                control.operator
+                hasOperator
                   ? `<p class="text-left">Persona asignada: ${control.operator.full_name}</p>`
-                  : ""
+                  : `<div class="flex flex-col gap-2">
+                      <label for="operator-select" class="text-left">Asignar operador:</label>
+                      <select id="operator-select" class="bg-gray-800 text-white rounded-md p-2">
+                        <option value="">Seleccionar operador</option>
+                        ${operadores}
+                      </select>
+                    </div>`
               }
               <div class="flex gap-2 justify-start">
               <p class="text-left">Estado:</p>
@@ -197,6 +217,26 @@ const TaskCard: React.FC<TaskCardProps> = ({
       confirmButtonText: "Cerrar",
       customClass: {
         popup: "bg-gray-900 text-white w-4/5",
+      },
+      didOpen: async () => {
+        const select = document.getElementById('operator-select') as HTMLSelectElement;
+        if (select) {
+          select.addEventListener('change', async (e) => {
+            const selectedOperatorId = (e.target as HTMLSelectElement).value;
+            if (selectedOperatorId && assignOperator) {
+              try {
+                await assignOperator(control.id, selectedOperatorId);
+                if(setOnSetOperator){
+                  setOnSetOperator(true);
+                }
+                Swal.close();
+              } catch(error) {
+                console.error(error);
+                Swal.showValidationMessage('Error al asignar un operador')
+              }
+            }
+          });
+        }
       },
     });
   };
@@ -224,8 +264,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="relative z-10"
+                disabled={!hasOperator}
               >
-                <TbArrowsExchange className="w-6 h-6 text-gray-300 hover:text-gray-100" />
+                <TbArrowsExchange className={`w-6 h-6 ${!hasOperator ? "text-gray-500" : "text-gray-300 hover:text-gray-100"}`} />
               </button>
               {showDropdown && (
                 <div className="absolute z-20 top-8 right-0 bg-gray-800 shadow-lg rounded-md p-2">
@@ -293,7 +334,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
+      {...(hasOperator ? listeners : {})}
       className="bg-gray-900 p-4 flex flex-col text-left rounded-xl hover:ring-2 hover:ring-inset hover:ring-blue-500 cursor-pointer justify-between relative gap-4"
       onClick={() => handleViewDetails(control)}
     >
@@ -313,7 +354,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <FaRegCalendarAlt />
           <p>{control.date_created.slice(0, 10)}</p>
         </div>
-        {control.operator ? <FaUserCircle className="w-5 h-5" /> : ""}
+        {hasOperator ? <FaUserCircle className="w-5 h-5" /> : ""}
       </div>
     </div>
   );
