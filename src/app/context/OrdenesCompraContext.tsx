@@ -65,7 +65,7 @@ interface OrdenDeCompraContextProps {
   fetchProveedores: () => void;
   createOrdenDeCompra: (ordenDeCompra: CreacionOrdenDeCompra) => Promise<void>;
   actualizarEstadoOrdenDeCompra: (id: string, estado: string) => Promise<void>;
-  agregarProductosOrdenDeCompra: (orden_id: string, producto_id: string, cantidad: number, costo: number) => void,
+  agregarProductosOrdenDeCompra: (orden_id: string, product_id: string, quantity: number, amount: number) => void,
   exportOrdenesDeCompraToExcel: () => void;
 }
 
@@ -141,15 +141,15 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
 
   const agregarProductosOrdenDeCompra = async (
     orden_id: string,
-    producto_id: string,
-    cantidad: number,
-    costo: number
+    product_id: string,
+    quantity: number,
+    amount: number
   ) => {
     try {
-      await axios.post(`${apiOrdenesDeCompraBackend}/${orden_id}/products`, {
-        producto_id,
-        cantidad,
-        costo,
+      await axios.put(`${apiOrdenesDeCompraBackend}/${orden_id}/products`, {
+        product_id,
+        quantity,
+        amount,
       });
       fetchOrdenesDeCompra();
     } catch (error) {
