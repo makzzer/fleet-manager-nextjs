@@ -5,7 +5,7 @@ import Link from 'next/link';
 const ScanPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-4 mt-4">Escanea tu código QR</h1>
+      <h1 className="text-3xl text-gray-800 font-bold mb-4 mt-4">Escanea tu código QR</h1>
       <div className="flex flex-col items-center justify-center ">
         <div className="flex items-center justify-center w-full max-w-md ">
           <div className='pb-[400px]'>
@@ -17,7 +17,7 @@ const ScanPage: React.FC = () => {
         <div className="flex flex-col items-center text-center gap-1 justify-around">
 
           <Link
-            href="/dashboard"
+            href="/productos"
             className="bg-red-500 w-[280px] hover:bg-red-700  mb-60 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
           >
             Volver

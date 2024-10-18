@@ -244,7 +244,7 @@ const Stock = () => {
               <FaPlusCircle className="mr-2" /> Agregar Producto
             </button>
             <Link
-              href="#"
+              href="#ScanPage"
               onClick={handleScanQRClick}
               className="w-full bg-red-800 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
             >
