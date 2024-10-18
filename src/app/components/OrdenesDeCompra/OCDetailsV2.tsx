@@ -25,13 +25,18 @@ interface Producto {
   description: string;
   category: string;
   quantity: number;
+  measurement: string;
+  price: number;
 }
-
-interface OrdenDeCompra {
-  id: string;
-  provider: Proveedor;
+interface Item {
   product: Producto;
   quantity: number;
+}
+
+export interface OrdenDeCompra {
+  id: string;
+  provider: Proveedor;
+  items: Item[];
   amount: number;
   date_created: string;
   date_updated: string;
@@ -202,10 +207,13 @@ export default function OCDetails({ orden }: OCDetailsProps) {
             <h3 className="text-xl font-bold text-white mb-4">Productos</h3>
             <ul className="space-y-2">
               {
-                <li key={orden.product.id} className="text-gray-300">
-                  <strong>{orden.product.name}</strong> - Cantidad:{" "}
-                  {orden.quantity} - Precio: ${orden.amount / orden.quantity}
+                orden.items.map((item, index) => 
+                (
+                <li key={index} className="text-gray-300">
+                  <strong>{item.product.name}</strong> - Cantidad:{" "}
+                  {item.quantity} - Precio: ${item.product.quantity * item.product.price}
                 </li>
+                ))
               }
             </ul>
           </div>
