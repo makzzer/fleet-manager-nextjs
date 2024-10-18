@@ -8,12 +8,20 @@ import Swal from "sweetalert2";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes"; //ruta protegida
 import { FaCircleCheck, FaCircleXmark } from "react-icons/fa6";
 import { MdPlaylistAddCheckCircle } from "react-icons/md";
+import FiltrosOrdenes from "../components/SearchBar/FiltrosOrdenes";
+
+const status = ["CREATED", "REJECTED", "APPROVER", "COMPLETED", "INACTIVE"];
 
 const OrdenesDeCompra = () => {
   const { ordenesDeCompra, productos, proveedores, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra, exportOrdenesDeCompraToExcel } = useOrdenesDeCompra();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [estadoFiltro, setEstadoFiltro] = useState(""); // Estado para el filtro de estado
+  const [filteredOrdenes, setFilteredOrdenes] = useState(ordenesDeCompra); // Estado para filtrar ordenes por la barra
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [isSearchEnabled, setIsSearchEnabled] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [visibleOrdenes, setVisibleOrdenes] = useState(10); // Estado para controlar cuántas órdenes mostramos
   const [showScrollIcon, setShowScrollIcon] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -68,6 +76,56 @@ const OrdenesDeCompra = () => {
     };
   }, []);
 
+  // función para filtrar tildes y caracteres especiales en el buscador.
+  const removeAccents = (str: string) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  };
+
+  useEffect(() => {
+    let filtered = ordenesDeCompra;
+
+    if (searchTerm) {
+      filtered = filtered.filter((orden) =>
+        removeAccents(orden.provider.name.toLowerCase()).includes(removeAccents(searchTerm.toLowerCase()))
+      );
+    }
+
+    if (selectedCategory) {
+      filtered = filtered.filter((orden) =>
+        removeAccents(orden.status.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
+      );
+    }
+
+    setFilteredOrdenes(filtered);
+  }, [ordenesDeCompra, searchTerm, selectedCategory]);
+
+  useEffect(() => {
+    let filtered = ordenesDeCompra;
+
+    // filtrar por categoría primero si hay una seleccionada.
+    if (selectedCategory) {
+      filtered = filtered.filter((orden) =>
+        removeAccents(orden.status.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
+      );
+    }
+
+    // luego el filtro por nombre o marca.
+    if (searchTerm && selectedFilter) {
+      const normalizedSearchTerm = removeAccents(searchTerm.toLowerCase());
+
+      filtered = filtered.filter((orden) => {
+        if (selectedFilter === "provider") {
+          return removeAccents(orden.provider.name.toLowerCase()).includes(normalizedSearchTerm);
+        } else if (selectedFilter === "date_created") {
+          return removeAccents(orden.date_created.toLowerCase()).includes(normalizedSearchTerm);
+        }
+        return false;
+      });
+    }
+    setFilteredOrdenes(filtered);
+  }, [ordenesDeCompra, searchTerm, selectedCategory, selectedFilter]);
+
+
   const handleView = (id: string) => {
     router.push(`/ordenesdecompra/${id}`);
   };
@@ -112,16 +170,39 @@ const OrdenesDeCompra = () => {
   };
 
   // Filtrar las órdenes de compra según el estado seleccionado
-  const filteredOrdenes = ordenesDeCompra.filter((orden) => {
-    if (estadoFiltro === "") return true;
-    return orden.status === estadoFiltro;
-  });
+  // const filteredOrdenes = ordenesDeCompra.filter((orden) => {
+  //   if (estadoFiltro === "") return true;
+  //   return orden.status === estadoFiltro;
+  // });
 
   // Controlar cuántas órdenes de compra se muestran
   const visibleOrdenesDeCompra = filteredOrdenes.slice(0, visibleOrdenes);
 
   const handleVerMas = () => {
     setVisibleOrdenes((prevVisible) => prevVisible + 10); // Mostrar 10 órdenes más
+  };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    setSelectedFilter(selected);
+    setIsSearchEnabled(!!selected); // habilitar las barras de búsqueda si se selecciona un filtro de nombre o marca.
+
+    // actualizar productos filtrados cuando seleccionas la categoría
+    if (selected === "status" && selectedCategory) {
+      const filtered = ordenesDeCompra.filter((orden) =>
+        orden.status.toLowerCase() === selectedCategory.toLowerCase()
+      );
+      setFilteredOrdenes(filtered);
+    }
+  };
+
+  const handleFilter = (filters: {
+    searchTerm: string;
+    selectedStatus: string;
+  }) => {
+    const { searchTerm, selectedStatus } = filters;
+    setSearchTerm(searchTerm);
+    setSelectedCategory(selectedStatus);
   };
 
   const handleAgregarOrdenCompra = () => {
@@ -158,8 +239,8 @@ const OrdenesDeCompra = () => {
 
         const providerId = providerIdElement?.value;
         const productId = productIdElement?.value;
-        const quantity = quantityElement?.value;
-        const amount = amountElement?.value;
+        const quantity = Number(quantityElement?.value);
+        const amount = Number(amountElement?.value);
 
         if (!providerId || !productId || quantity <= 0 || amount <= 0) {
           Swal.showValidationMessage('Por favor, completa todos los campos correctamente.');
@@ -201,7 +282,7 @@ const OrdenesDeCompra = () => {
           </button>
           <button
             onClick={exportOrdenesDeCompraToExcel}
-            className="m-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+            className="m-6 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">
             Exportar a Excel
           </button>
         </div>
@@ -222,6 +303,24 @@ const OrdenesDeCompra = () => {
             <option value="INACTIVE">Inactiva</option>
           </select>
         </div>
+
+        {/* Combobox para seleccionar el filtro */}
+        <div className="mb-4">
+          <label className="text-gray-200 text-sm font-bold mr-2">Filtrar por</label>
+          <select
+            value={selectedFilter}
+            onChange={handleFilterChange}
+            className="bg-gray-800 text-white p-2 rounded"
+          >
+            <option value="name">Proveedor</option>
+            <option value="brand">Fecha</option>
+          </select>
+        </div>
+
+        {/* Barra de búsqueda habilitada cuando se selecciona un filtro */}
+        {isSearchEnabled && (
+          <FiltrosOrdenes onFilter={handleFilter} status={status}/>
+        )}
 
         <div className="relative overflow-x-auto bg-gray-800 shadow-md rounded-lg p-6" ref={tableRef}>
           <table className="min-w-full divide-y divide-gray-600 table-auto">

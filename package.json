@@ -29,7 +29,7 @@
     "react-leaflet": "^4.2.1",
     "react-loading-skeleton": "^3.5.0",
     "sweetalert2": "^11.6.13",
-    "xlsx": "^0.18.5"
+    "xlsx": "0.19.3"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.12",
