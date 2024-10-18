@@ -307,8 +307,7 @@ const OrdenesDeCompra = () => {
     Swal.fire({
       title: "Agregar Producto a la Orden",
       html: `
-        <div class="bg-gray-900 text-white p-4 rounded-lg">
-          <button id="addNewProduct" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mb-4 w-full flex items-center justify-center">
+          <button id="addNewProduct" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mb-4 w-full flex items-center justify-center">
             <i class="fas fa-plus mr-2"></i> Agregar Nuevo Producto
           </button>
           
@@ -329,7 +328,6 @@ const OrdenesDeCompra = () => {
               </ul>
             </div>
           </div>
-        </div>
       `,
       showCloseButton: true,
       showConfirmButton: true,
