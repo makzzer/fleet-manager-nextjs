@@ -119,38 +119,6 @@ const OrdenesDeCompra = () => {
     setFilteredOrdenes(filtered);
   }, [ordenesDeCompra, searchTerm, selectedCategory]);
 
-  useEffect(() => {
-    let filtered = ordenesDeCompra;
-
-    // filtrar por categoría primero si hay una seleccionada.
-    if (selectedCategory) {
-      filtered = filtered.filter(
-        (orden) =>
-          removeAccents(orden.status.toLowerCase()) ===
-          removeAccents(selectedCategory.toLowerCase())
-      );
-    }
-
-    // luego el filtro por nombre o marca.
-    if (searchTerm && selectedFilter) {
-      const normalizedSearchTerm = removeAccents(searchTerm.toLowerCase());
-
-      filtered = filtered.filter((orden) => {
-        if (selectedFilter === "provider") {
-          return removeAccents(orden.provider.name.toLowerCase()).includes(
-            normalizedSearchTerm
-          );
-        } else if (selectedFilter === "date_created") {
-          return removeAccents(orden.date_created.toLowerCase()).includes(
-            normalizedSearchTerm
-          );
-        }
-        return false;
-      });
-    }
-    setFilteredOrdenes(filtered);
-  }, [ordenesDeCompra, searchTerm, selectedCategory, selectedFilter]);
-
   const handleView = (id: string) => {
     router.push(`/ordenesdecompra/${id}`);
   };
@@ -443,10 +411,8 @@ const OrdenesDeCompra = () => {
         </div>
 
         {/* Filtro por estado */}
-        <div className="mb-6">
-          <label className="text-gray-200 text-sm font-bold mr-2">
-            Filtrar por estado:
-          </label>
+        {/* <div className="mb-6">
+          <label className="text-gray-200 text-sm font-bold mr-2">Filtrar por estado:</label>
           <select
             value={estadoFiltro}
             onChange={(e) => setEstadoFiltro(e.target.value)}
@@ -459,7 +425,7 @@ const OrdenesDeCompra = () => {
             <option value="COMPLETED">Completada</option>
             <option value="INACTIVE">Inactiva</option>
           </select>
-        </div>
+        </div> */}
 
         {/* Combobox para seleccionar el filtro */}
         <div className="mb-4">
@@ -471,6 +437,7 @@ const OrdenesDeCompra = () => {
             onChange={handleFilterChange}
             className="bg-gray-800 text-white p-2 rounded"
           >
+            <option value="">Todos</option>
             <option value="name">Proveedor</option>
             <option value="brand">Fecha</option>
           </select>
@@ -509,13 +476,9 @@ const OrdenesDeCompra = () => {
               {filteredOrdenes.length > 0 ? (
                 visibleOrdenesDeCompra.map((orden) => (
                   <tr key={orden.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {orden.provider.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {orden.date_created.slice(0, 10)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className={`px-6 py-4 whitespace-nowrap rounded-full ${getEstadoColor(orden.status)}`}>{orden.provider.name}</td>
+                    <td className={`px-6 py-4 whitespace-nowrap rounded-full ${getEstadoColor(orden.status)}`}>{orden.date_created.slice(0, 10)}</td>
+                    <td className={`px-6 py-4 whitespace-nowrap rounded-full ${getEstadoColor(orden.status)}`}>
                       <span
                         className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border ${getEstadoColor(
                           orden.status
