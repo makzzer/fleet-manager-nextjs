@@ -63,7 +63,7 @@ interface OrdenDeCompraContextProps {
   fetchOrdenesDeCompra: () => void;
   fetchProductos: () => void;
   fetchProveedores: () => void;
-  createOrdenDeCompra: (ordenDeCompra: CreacionOrdenDeCompra) => Promise<void>;
+  createOrdenDeCompra: (provider_id: string) => Promise<void>;
   actualizarEstadoOrdenDeCompra: (id: string, estado: string) => Promise<void>;
   agregarProductosOrdenDeCompra: (orden_id: string, product_id: string, quantity: number, amount: number) => void,
   exportOrdenesDeCompraToExcel: () => void;
@@ -125,9 +125,9 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
     }
   }, []);
 
-  const createOrdenDeCompra = async (ordenDeCompra: CreacionOrdenDeCompra) => {
+  const createOrdenDeCompra = async (provider_id: string) => {
     try {
-      await axios.post(apiOrdenesDeCompraBackend, ordenDeCompra);
+      await axios.post(apiOrdenesDeCompraBackend, { provider_id });
       fetchOrdenesDeCompra(); //despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
     } catch (error) {
       console.error("Error al crear la orden de compra:", error);

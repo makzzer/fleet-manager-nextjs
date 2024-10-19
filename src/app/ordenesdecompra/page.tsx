@@ -205,68 +205,78 @@ const OrdenesDeCompra = () => {
           `<option value="${proveedor.id}">${proveedor.name}</option>`
       )
       .join("");
-    const productosOptions = productos
-      .map(
-        (producto) => `<option value="${producto.id}">${producto.name}</option>`
-      )
-      .join("");
+
+    // const productosOptions = productos
+    //   .map(
+    //     (producto) => `<option value="${producto.id}">${producto.name}</option>`
+    //   )
+    //   .join("");
 
     Swal.fire({
       title: "Agregar Orden de Compra",
       html: `
-      <div style="display: flex; flex-direction: column; gap: 15px;">
-        <select id="providerid" class="swal2-input">
+      <div class="flex flex-col md:flex-row justify-center gap-6 w-full max-w-4xl mx-auto">
+        <select id="providerid" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="" disabled selected>Selecciona un proveedor</option>
           ${proveedoresOptions}
         </select>
-        <select id="productid" class="swal2-input">
-          <option value="" disabled selected>Selecciona un producto</option>
-          ${productosOptions}
-        </select>
-        <input type="number" id="quantity" class="swal2-input" placeholder="Cantidad">
-        <input type="number" id="amount" class="swal2-input" placeholder="Monto">
       </div>
     `,
+    customClass: {
+      popup: "bg-gray-800 text-white w-full max-w-4xl p-6 rounded-lg",
+      title: "text-2xl font-bold mb-4",
+    },
       confirmButtonText: "Agregar",
       showCancelButton: true,
       preConfirm: () => {
         const providerIdElement = document.getElementById(
           "providerid"
         ) as HTMLSelectElement;
-        const productIdElement = document.getElementById(
-          "productid"
-        ) as HTMLSelectElement;
-        const quantityElement = document.getElementById(
-          "quantity"
-        ) as HTMLInputElement;
-        const amountElement = document.getElementById(
-          "amount"
-        ) as HTMLInputElement;
+        
+        // const productIdElement = document.getElementById(
+        //   "productid"
+        // ) as HTMLSelectElement;
+        // const quantityElement = document.getElementById(
+        //   "quantity"
+        // ) as HTMLInputElement;
+        // const amountElement = document.getElementById(
+        //   "amount"
+        // ) as HTMLInputElement
 
         const providerId = providerIdElement?.value;
-        const productId = productIdElement?.value;
-        const quantity = Number(quantityElement?.value);
-        const amount = Number(amountElement?.value);
+        // const productId = productIdElement?.value;
+        // const quantity = Number(quantityElement?.value);
+        // const amount = Number(amountElement?.value);
 
-        if (!providerId || !productId || quantity <= 0 || amount <= 0) {
+        // if (!providerId || !productId || quantity <= 0 || amount <= 0) {
+        //   Swal.showValidationMessage(
+        //     "Por favor, completa todos los campos correctamente."
+        //   );
+        //   return null;
+        // }
+
+        if(!providerId){
           Swal.showValidationMessage(
             "Por favor, completa todos los campos correctamente."
           );
           return null;
         }
 
-        return { providerId, productId, quantity, amount };
+        return { providerId }
+
+        // return { providerId, productId, quantity, amount };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        const order: CreacionOrdenDeCompra = {
-          provider_id: result.value.providerId,
-          product_id: result.value.productId,
-          quantity: result.value.quantity,
-          amount: result.value.amount,
-        };
+        
+        // const order: CreacionOrdenDeCompra = {
+        //   provider_id: result.value.providerId,
+        //   product_id: result.value.productId,
+        //   quantity: result.value.quantity,
+        //   amount: result.value.amount,
+        // };
 
-        createOrdenDeCompra(order);
+        createOrdenDeCompra(result.value.providerId);
 
         Swal.fire({
           title: "Orden agregada con éxito",
