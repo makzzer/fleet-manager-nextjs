@@ -400,22 +400,24 @@ const OrdenesDeCompra = () => {
   return (
     <ProtectedRoute requiredModule="ORDERS">
       <div className="min-h-screen rounded-xl bg-gray-900 p-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6">
           <h1 className="text-3xl font-bold mb-6 text-blue-400">
             Órdenes de compra
           </h1>
+          <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={handleAgregarOrdenCompra}
-            className="m-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            className="sm:my-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md "
           >
             Agregar Orden de Compra
           </button>
           <button
             onClick={exportOrdenesDeCompraToExcel}
-            className="m-6 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
+            className="sm:my-6 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md"
           >
             Exportar a Excel
           </button>
+          </div>
         </div>
 
         {/* Filtro por estado */}
