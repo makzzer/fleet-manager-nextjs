@@ -47,8 +47,8 @@ const SolicitarAsistencia = () => {
 
     // Función para enviar una notificación al bot de Telegram
     const sendTelegramAlert = async (vehicle_id: string) => {
-        const telegramBotToken = '7948811886:AAF4pJZPFcFEcPLw7TxJ6G-f75xusJjqXO4'; // Coloca aquí tu token del bot de Telegram
-        const chatId = '732794338'; // Coloca aquí tu chat ID de Telegram
+        const telegramBotToken = '7948811886:AAF4pJZPFcFEcPLw7TxJ6G-f75xusJjqXO4'; // Token del bot de Telegram
+        const chatId = '732794338'; // chat ID de Telegram puse el mio para probar @makzzer
 
         const message = `Se ha creado una nueva alerta para el vehículo con ID: ${vehicle_id}. Revisar con urgencia.`;
 
