@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import ReservaCard from "./ReservaCard";
 import ProtectedRoute from "../Routes/ProtectedRoutes";
 import { Reserva } from "@/app/context/ReservesContext";
+import * as XLSX from 'xlsx';
 
 const ListadoReservas = () => {
   const { reservas, fetchReservas } = useReserva();
@@ -36,6 +37,13 @@ const ListadoReservas = () => {
     }
   }, [authenticatedUser, reservas]);
 
+  const exportReservasToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(userReservas);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reservas');
+    XLSX.writeFile(workbook, 'reservas.xlsx');
+  };
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-900 text-white p-6">
@@ -51,6 +59,11 @@ const ListadoReservas = () => {
         ) : (
           <p className="text-gray-400">No tienes reservas disponibles.</p>
         )}
+         <button
+            onClick={exportReservasToExcel}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+            Exportar a Excel
+          </button>
       </div>
     </ProtectedRoute>
   );
