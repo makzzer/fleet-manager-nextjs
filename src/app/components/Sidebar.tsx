@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from "react";
 import { FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy, FaCalendarAlt, FaTools } from "react-icons/fa";
+import { MdMonitor } from "react-icons/md";
 import { MdDashboard } from "react-icons/md"
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
@@ -93,6 +94,16 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                   </span>
                 </div>
               </Link>
+
+              {hasModuleAccess("RESERVES") && (
+              <Link href="/centrodemonitoreo" onClick={handleLinkClick}>
+                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                  <MdMonitor  />
+                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                    Monitoreo
+                  </span>
+                </div>
+              </Link>)}
 
               {hasModuleAccess("RESERVES") && (
               <Link href="/reservas" onClick={handleLinkClick}>
