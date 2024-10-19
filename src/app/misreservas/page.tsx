@@ -11,7 +11,7 @@ const MisReservas = () => {
   const router = useRouter()
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className=" bg-gray-900 text-white p-6">
         {/*<h1 className="text-4xl font-bold text-blue-400 mb-8">Mis Reservas</h1>*/}
         <ListadoReservas />
      
