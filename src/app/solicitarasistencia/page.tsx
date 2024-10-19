@@ -1,11 +1,11 @@
-'use client';
-
+"use client";
 import React, { useState, useEffect } from 'react';
 import { useControl } from '../context/ControlContext';
 import { useAuth } from '../context/AuthContext';
 import { useReserva } from '../context/ReservesContext';
 import Swal from 'sweetalert2';
 import { useRouter } from "next/navigation";
+import axios from 'axios';
 
 const SolicitarAsistencia = () => {
     const router = useRouter();
@@ -42,6 +42,26 @@ const SolicitarAsistencia = () => {
         }
     };
 
+
+
+
+    // Función para enviar una notificación al bot de Telegram
+    const sendTelegramAlert = async (vehicle_id: string) => {
+        const telegramBotToken = '7948811886:AAF4pJZPFcFEcPLw7TxJ6G-f75xusJjqXO4'; // Coloca aquí tu token del bot de Telegram
+        const chatId = '732794338'; // Coloca aquí tu chat ID de Telegram
+
+        const message = `Se ha creado una nueva alerta para el vehículo con ID: ${vehicle_id}. Revisar con urgencia.`;
+
+        try {
+            await axios.post(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                chat_id: chatId,
+                text: message,
+            });
+        } catch (error) {
+            console.error('Error al enviar notificación a Telegram:', error);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -60,8 +80,15 @@ const SolicitarAsistencia = () => {
         };
 
         try {
+            // Crear el control correctivo
             await createCorrectiveControl(correctiveControl);
-            await createAlert(selectedReserva); // Crear la alerta después de que el control se haya creado correctamente
+
+            // Crear la alerta
+            await createAlert(selectedReserva);
+
+            // Enviar notificación al bot de Telegram
+            await sendTelegramAlert(selectedReserva);
+
             Swal.fire('Éxito', 'El control correctivo ha sido solicitado correctamente y se ha creado una alerta.', 'success');
             setSelectedReserva(null);
             setSubject('');
