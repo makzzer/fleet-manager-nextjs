@@ -2,7 +2,9 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-800 text-white">
+    <div className=" flex flex-col  items-center justify-center rounded-xl p-6 bg-gray-900  text-white  min-h-[70vh]">
+
+
       <h1 className="text-6xl font-bold mb-4">404</h1>
       <p className="text-xl mb-8">Lo sentimos, no encontramos la página que estás buscando.</p>
       <Link href="/"
