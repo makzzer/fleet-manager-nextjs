@@ -1,9 +1,10 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useVehiculo } from "../context/VehiculoContext"; // Usamos el context de vehículos para traer los vehículos disponibles
-import { useAuth } from "../context/AuthContext"; // Usamos el context de autenticación para obtener el usuario autenticado
-import Swal from "sweetalert2";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useVehiculo } from '../context/VehiculoContext'; // Usamos el context de vehículos para traer los vehículos disponibles
+import { useAuth } from '../context/AuthContext'; // Usamos el context de autenticación para obtener el usuario autenticado
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const ReservaViaje = () => {
   const router = useRouter();
@@ -25,45 +26,52 @@ const ReservaViaje = () => {
   // Función para manejar la selección del vehículo
   const handleSelectVehicle = (vehicleId: string) => {
     setSelectedVehicle(vehicleId);
+    console.log(vehicleId);
   };
 
-  // Función para crear la reserva
+  // Función para crear la reserva usando Axios
   const handleCreateReserva = async () => {
     if (!selectedVehicle) {
-      alert("Por favor, selecciona un vehículo.");
+      alert('Por favor, selecciona un vehículo.');
       return;
     }
 
     if (!authenticatedUser) {
-      alert("Debes estar autenticado para reservar un vehículo.");
+      alert('Debes estar autenticado para reservar un vehículo.');
       return;
     }
 
-    try {
-      const response = await fetch("https://fleet-manager-gzui.onrender.com/api/reserves", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          vehicleId: selectedVehicle,
-          userId: authenticatedUser.id,
-          destination: {
-            latitude: -34.53041058614282, // Valores de ejemplo
-            longitude: -58.70297600284797,
-          },
-        }),
-      });
+    const requestData = {
+      vehicle_id: selectedVehicle,
+      user_id: authenticatedUser.id,
+      destination: {
+        latitude: -34.532493826811276, // Valores de ejemplo
+        longitude: -58.70447301819182,
+      },
+    };
 
-      if (response.ok) {
-        Swal.fire("Reserva creada", "Tu reserva se ha creado exitosamente.", "success");
-        router.push("/reservas");
+    // Imprimir la request en la consola
+    console.log('Datos de la solicitud:', JSON.stringify(requestData, null, 2));
+
+    try {
+      const response = await axios.post(
+        'https://fleet-manager-gzui.onrender.com/api/reserves',
+        requestData
+      );
+
+      // Imprimir la response en la consola
+      console.log('Respuesta del servidor:', response);
+
+      if (response.status === 201) {
+        Swal.fire('Reserva creada', 'Tu reserva se ha creado exitosamente.', 'success');
+        router.push('/reservas');
       } else {
-        Swal.fire("Error", "No se pudo crear la reserva. Inténtalo nuevamente.", "error");
+        console.log('ID del usuario:', authenticatedUser.id);
+        Swal.fire('Error', 'No se pudo crear la reserva. Inténtalo nuevamente.', 'error');
       }
     } catch (error) {
-      console.error("Error al crear la reserva:", error);
-      Swal.fire("Error", "Ocurrió un error al crear la reserva.", "error");
+      console.error('Error al crear la reserva:', error);
+      Swal.fire('Error', 'Ocurrió un error al crear la reserva.', 'error');
     }
   };
 
@@ -82,14 +90,14 @@ const ReservaViaje = () => {
         ) : (
           <select
             className="bg-gray-800 text-white py-2 px-4 rounded w-full"
-            value={selectedVehicle || ""}
+            value={selectedVehicle || ''}
             onChange={(e) => handleSelectVehicle(e.target.value)}
           >
             <option value="" disabled>
               Selecciona un vehículo disponible
             </option>
             {vehiculos
-              .filter((vehiculo) => vehiculo.status === "AVAILABLE")
+              .filter((vehiculo) => vehiculo.status === 'AVAILABLE')
               .map((vehiculo) => (
                 <option key={vehiculo.id} value={vehiculo.id}>
                   {vehiculo.brand} {vehiculo.model} - {vehiculo.id}
@@ -110,7 +118,7 @@ const ReservaViaje = () => {
 
         <button
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all duration-300 transform "
-          onClick={() => router.push("/reservas")}
+          onClick={() => router.push('/reservas')}
         >
           Volver
         </button>

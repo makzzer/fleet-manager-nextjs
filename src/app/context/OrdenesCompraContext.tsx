@@ -30,13 +30,19 @@ interface Producto {
   description: string;
   category: string;
   quantity: number;
+  measurement: string;
+  price: number;
+}
+
+interface Item {
+  product: Producto;
+  quantity: number;
 }
 
 export interface OrdenDeCompra {
   id: string;
   provider: Proveedor;
-  product: Producto;
-  quantity: number;
+  items: Item[];
   amount: number;
   date_created: string;
   date_updated: string;
@@ -59,6 +65,7 @@ interface OrdenDeCompraContextProps {
   fetchProveedores: () => void;
   createOrdenDeCompra: (ordenDeCompra: CreacionOrdenDeCompra) => Promise<void>;
   actualizarEstadoOrdenDeCompra: (id: string, estado: string) => Promise<void>;
+  agregarProductosOrdenDeCompra: (orden_id: string, product_id: string, quantity: number, amount: number) => void,
   exportOrdenesDeCompraToExcel: () => void;
 }
 
@@ -77,11 +84,7 @@ export const useOrdenesDeCompra = () => {
   return context;
 };
 
-export const OrdenDeCompraProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => {
   const [ordenesDeCompra, setOrdenesDeCompra] = useState<OrdenDeCompra[]>([]);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -125,7 +128,7 @@ export const OrdenDeCompraProvider = ({
   const createOrdenDeCompra = async (ordenDeCompra: CreacionOrdenDeCompra) => {
     try {
       await axios.post(apiOrdenesDeCompraBackend, ordenDeCompra);
-      fetchOrdenesDeCompra();//despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
+      fetchOrdenesDeCompra(); //despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
     } catch (error) {
       console.error("Error al crear la orden de compra:", error);
     }
@@ -133,15 +136,33 @@ export const OrdenDeCompraProvider = ({
 
   const actualizarEstadoOrdenDeCompra = async (id: string, estado: string) => {
     await axios.put(`${apiOrdenesDeCompraBackend}/${id}/status/${estado}`);
-    fetchOrdenesDeCompra();//despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
+    fetchOrdenesDeCompra(); //despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
+  };
+
+  const agregarProductosOrdenDeCompra = async (
+    orden_id: string,
+    product_id: string,
+    quantity: number,
+    amount: number
+  ) => {
+    try {
+      await axios.put(`${apiOrdenesDeCompraBackend}/${orden_id}/products`, {
+        product_id,
+        quantity,
+        amount,
+      });
+      fetchOrdenesDeCompra();
+    } catch (error) {
+      console.error("Error al agregar productos a la orden de compra:", error);
+    }
   };
 
   const exportOrdenesDeCompraToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(ordenesDeCompra);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'ordenesDeCompra');
-    XLSX.writeFile(workbook, 'ordenesDeCompra.xlsx');
-  }
+    XLSX.utils.book_append_sheet(workbook, worksheet, "ordenesDeCompra");
+    XLSX.writeFile(workbook, "ordenesDeCompra.xlsx");
+  };
 
   useEffect(() => {
     fetchOrdenesDeCompra();
@@ -149,7 +170,18 @@ export const OrdenDeCompraProvider = ({
 
   return (
     <OrdenDeCompraContext.Provider
-      value={{ ordenesDeCompra, proveedores, productos, fetchOrdenesDeCompra, fetchProductos, fetchProveedores, createOrdenDeCompra, actualizarEstadoOrdenDeCompra, exportOrdenesDeCompraToExcel }}
+      value={{
+        ordenesDeCompra,
+        proveedores,
+        productos,
+        fetchOrdenesDeCompra,
+        fetchProductos,
+        fetchProveedores,
+        createOrdenDeCompra,
+        actualizarEstadoOrdenDeCompra,
+        agregarProductosOrdenDeCompra,
+        exportOrdenesDeCompraToExcel,
+      }}
     >
       {children}
     </OrdenDeCompraContext.Provider>

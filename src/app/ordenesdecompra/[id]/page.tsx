@@ -22,13 +22,19 @@ interface Producto {
   description: string;
   category: string;
   quantity: number;
+  measurement: string;
+  price: number;
 }
 
-interface OrdenDeCompra {
-  id: string;
-  provider: Proveedor;
+interface Item {
   product: Producto;
   quantity: number;
+}
+
+export interface OrdenDeCompra {
+  id: string;
+  provider: Proveedor;
+  items: Item[];
   amount: number;
   date_created: string;
   date_updated: string;
