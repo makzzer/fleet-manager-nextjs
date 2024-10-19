@@ -28,11 +28,41 @@ export interface Vehiculo {
   date_created: string;
   date_updated: string;
   fuel_type : string,
-  fuel_comsumption : number,
+  fuel_consumption : number,
   type : string,
-  max_load : number,
+  load : number,
   has_trailer : boolean,
+  color : string,
+  fuel_measurement : string,
+  cant_axles : number,
+  cant_seats : number,
 }
+
+export const tiposCombustible: { [key: string]: string } = {
+    "NAPHTHA": "Nafta",
+    "DIESEL": "Diesel",
+    "GAS": "Gas",
+    "ELECTRIC": "Electrico"
+};
+
+export const unidadesCombustible: { [key: string]: string } = {
+  "LITER": "Litros",
+  "GALON": "Galones"
+};
+
+export const estadosVehiculo: { [key: string]: string } = {
+  "AVAILABLE": "Disponible",
+  "RESERVED": "Reservado",
+  "MAINTENANCE": "Mantenimiento",
+  "UNAVAILABLE": "No disponible"
+};
+
+export const tiposVehiculo: { [key: string]: string } = {
+  "TRUCK": "Camion",
+  "CAR": "Auto",
+  "MOTORCYCLE": "Moto",
+  "VAN": "Utilitario"
+};
 
 interface VehiculoContextProps {
   vehiculos: Vehiculo[];
@@ -60,57 +90,20 @@ export const useVehiculo = () => {
   return context;
 };
 
-const typeOptions = ['Camión', 'Auto', 'Barco'];
-const fuelOptions = ['Gasoil', 'Eléctrico'];
-
-
-const getRandomType = () => {
-  const valorRandom = Math.floor(Math.random() * typeOptions.length);
-  return typeOptions[valorRandom];
-}
-
-const getRandomFuel = () => {
-  const valorRandom = Math.floor(Math.random() * fuelOptions.length);
-  return fuelOptions[valorRandom];
-}
-
 export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
 
   const fetchVehiculos = useCallback(async () => {
     try {
       const response = await axios.get(apiVehiculosBackend);
-
-      // Aquí accedemos directamente al array de vehículos, ya que no existe el campo `data`
-      const fetchedVehiculosData = response.data;
-
-      if (Array.isArray(fetchedVehiculosData)) {
-        const fetchedVehiculos: Vehiculo[] = fetchedVehiculosData.map(
-          (item: Vehiculo) => ({
-            id: item.id,
-            status: item.status,
-            model: item.model,
-            brand: item.brand,
-            year: item.year,
-            coordinates: {
-              latitude: item.coordinates.latitude,
-              longitude: item.coordinates.longitude,
-            },
-            date_created: item.date_created,
-            date_updated: item.date_updated,
-            type: item.type,
-            fuel_type : item.fuel_type,
-            fuel_comsumption : item.fuel_comsumption,
-            max_load : item.max_load,
-            has_trailer : item.has_trailer,
-          })
-        );
+      if (Array.isArray(response.data)) {
+        const fetchedVehiculos: Vehiculo[] = response.data;
 
         setVehiculos(fetchedVehiculos);
       } else {
         console.error(
           "Error: La respuesta de la API no es un array válido",
-          fetchedVehiculosData
+          response.data
         );
       }
     } catch (error) {
@@ -122,6 +115,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     vehiculo: Omit<Vehiculo, "date_created" | "date_updated">
   ): Promise<{ resultado: boolean, mensaje?: string}> => {
     try {
+      console.log("Vahiculo a crear: ", vehiculo);
       await axios.post(apiVehiculosBackend, vehiculo);
       fetchVehiculos();
       return { resultado: true };
@@ -138,6 +132,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     vehiculoEditado: Omit<Vehiculo, "date_created" | "date_updated">
   ) => {
     try {
+      console.log("Vahiculo a modificar: ", vehiculoEditado);
       // Realiza la solicitud PUT para modificar el vehículo en el backend
       await axios.put(`${apiVehiculosBackend}/${vehiculoEditado.id}`, vehiculoEditado);
   

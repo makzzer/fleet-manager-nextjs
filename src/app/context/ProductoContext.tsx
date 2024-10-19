@@ -13,6 +13,8 @@ export interface Producto {
   description: string;
   category: string;
   quantity: number;
+  measurement: string;
+  price: number;
 }
 
 interface ProductoContextProps {

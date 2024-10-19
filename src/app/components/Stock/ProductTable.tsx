@@ -26,13 +26,16 @@ interface Producto {
   description: string;
   category: string;
   quantity: number;
+  measurement: string;
+  price: number;
 }
 
 interface ProductTableProps {
   products: Producto[];
+  measurementUnits: { [key: string]: string };
 }
 
-const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
+const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits }) => {
   const [showScrollIcon, setShowScrollIcon] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -60,13 +63,13 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
     };
   }, []);
 
-  const getUnidadMedida = (category: string) => {
+ /* const getUnidadMedida = (category: string) => {
     const lowerCategory = category.toLowerCase();
     if (lowerCategory  === 'aceite' || lowerCategory === 'lubricantes' || lowerCategory === 'líquido de frenos') {
       return 'litros';
     }
     return 'unidades'; 
-  };
+  };*/
 
   return (
     <div
@@ -121,6 +124,9 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
               Unidad de medida
             </th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
+              Precio
+            </th>
             <th className="px-6 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
               Acciones
             </th>
@@ -133,7 +139,11 @@ const ProductTable: React.FC<ProductTableProps> = ({ products }) => {
               <td className="px-6 py-4 whitespace-nowrap">{product.brand}</td>
               <td className="px-6 py-4 whitespace-nowrap">{product.category}</td>
               <td className="px-6 py-4 whitespace-nowrap text-center">{product.quantity}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-center">{getUnidadMedida(product.category)}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-center">
+                {measurementUnits[product.measurement] || product.measurement}
+              </td>
+        
+              <td className="px-6 py-4 whitespace-nowrap text-center">{product.price}</td>
               <td className="px-6 py-4 whitespace-nowrap flex space-x-2 justify-end">
                 <IconButton
                   aria-label="Ver producto"

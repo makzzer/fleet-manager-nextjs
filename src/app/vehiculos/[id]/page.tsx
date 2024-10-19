@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useParams } from "next/navigation";
-import { useVehiculo } from "../../context/VehiculoContext";
+import { useVehiculo, tiposCombustible, unidadesCombustible, estadosVehiculo, tiposVehiculo } from "../../context/VehiculoContext";
 
 //importo aca tambien el hook dynamic para usar 
 //el componente del mapa
@@ -55,23 +55,23 @@ const VehiculoDinamicoPage = () => {
           </p>
           <p className="mb-2">
             <strong className="text-blue-300">Tipo: </strong>
-            {vehiculoData.type}
+            {tiposVehiculo[vehiculoData.type] || vehiculoData.type}
           </p>
           <p className="mb-2">
             <strong className="text-blue-300">Tipo de combustible: </strong>
-            {vehiculoData.fuel_type}
+            {tiposCombustible[vehiculoData.fuel_type] || vehiculoData.fuel_type}
           </p>
           <p className="mb-2">
             <strong className="text-blue-300">Consumo: </strong>
-            {vehiculoData.fuel_comsumption}
+            {vehiculoData.fuel_consumption}
           </p>
           <p className="mb-2">
             <strong className="text-blue-300">Carga máxima: </strong>
-            {vehiculoData.max_load}
+            {vehiculoData.load}
           </p>
           <p className="mb-2">
             <strong className="text-blue-300">Acoplado: </strong>
-            {vehiculoData.has_trailer}
+            {vehiculoData.has_trailer ? "Sí" : "No"}
           </p>
         </div>
 

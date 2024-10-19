@@ -1,12 +1,22 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import VehiculoCard from "../components/Cards/VehiculoCards";
-import { useVehiculo } from "../context/VehiculoContext";
+import { useVehiculo, tiposCombustible, unidadesCombustible, tiposVehiculo } from "../context/VehiculoContext";
 import Swal from 'sweetalert2';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import SearchBar from "../../app/components/SearchBar/SearchBar";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
+
+function generarSelect(map:{ [key: string]: string }, id:string, textSeleccione:string) {
+  const options = Object.entries(map)
+    .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
+
+  return `<select id="${id}" class="swal2-select">
+            <option value="" selected>${textSeleccione}</option>
+            ${options}
+          </select>`;
+}
 
 const Vehiculos = () => {
   const { vehiculos, fetchVehiculos, createVehiculo, exportVehiculosToExcel } = useVehiculo();
@@ -152,18 +162,13 @@ const Vehiculos = () => {
           <option value="" disabled selected>Selecciona un año</option>
           ${obtenerOpcionesAnios()}
         </select>
-        <select id="combustible" class="swal2-select">
-          <option value="" selected>Seleccione tipo de combustible</option>
-          <option value="Nafta">Nafta</option>
-          <option value="Gasoil">Gasoil</option>
-        </select>
-        <input type="number" id="consumo" class="swal2-input" placeholder="Consumo(Lts cada 100 km)" oninput="this.value"/>
-        <select id="tipoVehiculo" class="swal2-select">
-          <option value="" selected>Seleccione tipo de vehiculo</option>
-          <option value="Auto">Auto</option>
-          <option value="Camion">Camión</option>
-          <option value="Utilitario">Utilitario</option>
-        </select>
+        <input type="text" id="color" class="swal2-input" placeholder="Color" oninput="this.value"/>
+        ${generarSelect(tiposCombustible, "tipoCombustible", "Seleccione tipo de combustible")}
+        ${generarSelect(unidadesCombustible, "unidadCombustible", "Seleccione unidad de medida")}
+        <input type="number" id="consumo" class="swal2-input" placeholder="Consumo(cada 100 km)" oninput="this.value"/>
+        ${generarSelect(tiposVehiculo, "tipoVehiculo", "Seleccione tipo de vehiculo")}
+        <input type="number" id="cantEjes" class="swal2-input" placeholder="Cantidad de ejes" oninput="this.value"/>
+        <input type="number" id="cantAsientos" class="swal2-input" placeholder="Cantidad de asientos" oninput="this.value"/>
         <input type="number" id="cargaMax" class="swal2-input" placeholder="Carga máxima(Ton)" oninput="this.value" />
         <label style="display: block; margin-top: 10px;">
         <input type="checkbox" id="acoplado" />
@@ -179,21 +184,29 @@ const Vehiculos = () => {
         const brandElement = document.getElementById('brand') as HTMLInputElement;
         const modelElement = document.getElementById('model') as HTMLInputElement;
         const yearElement = document.getElementById('year') as HTMLInputElement;
-        const combustibleElement = document.getElementById('combustible') as HTMLInputElement;
+        const colorElement = document.getElementById('color') as HTMLInputElement;
+        const tipoCombustibleElement = document.getElementById('tipoCombustible') as HTMLInputElement;
+        const unidadCombustibleElement = document.getElementById('unidadCombustible') as HTMLInputElement;
         const consumoElement = document.getElementById('consumo') as HTMLInputElement;
         const tipoVehiculoElement = document.getElementById('tipoVehiculo') as HTMLInputElement;
+        const cantEjesElement = document.getElementById('cantEjes') as HTMLInputElement;
+        const cantAsientosElement = document.getElementById('cantAsientos') as HTMLInputElement;
         const cargaMaxElement = document.getElementById('cargaMax') as HTMLInputElement;
         const acopladoElement = document.getElementById('acoplado') as HTMLInputElement;
-        
+               
         const id = idElement?.value;
         const brand = brandElement?.value;
         const model = modelElement?.value;
         const year = yearElement?.value;
-        const combustible = combustibleElement?.value;
+        const tipoCombustible = tipoCombustibleElement?.value;
         const consumo = consumoElement?.value;
         const tipoVehiculo = tipoVehiculoElement?.value;
         const cargaMax = cargaMaxElement?.value;
-        const acoplado = acopladoElement?.value;
+        const acoplado = acopladoElement?.checked;
+        const color = colorElement?.value;
+        const unidadCombustible = unidadCombustibleElement?.value;
+        const cantEjes = cantEjesElement?.value;
+        const cantAsientos = cantAsientosElement?.value;
 
         // Validación de la patente
         const validarPatente = (patente: string) => {
@@ -201,7 +214,7 @@ const Vehiculos = () => {
           return regex.test(patente);
         }
 
-        if (!id || !brand || !model || !year || !combustible || !consumo || !tipoVehiculo) {
+        if (!id || !brand || !model || !year || !tipoCombustible || !consumo || !tipoVehiculo || !color || !unidadCombustible ) {
           Swal.showValidationMessage('Completa todos los campos');
           return null;
         }
@@ -211,7 +224,7 @@ const Vehiculos = () => {
           return null;
         }
 
-        return { id, brand, model, year, combustible, consumo, tipoVehiculo, cargaMax, acoplado };
+        return { id, brand, model, year, tipoCombustible, consumo, tipoVehiculo, cargaMax, acoplado, color, unidadCombustible, cantEjes, cantAsientos };
       },
       didOpen: () => {
         const brandSelect = document.getElementById('brand') as HTMLSelectElement;
@@ -243,11 +256,15 @@ const Vehiculos = () => {
             "latitude": -34.5347879,
             "longitude": -58.7133719
           },
-          fuel_type : result.value.combustible,
-          fuel_comsumption : result.value.consumo,
+          fuel_type : result.value.tipoCombustible,
+          fuel_consumption : result.value.consumo,
           type : result.value.tipoVehiculo,
-          max_load : result.value.cargaMax,
+          load : result.value.cargaMax,
           has_trailer : result.value.acoplado,
+          color : result.value.color,
+          fuel_measurement : result.value.unidadCombustible,
+          cant_axles : result.value.cantEjes,
+          cant_seats : result.value.cantAsientos,
         };
 
         const { resultado, mensaje } = await createVehiculo(vehiculo);

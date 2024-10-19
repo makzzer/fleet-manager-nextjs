@@ -1,9 +1,33 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { useVehiculo, Vehiculo } from "@/app/context/VehiculoContext";
+import { tiposCombustible, tiposVehiculo, unidadesCombustible, useVehiculo, Vehiculo } from "@/app/context/VehiculoContext";
 import { FiEdit, FiEye, FiTrash, FiCheckCircle } from "react-icons/fi"; // Feather Icons (más modernos)
 import { FaCar, FaTruck, FaShip } from "react-icons/fa";
+
+function generarSelect(map:{ [key: string]: string }, id:string, textSeleccione:string, selected:string) {
+  const options = Object.entries(map)
+    .map(([key, value]) => `<option key="${key}" value="${key}"  ${selected == key ? "selected" : ""}>${value}</option>`)
+    .join('');
+
+  return `<select id="${id}" class="swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="" ${selected == "" ? "selected" : ""}>${textSeleccione}</option>
+            ${options}
+          </select>`;
+}
+
+// Función para generar el rango de años
+function generarSelectAnios(selectedAnio:number) {
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - 30;
+  const anios : { [key: string]: string } = {};
+
+  for (let year = currentYear; year >= startYear; year--) {
+    anios[year.toString()] = year.toString()
+  }
+
+  return generarSelect(anios, "edit-vehicle-year", "Seleccione Año", selectedAnio.toString());
+}
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
@@ -46,20 +70,6 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
     : <FaShip className={`text-2xl font-bold max-w-full mt-1 ${vehiculo.fuel_type === 'Gasoil' ? 'text-amber-400' : 'text-cyan-400'}`}/>
   }
 
-  // Función para generar el rango de años
-  const generarOpcionesAños = () => {
-    const currentYear = new Date().getFullYear();
-    const startYear = currentYear - 30;
-    const opcionesAños = [];
-
-    for (let year = currentYear; year >= startYear; year--) {
-      opcionesAños.push(`<option value="${year}">${year}</option>`);
-    }
-
-    return opcionesAños.join('');
-  };
-
-
   const handleViewVehiculo = (id: string) => {
     if (vehiculo.status === "AVAILABLE") {
       router.push(`/vehiculos/${id}`);
@@ -101,7 +111,6 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   const handleEdit = () => {
     if (vehiculo.status === "AVAILABLE") {
       const opcionesMarcas = camiones.marcas.map(marca => `<option value="${marca.marca}">${marca.marca}</option>`).join('');
-      const opcionesAños = generarOpcionesAños(); // Generar las opciones de años
 
       Swal.fire({
         title: "Editar vehículo",
@@ -161,37 +170,43 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
               </div>
               <div class="input-container">
                 <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
-                <select id="edit-vehicle-year" class="swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  ${opcionesAños} <!-- Opciones de años -->
-                </select>
+                ${generarSelectAnios(vehiculo.year)}
+              </div>
+              <div class="input-container">
+                <label for="color" class="text-left text-gray-700 font-medium">Color</label>
+                <input type="text" id="edit-vehicle-color" class="swal2-input" placeholder="Color" value="${vehiculo.color}"  oninput="this.value"/>  
               </div>
               <div class="input-container">
                 <label for="edit-vehicle-fuel_type" class="text-left text-gray-700 font-medium">Combustible</label>
-                <select id="edit-vehicle-fuel_type" class="text-left swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="Nafta">Nafta</option>
-                  <option value="Gasoil">Gasoil</option>
-                </select>  
+                ${generarSelect(tiposCombustible, "edit-vehicle-fuel_type", "Seleccione tipo de combustible", vehiculo.fuel_type)}
+              </div>
+              <div class="input-container">
+                <label for="edit-vehicle-fuel_measurement" class="text-left text-gray-700 font-medium">Unidad de medida</label>
+                ${generarSelect(unidadesCombustible, "edit-vehicle-fuel_measurement", "Seleccione una unidad", vehiculo.fuel_measurement)}
               </div>     
               <div class="input-container">
-                <label for="consumo" class="text-left text-gray-700 font-medium">Consumo</label>
-                <input type="number" id="consumo" class="swal2-input" placeholder="Consumo(Lts cada 100 km)" oninput="this.value"/>  
+                <label for="edit-vehicle-fuel_comsumption" class="text-left text-gray-700 font-medium">Consumo</label>
+                <input type="number" id="edit-vehicle-fuel_comsumption" class="swal2-input" placeholder="Consumo(cada 100 km)" value="${vehiculo.fuel_consumption}" oninput="this.value"/>  
               </div>
               <div class="input-container">
                 <label for="edit-vehicle-type" class="text-left text-gray-700 font-medium">Tipo de vehiculo</label>
-                <select id="edit-vehicle-type" class="swal2-select p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="" selected>Seleccione tipo de vehiculo</option>
-                  <option value="Auto">Auto</option>
-                  <option value="Camion">Camión</option>
-                  <option value="Utilitario">Utilitario</option>
-                </select>  
-              </div>  
-              <div class="input-container">
-                <label for="cargaMax" class="text-left text-gray-700 font-medium">Carga max.(Ton)</label>
-                <input type="number" id="cargaMax" class="swal2-input" placeholder="Carga max.(Ton)" oninput="this.value"/>  
+                ${generarSelect(tiposVehiculo, "edit-vehicle-type", "Seleccione tipo de vehículo", vehiculo.type)} 
               </div>
               <div class="input-container">
-                <label for="tieneAcoplado" class="text-left text-gray-700 font-medium">Tiene acoplado</label>
-                <input type="checkbox" id="tieneAcoplado">
+                <label for="edit-vehicle-cant_axles" class="text-left text-gray-700 font-medium">Cantidad de ejes</label>
+                <input type="number" id="edit-vehicle-cant_axles" class="swal2-input" placeholder="Cantidad de ejes" value="${vehiculo.cant_axles}" oninput="this.value"/>  
+              </div>
+              <div class="input-container">
+                <label for="edit-vehicle-cant_seats" class="text-left text-gray-700 font-medium">Cantidad de asientos</label>
+                <input type="number" id="edit-vehicle-cant_seats" class="swal2-input" placeholder="Cantidad de asientos" value="${vehiculo.cant_seats}" oninput="this.value"/>  
+              </div>  
+              <div class="input-container">
+                <label for="edit-vehicle-load" class="text-left text-gray-700 font-medium">Carga max.(Ton)</label>
+                <input type="number" id="edit-vehicle-load" class="swal2-input" placeholder="Carga max.(Ton)" value="${vehiculo.load}" oninput="this.value"/>  
+              </div>
+              <div class="input-container">
+                <label for=""edit-vehicle-has_trailer" class="text-left text-gray-700 font-medium">Tiene acoplado</label>
+                <input type="checkbox" id="edit-vehicle-has_trailer" ${vehiculo.has_trailer ? "checked" : ""}>
               </div> 
           </div>
 
@@ -204,17 +219,24 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           const model = (document.getElementById("edit-vehicle-model") as HTMLInputElement).value;
           const year = parseInt((document.getElementById("edit-vehicle-year") as HTMLInputElement).value);
           const fuel_type = (document.getElementById("edit-vehicle-fuel_type") as HTMLInputElement).value;
-          const fuel_comsumption = (document.getElementById("edit-vehicle-consumo") as HTMLInputElement).value;
+          const fuel_comsumption = (document.getElementById("edit-vehicle-fuel_comsumption") as HTMLInputElement).value;
           const type = (document.getElementById("edit-vehicle-type") as HTMLInputElement).value;
-          const max_load = parseInt((document.getElementById("edit-vehicle-type") as HTMLInputElement).value);
-          const has_trailer = (document.getElementById("edit-vehicle-tieneAcoplado") as HTMLInputElement).value;
+          const load = parseInt((document.getElementById("edit-vehicle-load") as HTMLInputElement).value);
+          const has_trailer = (document.getElementById("edit-vehicle-has_trailer") as HTMLInputElement).checked;
+          const color = (document.getElementById("edit-vehicle-color") as HTMLInputElement).value;
+          const fuel_measurement = (document.getElementById("edit-vehicle-fuel_measurement") as HTMLInputElement).value;
+          const cant_axles = (document.getElementById("edit-vehicle-cant_axles") as HTMLInputElement).value;
+          const cant_seats = (document.getElementById("edit-vehicle-cant_seats") as HTMLInputElement).value;
 
-          if (!model || !brand || year < 1900 || year > new Date().getFullYear() || !fuel_type || !fuel_comsumption || !type || !max_load || !has_trailer) {
+          if (!model || !brand || year < 1900 || year > new Date().getFullYear() 
+            || !fuel_type || !fuel_comsumption || !type || !load
+            || !color || !fuel_measurement || !cant_axles || !cant_seats) {
+
             Swal.showValidationMessage("Por favor, complete todos los campos correctamente.");
             return false;
           }
 
-          return { model, brand, year, fuel_type, fuel_comsumption, type, max_load, has_trailer };
+          return { model, brand, year, fuel_type, fuel_comsumption, type, load, has_trailer, color, fuel_measurement, cant_axles, cant_seats };
         },
         didOpen: () => {
           const brandSelect = document.getElementById('edit-vehicle-brand') as HTMLSelectElement;
@@ -243,8 +265,8 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          const { model, brand, year } = result.value;
-          const updatedVehiculo = { ...vehiculo, model, brand, year };
+          const {model, brand, year, fuel_type, fuel_comsumption, type, load, has_trailer, color, fuel_measurement, cant_axles, cant_seats } = result.value;
+          const updatedVehiculo = { ...vehiculo, model, brand, year, fuel_type, fuel_comsumption, type, load, has_trailer, color, fuel_measurement, cant_axles, cant_seats };
 
           modifyVehiculo(updatedVehiculo);
 

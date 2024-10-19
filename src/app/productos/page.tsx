@@ -22,6 +22,13 @@ const categorias = ['Aceite', 'Aire Acondicionado', 'Amortiguadores', 'Baterías
   'Suspensión', 'Transmisión',
 ];
 
+const unidadesDeMedida: { [key: string]: string } = {
+  'LITER': 'Litros',
+  'UNIT': 'Unidades',
+  'KILOGRAM': 'kg',
+};
+
+
 const Stock = () => {
   const router = useRouter();
   const { productos, fetchProductos, createProducto, exportProductoToExcel } = useProducto();
@@ -33,6 +40,12 @@ const Stock = () => {
   const [selectedFilter, setSelectedFilter] = useState(""); // Estado para el filtro seleccionado
   const [isSearchEnabled, setIsSearchEnabled] = useState(false); // Estado para habilitar o deshabilitar la barra de búsqueda
 
+   // Mapeo de unidades de medida
+  /* const measurementMap = {
+    Liter: "Litros",
+    Unit: "Unidades",
+    Kilogram: "Kilogramos",
+  };*/
 
   useEffect(() => {
     const loadProductos = async () => {
@@ -154,7 +167,11 @@ const Stock = () => {
 
   const handleAgregarProducto = () => {
     // Construir las opciones del select
-    const opcionesCategorias = categorias.map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
+    const opcionesCategorias = categorias
+      .map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
+    const opcionesUnidadMedida = Object.entries(unidadesDeMedida)
+      .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
+    
 
     Swal.fire({
       title: "Agregar Producto",
@@ -176,10 +193,15 @@ const Stock = () => {
             <input type="text" id="brand" class="swal2-input" placeholder="Marca">
             <input type="text" id="description" class="swal2-input" placeholder="Descripción">
             <select id="category" class="swal2-select">
-            <option value="" disabled selected>Seleccione una categoria</option>
-            ${opcionesCategorias}
+              <option value="" disabled selected>Seleccione una categoria</option>
+              ${opcionesCategorias}
             </select>
             <input type="text" id="quantity" class="swal2-input" placeholder="Cantidad">
+            <select id="measurement" class="swal2-select">
+              <option value="" selected>Seleccione unidad de medida</option>
+               ${opcionesUnidadMedida}
+            </select>
+            <input type="text" id="price" class="swal2-input" placeholder="Precio">
           `,
       confirmButtonText: "Agregar",
       cancelButtonText: "Cancelar",
@@ -191,19 +213,23 @@ const Stock = () => {
         const descriptionElement = document.getElementById("description") as HTMLInputElement;
         const categoryElement = document.getElementById("category") as HTMLInputElement;
         const quantityElement = document.getElementById("quantity") as HTMLInputElement;
+        const measurementElement = document.getElementById("measurement") as HTMLInputElement;
+        const priceElement = document.getElementById("price") as HTMLInputElement;
 
         const name = nameElement?.value;
         const brand = brandElement?.value;
         const description = descriptionElement?.value;
         const category = categoryElement?.value;
         const quantity = quantityElement?.value;
+        const measurement = measurementElement?.value;
+        const price = priceElement?.value;
 
-        if (!name || !brand || !description || !category) {
+        if (!name || !brand || !description || !category || !quantity || !measurement || !price) {
           Swal.showValidationMessage("Completa todos los campos");
           return null;
         }
 
-        return { name, brand, description, category, quantity };
+        return { name, brand, description, category, quantity, measurement, price };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
@@ -214,6 +240,8 @@ const Stock = () => {
           description: result.value.description,
           category: result.value.category,
           quantity: result.value.quantity,
+          measurement: result.value.measurement,
+          price: result.value.price
         };
 
         createProducto(producto);
@@ -279,7 +307,7 @@ const Stock = () => {
 
         {filteredProductos && filteredProductos.length > 0 ? (
           // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
-          <ProductTable products={filteredProductos} />
+          <ProductTable products={filteredProductos} measurementUnits={unidadesDeMedida}/>
         ) : (
           <div className="flex flex-col items-center justify-center mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-lg font-semibold text-gray-800">

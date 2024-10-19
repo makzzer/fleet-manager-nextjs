@@ -47,15 +47,19 @@ const ProductPage = () => {
                 </div>
                 <div className="bg-gray-800 p-3 rounded md:col-span-2">
                   <p className="text-gray-400 text-sm">Categoría</p>
-                  <p className="text-white font-semibold">
-                    {producto.category}
-                  </p>
+                  <p className="text-white font-semibold">{producto.category}</p>
                 </div>
                 <div className="bg-gray-800 p-3 rounded md:col-span-2">
                   <p className="text-gray-400 text-sm">Cantidad</p>
-                  <p className="text-white font-semibold">
-                    {producto.quantity}
-                  </p>
+                  <p className="text-white font-semibold">{producto.quantity}</p>
+                </div>
+                <div className="bg-gray-800 p-3 rounded md:col-span-2">
+                  <p className="text-gray-400 text-sm">Unidad de medida</p>
+                  <p className="text-white font-semibold">{producto.measurement}</p>
+                </div>
+                <div className="bg-gray-800 p-3 rounded md:col-span-2">
+                  <p className="text-gray-400 text-sm">Precio</p>
+                  <p className="text-white font-semibold">{producto.price}</p>
                 </div>
                 {/* El elemento ocupa 2 columnas en pantallas medianas o grandes */}
                 <div className="bg-gray-800 p-3 rounded md:col-span-2">
