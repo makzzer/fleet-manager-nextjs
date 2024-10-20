@@ -1,62 +1,86 @@
 "use client";
 
+import axios from "axios";
 import {
   createContext,
   useContext,
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
 // import axios from "axios";
 
-interface AnalyticsData {
-  reservas: number[];
-  combustible: number[];
-  kilometraje: number[];
-  tiempoUsoPromedio: number[];
-  montoCombustible: number[];
-  vehiculoMasFrecuente: string[];
+export interface Avg {
+  type: string;
+  value: string;
+  years: number;
+  months: number;
+  days: number;
+  hours: number;
+  minutes: number;
+  whole_seconds: number;
+  micro_seconds: number;
+  seconds: number;
+  null: boolean;
+}
+
+export interface Value {
+  id?: string;
+  name?: string;
+  type?: string;
+  status?: string;
+  count?: number;
+  priority?: string;
+  user_id?: string;
+  username?: string;
+  concat?: string;
+  avg?: Avg;
+  quantity?: number;
+}
+
+export interface AnalyticsData {
+  origin: string;
+  type: string;
+  description: string;
+  values: Value[];
 }
 
 interface AnalyticsContextProps {
-  data: AnalyticsData | null;
-  fetchAnalyticsData: () => Promise<void>;
+  analytics: AnalyticsData[] | null;
+  fetchAnalytics: () => Promise<void>;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextProps | undefined>(
   undefined
 );
 
-//TODOS LOS DATOS, DE MOMENTO, SON POR MES
-
-const staticData: AnalyticsData = {
-  reservas: [12, 19, 15, 8, 6, 9], // Reservas por mes
-  combustible: [65, 59, 80, 81, 56, 55], // Litros de combustible por mes
-  kilometraje: [200, 300, 150, 400, 600, 250], // Kilometros recorridos
-  tiempoUsoPromedio: [2, 3, 4, 5, 6, 7], // Horas de uso promedio
-  montoCombustible: [200, 150, 300, 400, 350, 280], // Monto en combustible
-  vehiculoMasFrecuente: ["Camión A", "Auto B", "Moto C"], // Vehiculos mas utilizados
-};
+const apiAnaliticasBackend = `https://fleet-manager-gzui.onrender.com/api/analytics`
 
 export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
-  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsData[] | null>(null);
 
-  const fetchAnalyticsData = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
-      setData(staticData);
-      // const response = await axios.get("/api/analytics");
-      // setData(response.data);
-    } catch (error) {
-      console.error("Error fetching analytics data:", error);
-    }
-  };
+      const response = await axios.get(apiAnaliticasBackend);
+      const fetchedAnalytics = response.data;
 
-  useEffect(() => {
-    fetchAnalyticsData();
+      if (Array.isArray(fetchedAnalytics)) {
+        setAnalytics(fetchedAnalytics);
+      } else {
+        console.error("Error: La respuesta de la API no es un array válido", fetchedAnalytics);
+      }
+    } catch (error) {
+      console.error("Error al obtener las analiticas:", error);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
+
   return (
-    <AnalyticsContext.Provider value={{ data, fetchAnalyticsData }}>
+    <AnalyticsContext.Provider value={{ analytics, fetchAnalytics }}>
       {children}
     </AnalyticsContext.Provider>
   );

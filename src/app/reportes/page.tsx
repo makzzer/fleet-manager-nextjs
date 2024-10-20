@@ -3,11 +3,6 @@
 import { useEffect } from "react";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { useAnalytics } from "../context/AnalyticsContext";
-import BarChartReservas from "../components/Charts/BarChartReservas";
-import LineChartCombustible from "../components/Charts/LineChartCombustible";
-import BarChartKilometraje from "../components/Charts/BarChartKilometraje";
-import LineChartTiempoUsoPromedio from "../components/Charts/LineChartTiempoUsoPromedio";
-import DoughnutChartPagoCombustible from "../components/Charts/DoughnutChartPagoCombustible";
 
 import {
   Chart,
@@ -23,6 +18,8 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
+import { processChartData } from "../components/Charts/chartDataProcesor";
+import BarChart from "../components/Charts/BarChart";
 
 const registerChartComponentes = () => {
   Chart.register(
@@ -41,17 +38,24 @@ const registerChartComponentes = () => {
 };
 
 const Analytics = () => {
-  const { data, fetchAnalyticsData } = useAnalytics();
+  const { analytics, fetchAnalytics } = useAnalytics();
 
   //Registro los componentes del chart y hago el fetch para traer los datos
   useEffect(() => {
     registerChartComponentes();
-    fetchAnalyticsData();
-  }, [fetchAnalyticsData]);
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
-  if (!data) {
-    return <div>No hay datos disponibles</div>;
+  if (!analytics) {
+    return <div>Loading...</div>;
   }
+
+  //Traigo los datos procesados
+  const processedChartData = processChartData(analytics);
+
+  //Obtengo solo los graficos de barra
+  const barChartData = processedChartData.filter((chart) => chart.type === 'bar');
+
 
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
@@ -61,13 +65,29 @@ const Analytics = () => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+          {barChartData.map((chart, index) => 
+          (
+          <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4">
+              {chart.title}
+            </h2>
+            <BarChart data={chart.data} title={chart.title} />
+          </div>
+          )
+          )}
+ 
+
+          {/*
           <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">
               Cantidad de reservas
             </h2>
-            <BarChartReservas reservas={data.reservas} />
+            <BarChartReservas data={data.reservas} label={}/>
           </div>
+            */}
 
+          {/*
           <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">
               Consumo de combustible
@@ -99,6 +119,7 @@ const Analytics = () => {
               montoCombustible={data.montoCombustible}
             />
           </div>
+          */}
         </div>
       </div>
     </ProtectedRoute>
