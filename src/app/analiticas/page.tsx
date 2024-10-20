@@ -157,7 +157,7 @@ const Analytics = () => {
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
       <div className="p-6 bg-gray-900 min-h-screen text-white">
-        <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">Reportes</h1>
+        <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">Analíticas</h1>
         <div className="space-y-12">
           {origins.map((origin) => (
             <div key={origin} className="bg-gray-800/50 p-6 rounded-lg shadow-lg">
