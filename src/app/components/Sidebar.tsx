@@ -177,7 +177,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                   <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                     <IoAnalytics />
                     <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                      Analitícas
+                      Analíticas
                     </span>
                   </div>
                 </Link>

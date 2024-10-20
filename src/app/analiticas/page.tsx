@@ -22,7 +22,21 @@ import { processChartData } from "../components/Charts/chartDataProcesor";
 import BarChart from "../components/Charts/BarChart";
 import StatCard from "../components/StatCard";
 import { FaCalendarAlt, FaFileAlt, FaTools } from "react-icons/fa";
-import DoughnutChartPagoCombustible from "../components/Charts/DoughnutChart";
+import DoughnutChart from "../components/Charts/DoughnutChart";
+
+interface ProcessedChartData {
+  origin: string;
+  title: string;
+  type: "bar" | "pie" | "value";
+  data: {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[] | number;
+      backgroundColor?: string | string[];
+    }[];
+  };
+}
 
 const registerChartComponentes = () => {
   Chart.register(
@@ -54,113 +68,125 @@ const Analytics = () => {
   }
 
   const modulesIcons = (module: string) => {
-    switch(module) {
+    switch (module) {
       case "CONTROLS":
-        return (<FaTools />);
+        return <FaTools />;
       case "ORDERS":
-        return (<FaFileAlt />);
-      case "RESERVES":  
-        return (<FaCalendarAlt />);
+        return <FaFileAlt />;
+      case "RESERVES":
+        return <FaCalendarAlt />;
     }
-  }
+  };
 
   //Traigo los datos procesados
   const processedChartData = processChartData(analytics);
 
-  //Obtengo solo los graficos de barra
-  const barChartData = processedChartData.filter((chart) => chart.type === 'bar');
+  const origins = ["CONTROLS", "ORDERS", "RESERVES"];
+  const types = ["value", "bar", "pie"] as const;
 
-  const uniqueValueData = processedChartData.filter((chart) => chart.type === 'value');
+  const groupChartsByOriginAndType = (
+    processedChartData: ProcessedChartData[]
+  ) => {
+    return origins.reduce((acc, origin) => {
+      const chartsForOrigin = processedChartData.filter(
+        (chart) => chart.origin === origin
+      );
 
-  const pieChartData = processedChartData.filter((chart) => chart.type === 'pie');
+      acc[origin] = types.reduce((typeAcc, type) => {
+        typeAcc[type] = chartsForOrigin.filter((chart) => chart.type === type);
+        return typeAcc;
+      }, {} as Record<(typeof types)[number], ProcessedChartData[]>);
 
-  return (
-    <ProtectedRoute requiredModule="ANALYTICS">
-      <div className="p-6 bg-gray-900 min-h-screen text-white">
-        <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">
-          Reportes
-        </h1>
+      return acc;
+    }, {} as Record<string, Record<(typeof types)[number], ProcessedChartData[]>>);
+  };
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  const groupedCharts = groupChartsByOriginAndType(processedChartData);
 
-          {barChartData.map((chart, index) => 
-          (
-          <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">
-              {chart.title}
-            </h2>
-            <BarChart data={chart.data} title={chart.title} />
-          </div>
-          )
-          )}
-
-          {uniqueValueData.map((chart, index) => {
-           const valor: number = chart.data.datasets.reduce((acc, dataset) => {
+  const renderStatCards = (charts: ProcessedChartData[]) => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {charts.map((chart, index) => {
+          const valor: number = chart.data.datasets.reduce((acc, dataset) => {
             if (dataset.data && Array.isArray(dataset.data)) {
               return acc + (dataset.data[0] as number);
             } else {
               return acc + (dataset.data as number);
             }
-            }, 0);
+          }, 0);
 
-           return (
-            <StatCard key={index} title={chart.title} value={valor} icon={modulesIcons(chart.origin)}/>
-          )}
-          )}
- 
-          {pieChartData.map((chart, index) => 
-          (
-          <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">
-              {chart.title}
-            </h2>
-            <DoughnutChartPagoCombustible data={chart.data} />
-          </div>
-          )
-          )}
-
-          {/*
-          <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">
-              Cantidad de reservas
-            </h2>
-            <BarChartReservas data={data.reservas} label={}/>
-          </div>
-            */}
-
-          {/*
-          <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">
-              Consumo de combustible
-            </h2>
-            <LineChartCombustible combustible={data.combustible} />
-          </div>
-
-          <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">
-              Kilómetros Recorridos
-            </h2>
-            <BarChartKilometraje kilometraje={data.kilometraje} />
-          </div>
-
-          <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">
-              Tiempo de Uso Promedio
-            </h2>
-            <LineChartTiempoUsoPromedio
-              tiempoUsoPromedio={data.tiempoUsoPromedio}
+          return (
+            <StatCard
+              key={`${chart.origin}-${chart.type}-${index}`}
+              title={chart.title}
+              value={valor}
+              icon={modulesIcons(chart.origin)}
             />
-          </div>
+          );
+        })}
+      </div>
+    );
+  };
 
-          <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">
-              Monto Pagado por Combustible
-            </h2>
-            <DoughnutChartPagoCombustible
-              montoCombustible={data.montoCombustible}
-            />
+  const renderBarCharts = (charts: ProcessedChartData[]) => {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {charts.map((chart, index) => (
+          <div key={`${chart.origin}-${chart.type}-${index}`} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+            <h3 className="text-xl font-semibold mb-4">{chart.title}</h3>
+            <BarChart data={chart.data} title={chart.title} />
           </div>
-          */}
+        ))}
+      </div>
+    );
+  };
+
+  const renderDoughnutCharts = (charts: ProcessedChartData[]) => {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {charts.map((chart, index) => (
+          <div key={`${chart.origin}-${chart.type}-${index}`} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+            <h3 className="text-xl font-semibold mb-4">{chart.title}</h3>
+            <DoughnutChart data={chart.data} />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <ProtectedRoute requiredModule="ANALYTICS">
+      <div className="p-6 bg-gray-900 min-h-screen text-white">
+        <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">Reportes</h1>
+        <div className="space-y-12">
+          {origins.map((origin) => (
+            <div key={origin} className="bg-gray-800/50 p-6 rounded-lg shadow-lg">
+              <h2 className="text-2xl font-semibold mb-6 flex items-center">
+                {modulesIcons(origin)}
+                <span className="ml-2">{origin}</span>
+              </h2>
+              <div className="space-y-8">
+                {groupedCharts[origin].value.length > 0 && (
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4">Estadísticas</h3>
+                    {renderStatCards(groupedCharts[origin].value)}
+                  </div>
+                )}
+                {groupedCharts[origin].bar.length > 0 && (
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4">Gráficos de Barras</h3>
+                    {renderBarCharts(groupedCharts[origin].bar)}
+                  </div>
+                )}
+                {groupedCharts[origin].pie.length > 0 && (
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4">Gráficos Circulares</h3>
+                    {renderDoughnutCharts(groupedCharts[origin].pie)}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </ProtectedRoute>
