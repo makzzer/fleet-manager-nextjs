@@ -6,6 +6,8 @@ import { MdDashboard } from "react-icons/md"
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 import React from "react";
+import { IoAnalytics } from "react-icons/io5";
+
 
 interface SidebarProps {
   onToggleSidebar: (isOpen: boolean) => void;
@@ -165,6 +167,17 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                     <FaFileAlt />
                     <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
                       Órdenes
+                    </span>
+                  </div>
+                </Link>
+              )}
+
+                {hasModuleAccess("ANALYTICS") && (
+                <Link href="/analiticas" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <IoAnalytics />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Analitícas
                     </span>
                   </div>
                 </Link>
