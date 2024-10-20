@@ -20,6 +20,9 @@ import {
 } from "chart.js";
 import { processChartData } from "../components/Charts/chartDataProcesor";
 import BarChart from "../components/Charts/BarChart";
+import StatCard from "../components/StatCard";
+import { FaCalendarAlt, FaFileAlt, FaTools } from "react-icons/fa";
+import DoughnutChartPagoCombustible from "../components/Charts/DoughnutChart";
 
 const registerChartComponentes = () => {
   Chart.register(
@@ -50,12 +53,26 @@ const Analytics = () => {
     return <div>Loading...</div>;
   }
 
+  const modulesIcons = (module: string) => {
+    switch(module) {
+      case "CONTROLS":
+        return (<FaTools />);
+      case "ORDERS":
+        return (<FaFileAlt />);
+      case "RESERVES":  
+        return (<FaCalendarAlt />);
+    }
+  }
+
   //Traigo los datos procesados
   const processedChartData = processChartData(analytics);
 
   //Obtengo solo los graficos de barra
   const barChartData = processedChartData.filter((chart) => chart.type === 'bar');
 
+  const uniqueValueData = processedChartData.filter((chart) => chart.type === 'value');
+
+  const pieChartData = processedChartData.filter((chart) => chart.type === 'pie');
 
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
@@ -76,7 +93,31 @@ const Analytics = () => {
           </div>
           )
           )}
+
+          {uniqueValueData.map((chart, index) => {
+           const valor: number = chart.data.datasets.reduce((acc, dataset) => {
+            if (dataset.data && Array.isArray(dataset.data)) {
+              return acc + (dataset.data[0] as number);
+            } else {
+              return acc + (dataset.data as number);
+            }
+            }, 0);
+
+           return (
+            <StatCard key={index} title={chart.title} value={valor} icon={modulesIcons(chart.origin)}/>
+          )}
+          )}
  
+          {pieChartData.map((chart, index) => 
+          (
+          <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4">
+              {chart.title}
+            </h2>
+            <DoughnutChartPagoCombustible data={chart.data} />
+          </div>
+          )
+          )}
 
           {/*
           <div className="bg-gray-800 p-4 rounded-lg shadow-lg">

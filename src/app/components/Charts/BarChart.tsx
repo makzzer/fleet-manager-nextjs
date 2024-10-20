@@ -8,7 +8,7 @@ interface BarChartProps {
     labels: string[];
     datasets: {
       label: string;
-      data: number[];
+      data: number[] | number;
       backgroundColor?: string | string[];
     }[];
   };

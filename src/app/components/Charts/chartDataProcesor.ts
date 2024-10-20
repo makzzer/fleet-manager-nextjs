@@ -3,13 +3,14 @@ import { AnalyticsData, Avg } from '../../context/AnalyticsContext';
 
 //Como se van a estructurar los datos para usarlos en nuestros graficos
 interface ProcessedChartData {
+  origin: string;
   title: string;
   type: 'bar' | 'pie' | 'value';
   data: {
     labels: string[];
     datasets: {
       label: string;
-      data: number[];
+      data: number[] | number;
       backgroundColor?: string | string[];
     }[];
   };
@@ -67,6 +68,7 @@ function processBarChartData(chart: AnalyticsData): ProcessedChartData {
 
     // Retorna los datos estructurados para un grafico de barras apiladas
     return {
+      origin: chart.origin,
       title: chart.description,
       type: 'bar',
       data: { labels, datasets }
@@ -76,6 +78,7 @@ function processBarChartData(chart: AnalyticsData): ProcessedChartData {
   // Procesa los datos de forma mas simple, sin subcategorias
   else {
     return {
+      origin: chart.origin,
       title: chart.description,
       type: 'bar',
       data: {
@@ -93,6 +96,7 @@ function processBarChartData(chart: AnalyticsData): ProcessedChartData {
 //Función que estructura los graficos de tipo pie
 function processPieChartData(chart: AnalyticsData): ProcessedChartData {
   return {
+    origin: chart.origin,
     title: chart.description,
     type: 'pie',
     data: {
@@ -114,13 +118,14 @@ function processValueData(chart: AnalyticsData): ProcessedChartData {
                 chart.values[0].count || 0;
   
   return {
+    origin: chart.origin,
     title: chart.description,
     type: 'value',
     data: {
       labels: [chart.description],
       datasets: [{
         label: 'Valor',
-        data: [value],
+        data: value,
       }]
     }
   };
