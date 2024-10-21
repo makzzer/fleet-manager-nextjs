@@ -1,19 +1,56 @@
-// DetalleReserva.tsx
-
 "use client";
 import { Reserva } from "@/app/context/ReservesContext";
 import { useAuth } from "@/app/context/AuthContext";
 import dynamic from "next/dynamic";
+import axios from "axios"; // Asegúrate de tener axios importado
+import { useState } from "react";
+import Swal from "sweetalert2"; // Para alertas
 
 // Cargar LeafletMap dinámicamente para evitar problemas con SSR
 const LeafletMap = dynamic(() => import("../../components/Maps/MapTrazadoRuta"), { ssr: false });
 
 interface DetalleReservaProps {
   reserva: Reserva;
+  reservaId: string; // Recibimos el id de la reserva
 }
 
-const DetalleReserva = ({ reserva }: DetalleReservaProps) => {
+const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaProps) => {
   const { authenticatedUser } = useAuth();
+  const [reserva, setReserva] = useState<Reserva>(initialReserva); // Utilizamos un estado para manejar la reserva localmente
+  const [loading, setLoading] = useState(false); // Estado de carga
+
+  // Función para cambiar el estado de la reserva a COMPLETED
+  const completarReserva = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.put(
+        `https://fleet-manager-gzui.onrender.com/api/reserves/${reservaId}/status/COMPLETED`
+      );
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Éxito",
+          text: "La reserva ha sido completada.",
+          icon: "success",
+        });
+
+        // Actualizamos el estado de la reserva en el componente
+        setReserva((prevReserva) => ({
+          ...prevReserva,
+          status: "COMPLETED",
+        }));
+      }
+    } catch (error) {
+      console.error("Error al completar la reserva:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al completar la reserva.",
+        icon: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-6">
@@ -67,15 +104,29 @@ const DetalleReserva = ({ reserva }: DetalleReservaProps) => {
             <LeafletMap routes={reserva.trip.routes} />
           </div>
         </div>
-      </div>
 
-      <div className="flex-auto w-full sm:w-64 mt-2">
-        <button
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
-          onClick={() => window.history.back()}
-        >
-          Volver
-        </button>
+        {/* Mostrar el botón solo si el estado no es COMPLETED */}
+        {reserva.status !== "COMPLETED" && (
+          <div className="w-full mt-4">
+            <button
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
+              onClick={completarReserva}
+              disabled={loading} // Deshabilitar el botón mientras se realiza la petición
+            >
+              {loading ? "Cambiando estado..." : "Marcar como Completada"}
+            </button>
+          </div>
+        )}
+
+        {/* Botón de Volver más responsivo */}
+        <div className="w-full mt-4">
+          <button
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
+            onClick={() => window.history.back()}
+          >
+            Volver
+          </button>
+        </div>
       </div>
     </div>
   );

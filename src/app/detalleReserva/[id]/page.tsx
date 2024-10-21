@@ -55,7 +55,7 @@ const DetalleReservaPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <ProtectedRoute>
-      <DetalleReserva reserva={reservaSeleccionada} />
+      <DetalleReserva reserva={reservaSeleccionada} reservaId={id} /> {/* Pasar el ID de la reserva */}
     </ProtectedRoute>
   );
 };
