@@ -1,29 +1,33 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useVehiculo } from '../context/VehiculoContext'; // Usamos el context de vehículos para traer los vehículos disponibles
-import { useAuth } from '../context/AuthContext'; // Usamos el context de autenticación para obtener el usuario autenticado
+import { useVehiculo } from '../context/VehiculoContext';
+import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Carousel from '../components/Carousel/Carousel';
-import { EmblaOptionsType } from 'embla-carousel'
+import { EmblaOptionsType } from 'embla-carousel';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { es } from 'date-fns/locale';
+import MapPickCoordinates from '../components/Maps/MapPickCoordinates'; // Asegúrate de que este es el import correcto
 
-
-const OPTIONS: EmblaOptionsType = { 
+const OPTIONS: EmblaOptionsType = {
   loop: true,
   align: 'center',
   skipSnaps: false,
-}
+};
 
 const ReservaViaje = () => {
   const router = useRouter();
-  const { vehiculos, fetchVehiculos } = useVehiculo(); // Obtener vehículos del context
-  const { authenticatedUser } = useAuth(); // Obtener el usuario autenticado
+  const { vehiculos, fetchVehiculos } = useVehiculo();
+  const { authenticatedUser } = useAuth();
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [pickedCoordinates, setPickedCoordinates] = useState<{ lat: number; lng: number } | null>(null); // Estado para las coordenadas seleccionadas
 
   useEffect(() => {
-    // Cargar los vehículos al montar el componente
     const loadVehiculos = async () => {
       setIsLoading(true);
       await fetchVehiculos();
@@ -50,13 +54,19 @@ const ReservaViaje = () => {
       return;
     }
 
+    if (!pickedCoordinates) {
+      alert('Por favor, selecciona un destino en el mapa.');
+      return;
+    }
+
     const requestData = {
       vehicle_id: selectedVehicle,
       user_id: authenticatedUser.id,
       destination: {
-        latitude: -34.532493826811276, // Valores de ejemplo
-        longitude: -58.70447301819182,
+        latitude: pickedCoordinates.lat,  // Usar las coordenadas seleccionadas
+        longitude: pickedCoordinates.lng, // Usar las coordenadas seleccionadas
       },
+      // No usamos selectedDate todavía, será para futuras características
     };
 
     // Imprimir la request en la consola
@@ -96,16 +106,31 @@ const ReservaViaje = () => {
         <h2 className="text-2xl font-semibold mb-5">Seleccionar Vehículo</h2>
         {isLoading ? (
           <p className="text-gray-400">Cargando vehículos...</p>
-          
         ) : (
-          <Carousel 
-            vehicles={vehiculos.filter(v => v.status === 'AVAILABLE')} 
+          <Carousel
+            vehicles={vehiculos.filter(v => v.status === 'AVAILABLE')}
             options={OPTIONS}
             onSelectVehicle={handleSelectVehicle}
             selectedVehicleId={selectedVehicle}
           />
         )}
       </div>
+
+      {/* Selector de Fecha */}
+      <div className="flex-shrink-0 mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Seleccionar Fecha del Viaje</h2>
+        <DatePicker
+          selected={selectedDate}
+          onChange={(date: Date) => setSelectedDate(date)}
+          dateFormat="dd/MM/yyyy"
+          placeholderText="Selecciona una fecha"
+          className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          locale={es}
+        />
+      </div>
+
+      {/* Mapa para seleccionar coordenadas */}
+      <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} /> {/* Pasa la función para actualizar las coordenadas */}
 
       {/* Botón para crear la reserva */}
       <div className="flex-shrink-0 mt-4">
@@ -117,7 +142,7 @@ const ReservaViaje = () => {
         </button>
 
         <button
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all duration-300 transform "
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all duration-300 transform"
           onClick={() => router.push('/reservas')}
         >
           Volver
