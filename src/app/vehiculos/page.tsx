@@ -7,8 +7,9 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import SearchBar from "../../app/components/SearchBar/SearchBar";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
+import { FiPlus, FiDownload } from 'react-icons/fi'; // React Icons
 
-function generarSelect(map:{ [key: string]: string }, id:string, textSeleccione:string) {
+function generarSelect(map: { [key: string]: string }, id: string, textSeleccione: string) {
   const options = Object.entries(map)
     .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
 
@@ -193,7 +194,7 @@ const Vehiculos = () => {
         const cantAsientosElement = document.getElementById('cantAsientos') as HTMLInputElement;
         const cargaMaxElement = document.getElementById('cargaMax') as HTMLInputElement;
         const acopladoElement = document.getElementById('acoplado') as HTMLInputElement;
-               
+
         const id = idElement?.value;
         const brand = brandElement?.value;
         const model = modelElement?.value;
@@ -214,7 +215,7 @@ const Vehiculos = () => {
           return regex.test(patente);
         }
 
-        if (!id || !brand || !model || !year || !tipoCombustible || !consumo || !tipoVehiculo || !color || !unidadCombustible ) {
+        if (!id || !brand || !model || !year || !tipoCombustible || !consumo || !tipoVehiculo || !color || !unidadCombustible) {
           Swal.showValidationMessage('Completa todos los campos');
           return null;
         }
@@ -256,15 +257,15 @@ const Vehiculos = () => {
             "latitude": -34.5347879,
             "longitude": -58.7133719
           },
-          fuel_type : result.value.tipoCombustible,
-          fuel_consumption : result.value.consumo,
-          type : result.value.tipoVehiculo,
-          load : result.value.cargaMax,
-          has_trailer : result.value.acoplado,
-          color : result.value.color,
-          fuel_measurement : result.value.unidadCombustible,
-          cant_axles : result.value.cantEjes,
-          cant_seats : result.value.cantAsientos,
+          fuel_type: result.value.tipoCombustible,
+          fuel_consumption: result.value.consumo,
+          type: result.value.tipoVehiculo,
+          load: result.value.cargaMax,
+          has_trailer: result.value.acoplado,
+          color: result.value.color,
+          fuel_measurement: result.value.unidadCombustible,
+          cant_axles: result.value.cantEjes,
+          cant_seats: result.value.cantAsientos,
         };
 
         const { resultado, mensaje } = await createVehiculo(vehiculo);
@@ -301,16 +302,30 @@ const Vehiculos = () => {
           <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">
             Gestión de Vehículos
           </h1>
-          <button
-            onClick={handleAgregarVehiculo}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-            Agregar Vehículo
-          </button>
-          <button
-            onClick={exportVehiculosToExcel}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-            Exportar a Excel
-          </button>
+
+
+
+
+
+
+
+          {/* Botones mejorados con responsividad */}
+          <div className="flex space-x-4">
+            <button
+              onClick={handleAgregarVehiculo}
+              className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out">
+              <FiPlus className="h-5 w-5 mr-2" /> {/* Icono */}
+              <span className="hidden sm:inline">Agregar Vehículo</span> {/* Texto se oculta en pantallas pequeñas */}
+            </button>
+
+            <button
+              onClick={exportVehiculosToExcel}
+              className="flex items-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out">
+              <FiDownload className="h-5 w-5 mr-2" /> {/* Icono */}
+              <span className="hidden sm:inline">Exportar a Excel</span> {/* Texto se oculta en pantallas pequeñas */}
+            </button>
+          </div>
+
         </div>
 
         {/* Barra de búsqueda */}
