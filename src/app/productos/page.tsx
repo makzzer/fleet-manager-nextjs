@@ -31,7 +31,7 @@ const unidadesDeMedida: { [key: string]: string } = {
 
 const Stock = () => {
   const router = useRouter();
-  const { productos, fetchProductos, createProducto, exportProductoToExcel } = useProducto();
+  const { productos, proveedores, fetchProductos, fetchProveedores, createProducto, exportProductoToExcel } = useProducto();
   const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
   const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
   const [loadMoreCount, setLoadMoreCount] = useState(5); // Para cargar de a 4
@@ -55,6 +55,15 @@ const Stock = () => {
     };
     loadProductos();
   }, [fetchProductos]);
+
+  useEffect(() => {
+    const loadProveedores = async () => {
+      setIsLoading(true);
+      await fetchProveedores();
+      setIsLoading(false);
+    };
+    loadProveedores();
+  }, [fetchProveedores]);
 
   // función para filtrar tildes y caracteres especiales en el buscador.
   const removeAccents = (str: string) => {
@@ -169,8 +178,12 @@ const Stock = () => {
     // Construir las opciones del select
     const opcionesCategorias = categorias
       .map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
+
     const opcionesUnidadMedida = Object.entries(unidadesDeMedida)
       .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
+
+    const proveedoresOptions = proveedores
+      .map( (proveedor) => `<option value="${proveedor.id}">${proveedor.name}</option>` ).join("");
     
 
     Swal.fire({
@@ -202,6 +215,11 @@ const Stock = () => {
                ${opcionesUnidadMedida}
             </select>
             <input type="text" id="price" class="swal2-input" placeholder="Precio">
+            <select id="preferenceProviderId" class="swal2-select">
+              <option value="" selected>Seleccione un proveedor</option>
+               ${proveedoresOptions}
+            </select>
+            <input type="text" id="minStock" class="swal2-input" placeholder="Stock mínimo">
           `,
       confirmButtonText: "Agregar",
       cancelButtonText: "Cancelar",
@@ -215,6 +233,8 @@ const Stock = () => {
         const quantityElement = document.getElementById("quantity") as HTMLInputElement;
         const measurementElement = document.getElementById("measurement") as HTMLInputElement;
         const priceElement = document.getElementById("price") as HTMLInputElement;
+        const preferenceProviderIdElement = document.getElementById("preferenceProviderId") as HTMLInputElement;
+        const minStockElement = document.getElementById("minStock") as HTMLInputElement;
 
         const name = nameElement?.value;
         const brand = brandElement?.value;
@@ -223,13 +243,15 @@ const Stock = () => {
         const quantity = quantityElement?.value;
         const measurement = measurementElement?.value;
         const price = priceElement?.value;
+        const preferenceProviderId= preferenceProviderIdElement?.value;
+        const minStock = minStockElement?.value;
 
-        if (!name || !brand || !description || !category || !quantity || !measurement || !price) {
+        if (!name || !brand || !description || !category || !quantity || !measurement || !price || !preferenceProviderId || !minStock) {
           Swal.showValidationMessage("Completa todos los campos");
           return null;
         }
 
-        return { name, brand, description, category, quantity, measurement, price };
+        return { name, brand, description, category, quantity, measurement, price, preferenceProviderId, minStock };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
@@ -241,7 +263,9 @@ const Stock = () => {
           category: result.value.category,
           quantity: result.value.quantity,
           measurement: result.value.measurement,
-          price: result.value.price
+          price: result.value.price,
+          provider_id: result.value.preferenceProviderId,
+          min_stock: result.value.minStock
         };
 
         createProducto(producto);

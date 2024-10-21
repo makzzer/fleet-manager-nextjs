@@ -28,6 +28,8 @@ interface Producto {
   quantity: number;
   measurement: string;
   price: number;
+  preference_provider_id: string;
+  min_stock: number;
 }
 
 interface ProductTableProps {

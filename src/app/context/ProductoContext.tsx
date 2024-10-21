@@ -5,6 +5,7 @@ import axios from "axios";
 import * as XLSX from 'xlsx';
 
 const apiProductosBackend = `https://fleet-manager-gzui.onrender.com/api/products`;
+const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
 
 export interface Producto {
   id: string;
@@ -15,14 +16,40 @@ export interface Producto {
   quantity: number;
   measurement: string;
   price: number;
+  preference_provider_id: string;
+  min_stock: number;
+}
+
+export interface ProductoRequest {
+  id: string;
+  name: string;
+  brand: string;
+  description: string;
+  category: string;
+  quantity: number;
+  measurement: string;
+  price: number;
+  provider_id: string;
+  min_stock: number;
+}
+
+interface Proveedor {
+  id: string;
+  name: string;
+  email: string;
+  cuit: string;
+  phone_number: string;
+  address: string;
 }
 
 interface ProductoContextProps {
   productos: Producto[];
   producto: Producto | null;
+  proveedores: Proveedor[];
   fetchProductos: () => void;
   fetchProducto: (id: string) => void;
-  createProducto: (producto: Producto) => Promise<void>;
+  fetchProveedores: () => void;
+  createProducto: (producto: ProductoRequest) => Promise<void>;
   exportProductoToExcel: () => void;
 }
 
@@ -41,6 +68,7 @@ export const useProducto = () => {
 export const ProductoProvider = ({ children }: { children: ReactNode }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [producto, setProducto] = useState<Producto | null>(null);
+  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
 
   const fetchProductos = useCallback(async () => {
     try {
@@ -67,7 +95,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const createProducto = async (producto: Producto) => {
+  const createProducto = async (producto: ProductoRequest) => {
     try {
       console.log("Producto a enviar:", producto);
       await axios.post(apiProductosBackend, producto);
@@ -80,6 +108,15 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   };
+
+  const fetchProveedores = useCallback(async () => {
+    try {
+      const response = await axios.get(apiProveedoresBackend);
+      setProveedores(response.data);
+    } catch (error) {
+      console.error("Error al obtener los proveedores:", error);
+    }
+  }, []);
 
   const exportProductoToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(productos);
@@ -94,7 +131,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ProductoContext.Provider
-      value={{ productos, producto, fetchProductos, fetchProducto, createProducto, exportProductoToExcel }}
+      value={{ productos, producto, proveedores, fetchProductos, fetchProducto, fetchProveedores, createProducto, exportProductoToExcel }}
     >
       {children}
     </ProductoContext.Provider>
