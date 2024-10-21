@@ -81,7 +81,7 @@ const Analytics = () => {
   //Traigo los datos procesados
   const processedChartData = processChartData(analytics);
 
-  const origins = ["CONTROLS", "ORDERS", "RESERVES", "ALERTS", "VEHICLES"];
+  const origins = ["CONTROLS", "ORDERS", "RESERVES", "ALERTS", "VEHICLES", "PRODUCTS"];
   const types = ["value", "bar", "pie"] as const;
 
   const groupChartsByOriginAndType = (
@@ -154,7 +154,7 @@ const Analytics = () => {
     );
   };
 
-  console.log(groupedCharts["VEHICLES"].bar);
+  console.log(groupedCharts["PRODUCTS"]);
 
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
