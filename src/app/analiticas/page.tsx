@@ -50,7 +50,7 @@ const registerChartComponentes = () => {
     Title,
     Tooltip,
     Legend,
-    ArcElement
+    ArcElement,
   );
 };
 
@@ -81,7 +81,7 @@ const Analytics = () => {
   //Traigo los datos procesados
   const processedChartData = processChartData(analytics);
 
-  const origins = ["CONTROLS", "ORDERS", "RESERVES"];
+  const origins = ["CONTROLS", "ORDERS", "RESERVES", "ALERTS", "VEHICLES"];
   const types = ["value", "bar", "pie"] as const;
 
   const groupChartsByOriginAndType = (
@@ -153,6 +153,8 @@ const Analytics = () => {
       </div>
     );
   };
+
+  console.log(groupedCharts["VEHICLES"].bar);
 
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
