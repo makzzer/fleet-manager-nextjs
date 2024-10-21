@@ -1,13 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useReserva } from "@/app/context/ReservesContext";
+import { useVehiculo } from "@/app/context/VehiculoContext"; // Importar el contexto de Vehículos
 import MapCentroMonitoreo from "../components/Maps/MapCentroMonitoreo"; // Mapa de vehículos
 import MapTrazadoRuta2 from "../components/Maps/MapTrazadoRuta2"; // Mapa de trazado de rutas
 import { MapContainer, TileLayer } from "react-leaflet";
 
 // Página con pestañas para cambiar entre el monitoreo y el trazado de rutas
 const CentroDeMonitoreoConTabs = () => {
-  const { reservas, fetchReservas } = useReserva(); // Obtener reservas desde el contexto
+  const { reservas, fetchReservas } = useReserva(); // Obtener reservas desde el contexto de reservas
+  const { vehiculos, fetchVehiculos } = useVehiculo(); // Obtener vehículos desde el contexto de vehículos
   const [vehiculosEnViaje, setVehiculosEnViaje] = useState<
     { id: string; model: string; brand: string; coordinates: { latitude: number; longitude: number } }[]
   >([]);
@@ -20,20 +22,25 @@ const CentroDeMonitoreoConTabs = () => {
   } | null>(null); // Estado para el trazado de rutas
   const [activeTab, setActiveTab] = useState("reservas"); // Estado para la pestaña activa
 
-  // Cargar reservas al montar el componente
+  // Cargar reservas y vehículos al montar el componente
   useEffect(() => {
-    const cargarReservas = async () => {
+    const cargarDatos = async () => {
       await fetchReservas();
+      await fetchVehiculos();
     };
 
-    cargarReservas();
-  }, [fetchReservas]);
+    cargarDatos();
+  }, [fetchReservas, fetchVehiculos]);
 
   // Procesar reservas activas y obtener coordenadas aleatorias
   useEffect(() => {
     const vehiculosFiltrados = reservas
       .filter((reserva) => reserva.status === "ACTIVATED") // Filtrar reservas activas
       .map((reserva) => {
+        // Buscar el vehículo en el contexto de Vehiculos
+        const vehiculo = vehiculos.find((v) => v.id === reserva.vehicle_id);
+
+        // Obtener las coordenadas aleatorias de los steps del viaje
         if (reserva.trip.routes.length > 0 && reserva.trip.routes[0].steps.length > 0) {
           const randomRouteIndex = Math.floor(Math.random() * reserva.trip.routes.length);
           const randomStepIndex = Math.floor(Math.random() * reserva.trip.routes[randomRouteIndex].steps.length);
@@ -42,8 +49,8 @@ const CentroDeMonitoreoConTabs = () => {
           if (randomStep && randomStep.latitude && randomStep.longitude) {
             return {
               id: reserva.vehicle_id,
-              model: "Modelo del vehículo", // Asigna el modelo si tienes esta info
-              brand: "Marca del vehículo", // Asigna la marca si tienes esta info
+              model: vehiculo?.model || "Modelo del vehículo", // Tomar el modelo desde el contexto
+              brand: vehiculo?.brand || "Marca del vehículo", // Tomar la marca desde el contexto
               coordinates: {
                 latitude: randomStep.latitude,
                 longitude: randomStep.longitude,
@@ -54,8 +61,8 @@ const CentroDeMonitoreoConTabs = () => {
 
         return {
           id: reserva.vehicle_id,
-          model: "Modelo desconocido",
-          brand: "Marca desconocida",
+          model: vehiculo?.model || "Modelo desconocido",
+          brand: vehiculo?.brand || "Marca desconocida",
           coordinates: {
             latitude: -34.603722, // Coordenadas predeterminadas
             longitude: -58.381592,
@@ -64,7 +71,7 @@ const CentroDeMonitoreoConTabs = () => {
       });
 
     setVehiculosEnViaje(vehiculosFiltrados); // Actualizar el estado con los vehículos en viaje
-  }, [reservas]);
+  }, [reservas, vehiculos]);
 
   // Manejar selección de un vehículo para el mapa de monitoreo
   const handleSeleccionarVehiculo = (vehiculoId: string) => {
@@ -82,10 +89,14 @@ const CentroDeMonitoreoConTabs = () => {
           longitude: step.longitude,
         }))
       );
+
+      // Buscar el vehículo en el contexto de Vehiculos
+      const vehiculo = vehiculos.find((v) => v.id === reservaSeleccionada.vehicle_id);
+
       setVehiculoConRuta({
         id: reservaSeleccionada.vehicle_id,
-        model: "Modelo del vehículo", // Asigna el modelo si tienes esta info
-        brand: "Marca del vehículo", // Asigna la marca si tienes esta info
+        model: vehiculo?.model || "Modelo del vehículo", // Tomar el modelo desde el contexto
+        brand: vehiculo?.brand || "Marca del vehículo", // Tomar la marca desde el contexto
         steps: steps,
       });
     }
@@ -125,7 +136,7 @@ const CentroDeMonitoreoConTabs = () => {
                     }`}
                     onClick={() => handleSeleccionarVehiculo(vehiculo.id)}
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col items-center justify-between">
                       <div className="text-lg font-bold">
                         {vehiculo.brand} {vehiculo.model}
                       </div>
