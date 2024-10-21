@@ -10,7 +10,10 @@ import { EmblaOptionsType } from 'embla-carousel';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { es } from 'date-fns/locale';
-import MapPickCoordinates from '../components/Maps/MapPickCoordinates'; // Asegúrate de que este es el import correcto
+import dynamic from 'next/dynamic';
+
+// Carga dinámica del componente MapPickCoordinates solo en el cliente
+const MapPickCoordinates = dynamic(() => import('../components/Maps/MapPickCoordinates'), { ssr: false });
 
 const OPTIONS: EmblaOptionsType = {
   loop: true,
@@ -124,8 +127,7 @@ const ReservaViaje = () => {
 
       {/* Mapa para seleccionar coordenadas */}
       <div className='z-20'>
-      <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} /> {/* Pasa la función para actualizar las coordenadas */}
-
+        <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} /> {/* Pasa la función para actualizar las coordenadas */}
       </div>
 
       {/* Botón para crear la reserva */}
