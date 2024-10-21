@@ -2,9 +2,16 @@
 import { useState, useEffect } from "react";
 import { useReserva } from "@/app/context/ReservesContext";
 import { useVehiculo } from "@/app/context/VehiculoContext"; // Importar el contexto de Vehículos
-import MapCentroMonitoreo from "../components/Maps/MapCentroMonitoreo"; // Mapa de vehículos
-import MapTrazadoRuta2 from "../components/Maps/MapTrazadoRuta2"; // Mapa de trazado de rutas
+import dynamic from "next/dynamic"; // Para cargar componentes de forma dinámica
 import { MapContainer, TileLayer } from "react-leaflet";
+
+// Cargar los componentes del mapa dinámicamente sin SSR
+const MapCentroMonitoreo = dynamic(() => import("../components/Maps/MapCentroMonitoreo"), {
+    ssr: false,
+});
+const MapTrazadoRuta2 = dynamic(() => import("../components/Maps/MapTrazadoRuta2"), {
+    ssr: false,
+});
 
 // Página con pestañas para cambiar entre el monitoreo y el trazado de rutas
 const CentroDeMonitoreoConTabs = () => {
@@ -154,7 +161,9 @@ const CentroDeMonitoreoConTabs = () => {
 
                     {/* Mapa de monitoreo */}
                     <div className="w-full lg:w-3/4 h-full relative z-0">
-                        <MapCentroMonitoreo vehiculos={vehiculosEnViaje} vehiculoSeleccionado={vehiculoSeleccionado} />
+                        {typeof window !== 'undefined' && (
+                            <MapCentroMonitoreo vehiculos={vehiculosEnViaje} vehiculoSeleccionado={vehiculoSeleccionado} />
+                        )}
                     </div>
                 </div>
             )}
@@ -186,18 +195,20 @@ const CentroDeMonitoreoConTabs = () => {
 
                     {/* Mapa con el trazado de rutas */}
                     <div className="w-full lg:w-3/4 h-full relative z-0">
-                        <MapContainer
-                            center={[-34.493027, -58.639397]} // Coordenadas predeterminadas
-                            zoom={14}
-                            scrollWheelZoom={false}
-                            style={{ height: "100%", width: "100%" }}
-                        >
-                            <TileLayer
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            {vehiculoConRuta && <MapTrazadoRuta2 vehiculoSeleccionado={vehiculoConRuta} />}
-                        </MapContainer>
+                        {typeof window !== 'undefined' && (
+                            <MapContainer
+                                center={[-34.493027, -58.639397]} // Coordenadas predeterminadas
+                                zoom={14}
+                                scrollWheelZoom={false}
+                                style={{ height: "100%", width: "100%" }}
+                            >
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                {vehiculoConRuta && <MapTrazadoRuta2 vehiculoSeleccionado={vehiculoConRuta} />}
+                            </MapContainer>
+                        )}
                     </div>
                 </div>
             )}
