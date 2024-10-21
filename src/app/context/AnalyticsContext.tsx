@@ -37,6 +37,17 @@ export interface Value {
   concat?: string;
   avg?: Avg;
   quantity?: number;
+  model?: string;
+  brand?: string;
+  year?: string;
+  fuel_type?: string;
+  axles?: number;
+  seats?: number;
+  has_trailer?: boolean;
+  load?: number;
+  acknowledge?: boolean;
+  title?: string;
+  category?: string;
 }
 
 export interface AnalyticsData {

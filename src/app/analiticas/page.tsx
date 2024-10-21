@@ -21,7 +21,7 @@ import {
 import { processChartData } from "../components/Charts/chartDataProcesor";
 import BarChart from "../components/Charts/BarChart";
 import StatCard from "../components/StatCard";
-import { FaCalendarAlt, FaFileAlt, FaTools } from "react-icons/fa";
+import { FaBox, FaCalendarAlt, FaCar, FaFileAlt, FaTools } from "react-icons/fa";
 import DoughnutChart from "../components/Charts/DoughnutChart";
 
 interface ProcessedChartData {
@@ -50,7 +50,7 @@ const registerChartComponentes = () => {
     Title,
     Tooltip,
     Legend,
-    ArcElement
+    ArcElement,
   );
 };
 
@@ -67,6 +67,23 @@ const Analytics = () => {
     return <div>Loading...</div>;
   }
 
+  const modulesTitleEsp = (module: string) => {
+    switch (module) {
+      case "CONTROLS":
+        return "Controles";
+      case "ORDERS":
+        return "Órdenes";
+      case "RESERVES":
+        return "Reservas";
+      case "ALERTS":
+        return "Alertas";
+      case "VEHICLES":
+        return "Vehículos";
+      case "PRODUCTS":
+        return "Productos";
+    }
+  }
+
   const modulesIcons = (module: string) => {
     switch (module) {
       case "CONTROLS":
@@ -75,13 +92,28 @@ const Analytics = () => {
         return <FaFileAlt />;
       case "RESERVES":
         return <FaCalendarAlt />;
+      case "ALERTS":
+        return <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      </svg>
+      case "VEHICLES":
+        return <FaCar />
+      case "PRODUCTS":
+        return <FaBox />
     }
   };
 
   //Traigo los datos procesados
   const processedChartData = processChartData(analytics);
 
-  const origins = ["CONTROLS", "ORDERS", "RESERVES"];
+  const origins = ["CONTROLS", "ORDERS", "RESERVES", "ALERTS", "VEHICLES", "PRODUCTS"];
   const types = ["value", "bar", "pie"] as const;
 
   const groupChartsByOriginAndType = (
@@ -154,6 +186,8 @@ const Analytics = () => {
     );
   };
 
+  console.log(groupedCharts["PRODUCTS"]);
+
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
       <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -163,7 +197,7 @@ const Analytics = () => {
             <div key={origin} className="bg-gray-800/50 p-6 rounded-lg shadow-lg">
               <h2 className="text-2xl font-semibold mb-6 flex items-center">
                 {modulesIcons(origin)}
-                <span className="ml-2">{origin}</span>
+                <span className="ml-2">{modulesTitleEsp(origin)}</span>
               </h2>
               <div className="space-y-8">
                 {groupedCharts[origin].value.length > 0 && (
