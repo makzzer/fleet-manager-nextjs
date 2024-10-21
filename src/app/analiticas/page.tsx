@@ -55,6 +55,8 @@ const registerChartComponentes = () => {
 };
 
 const Analytics = () => {
+  registerChartComponentes();
+
   const { analytics, fetchAnalytics } = useAnalytics();
 
   //Registro los componentes del chart y hago el fetch para traer los datos
