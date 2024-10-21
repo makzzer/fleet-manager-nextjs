@@ -171,11 +171,11 @@ const CentroDeMonitoreoConTabs = () => {
       {activeTab === "reservas" && (
         <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
           {/* Sidebar de vehículos en viaje */}
-          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10">
+          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
             <h2 className="text-2xl font-semibold mb-4">Vehículos en viaje</h2>
             <ul className="space-y-4">
               {vehiculosEnViaje.length > 0 ? (
-                vehiculosEnViaje.map((vehiculo) => (
+                vehiculosEnViaje.map((vehiculo) => ( // Mostramos solo 5 vehículos a la vez
                   <li
                     key={vehiculo.id}
                     className={`bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer ${
@@ -209,11 +209,11 @@ const CentroDeMonitoreoConTabs = () => {
       {activeTab === "vehiculo" && (
         <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
           {/* Sidebar de vehículos con rutas */}
-          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10">
+          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
             <h2 className="text-2xl font-semibold mb-4">Trazado de rutas</h2>
             <ul className="space-y-4">
               {reservas.length > 0 ? (
-                reservas.map((reserva) => (
+                reservas.map((reserva) => ( // Mostramos solo 5 rutas a la vez
                   <li
                     key={reserva.vehicle_id}
                     className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
@@ -254,11 +254,11 @@ const CentroDeMonitoreoConTabs = () => {
       {activeTab === "simulador" && (
         <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
           {/* Sidebar para seleccionar una reserva */}
-          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10">
+          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
             <h2 className="text-2xl font-semibold mb-4">Simulador de Viaje</h2>
             <ul className="space-y-4">
               {reservas.length > 0 ? (
-                reservas.map((reserva) => (
+                reservas.map((reserva) => ( // Mostramos solo 5 reservas a la vez
                   <li
                     key={reserva.vehicle_id}
                     className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"

@@ -61,7 +61,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-900 text-white border-b-2 min-h-[80px] border-gray-800 p-4 sticky z-30 top-0 left-0 w-full shadow-md">
+    <nav className="bg-gray-900 text-white border-b-2 min-h-[80px] border-gray-800 p-4 sticky z-40 top-0 left-0 w-full shadow-md">
       <div className="container flex justify-between items-center">
         <div className="hidden md:block">
           <div className="flex space-x-4 mt-2 items-center">

@@ -112,7 +112,7 @@ const ReservaViaje = () => {
       </div>
 
       {/* Selector de Fecha */}
-      <div className="flex-shrink-0 mb-6 relative z-50"> {/* Agregamos z-index aquí */}
+      <div className="flex-shrink-0 mb-6 relative z-30"> {/* Agregamos z-index aquí */}
         <h2 className="text-2xl font-semibold mb-2">Seleccionar Fecha del Viaje</h2>
         <DatePicker
           selected={selectedDate}
@@ -121,7 +121,7 @@ const ReservaViaje = () => {
           placeholderText="Selecciona una fecha"
           className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           locale={es}
-          popperClassName="z-50" // Asegura que el calendario del DatePicker esté por encima
+          popperClassName="z-30" // Asegura que el calendario del DatePicker esté por encima
         />
       </div>
 
