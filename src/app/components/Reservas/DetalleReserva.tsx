@@ -106,7 +106,7 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
         </div>
 
         {/* Mostrar el botón solo si el estado no es COMPLETED */}
-        {reserva.status !== "COMPLETED" && (
+        {reserva.status !== "COMPLETED" &&  reserva.status !=="CREATED" && (
           <div className="w-full mt-4">
             <button
               className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"

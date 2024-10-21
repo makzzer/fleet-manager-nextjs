@@ -13,7 +13,6 @@ const customMarker = new L.Icon({
   iconUrl: markerIcon.src,
   shadowUrl: markerShadow.src,
   iconRetinaUrl: markerRetina.src,
-  //shadowUrl: markerShadow.src,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -21,10 +20,9 @@ const customMarker = new L.Icon({
 });
 
 // Componente para detectar el doble clic y obtener las coordenadas
-const LocationMarker = ({ setPickedCoordinates } :any) => {
+const LocationMarker = ({ setPickedCoordinates }: any) => {
   const [position, setPosition] = useState(null);
 
-  // Manejo de eventos en el mapa
   useMapEvents({
     dblclick(e) {
       const { lat, lng } = e.latlng;
@@ -34,7 +32,6 @@ const LocationMarker = ({ setPickedCoordinates } :any) => {
     },
   });
 
-  // Mostrar un marcador donde el usuario haya hecho doble clic
   return position === null ? null : (
     <Marker position={position} icon={customMarker}>
       <Popup>Coordenadas seleccionadas: {`${position.lat}, ${position.lng}`}</Popup>
@@ -42,37 +39,36 @@ const LocationMarker = ({ setPickedCoordinates } :any) => {
   );
 };
 
-const MapPickCoordinates = ({ setPickedCoordinates }:any) => {
-    const [pickedCoordinates, setLocalPickedCoordinates] = useState(null);
-  
-    return (
-      <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Selecciona un punto en el mapa</h2>
-        <div style={{ height: '500px', width: '100%' }}>
-          <MapContainer
-            center={[-34.603722, -58.381592]} // Coordenadas iniciales (Buenos Aires como ejemplo)
-            zoom={13}
-            scrollWheelZoom={false}
-            style={{ height: '100%', width: '100%' }}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <LocationMarker setPickedCoordinates={setPickedCoordinates} />
-          </MapContainer>
-        </div>
-  
-        {/* Mostrar las coordenadas seleccionadas en la interfaz, si hay */}
-        {pickedCoordinates && (
-          <div className="mt-4">
-            <h3 className="text-lg font-bold text-white">Coordenadas seleccionadas:</h3>
-            <p className="text-white">Latitud: {pickedCoordinates.lat}, Longitud: {pickedCoordinates.lng}</p>
-          </div>
-        )}
+const MapPickCoordinates = ({ setPickedCoordinates }: any) => {
+  const [pickedCoordinates, setLocalPickedCoordinates] = useState(null);
+
+  return (
+    <div>
+      <h2 className="text-xl font-semibold text-white mb-4">Selecciona un punto en el mapa</h2>
+      <div style={{ height: '500px', width: '100%' }}>
+        <MapContainer
+          center={[-34.603722, -58.381592]} // Coordenadas iniciales (Buenos Aires como ejemplo)
+          zoom={13}
+          scrollWheelZoom={false}
+          style={{ height: '100%', width: '100%' }}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <LocationMarker setPickedCoordinates={setPickedCoordinates} />
+        </MapContainer>
       </div>
-    );
-  };
-  
+
+      {/* Mostrar las coordenadas seleccionadas en la interfaz, si hay */}
+      {pickedCoordinates && (
+        <div className="mt-4">
+          <h3 className="text-lg font-bold text-white">Coordenadas seleccionadas:</h3>
+          <p className="text-white">Latitud: {pickedCoordinates.lat}, Longitud: {pickedCoordinates.lng}</p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default dynamic(() => Promise.resolve(MapPickCoordinates), { ssr: false });

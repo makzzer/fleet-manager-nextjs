@@ -25,7 +25,7 @@ const ReservaViaje = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [pickedCoordinates, setPickedCoordinates] = useState<{ lat: number; lng: number } | null>(null); // Estado para las coordenadas seleccionadas
+  const [pickedCoordinates, setPickedCoordinates] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     const loadVehiculos = async () => {
@@ -39,7 +39,6 @@ const ReservaViaje = () => {
   // Función para manejar la selección del vehículo
   const handleSelectVehicle = (vehicleId: string) => {
     setSelectedVehicle(vehicleId);
-    console.log(vehicleId);
   };
 
   // Función para crear la reserva usando Axios
@@ -63,13 +62,11 @@ const ReservaViaje = () => {
       vehicle_id: selectedVehicle,
       user_id: authenticatedUser.id,
       destination: {
-        latitude: pickedCoordinates.lat,  // Usar las coordenadas seleccionadas
-        longitude: pickedCoordinates.lng, // Usar las coordenadas seleccionadas
+        latitude: pickedCoordinates.lat,
+        longitude: pickedCoordinates.lng,
       },
-      // No usamos selectedDate todavía, será para futuras características
     };
 
-    // Imprimir la request en la consola
     console.log('Datos de la solicitud:', JSON.stringify(requestData, null, 2));
 
     try {
@@ -78,18 +75,13 @@ const ReservaViaje = () => {
         requestData
       );
 
-      // Imprimir la response en la consola
-      console.log('Respuesta del servidor:', response);
-
       if (response.status === 201) {
         Swal.fire('Reserva creada', 'Tu reserva se ha creado exitosamente.', 'success');
         router.push('/reservas');
       } else {
-        console.log('ID del usuario:', authenticatedUser.id);
         Swal.fire('Error', 'No se pudo crear la reserva. Inténtalo nuevamente.', 'error');
       }
     } catch (error) {
-      console.error('Error al crear la reserva:', error);
       Swal.fire('Error', 'Ocurrió un error al crear la reserva.', 'error');
     }
   };
@@ -117,20 +109,24 @@ const ReservaViaje = () => {
       </div>
 
       {/* Selector de Fecha */}
-      <div className="flex-shrink-0 mb-6">
+      <div className="flex-shrink-0 mb-6 relative z-50"> {/* Agregamos z-index aquí */}
         <h2 className="text-2xl font-semibold mb-2">Seleccionar Fecha del Viaje</h2>
         <DatePicker
           selected={selectedDate}
-          onChange={(date: Date) => setSelectedDate(date)}
+          onChange={(date: Date | null) => setSelectedDate(date)}
           dateFormat="dd/MM/yyyy"
           placeholderText="Selecciona una fecha"
           className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           locale={es}
+          popperClassName="z-50" // Asegura que el calendario del DatePicker esté por encima
         />
       </div>
 
       {/* Mapa para seleccionar coordenadas */}
+      <div className='z-20'>
       <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} /> {/* Pasa la función para actualizar las coordenadas */}
+
+      </div>
 
       {/* Botón para crear la reserva */}
       <div className="flex-shrink-0 mt-4">
