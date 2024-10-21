@@ -5,6 +5,15 @@ import { useVehiculo } from '../context/VehiculoContext'; // Usamos el context d
 import { useAuth } from '../context/AuthContext'; // Usamos el context de autenticación para obtener el usuario autenticado
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Carousel from '../components/Carousel/Carousel';
+import { EmblaOptionsType } from 'embla-carousel'
+
+
+const OPTIONS: EmblaOptionsType = { 
+  loop: true,
+  align: 'center',
+  skipSnaps: false,
+}
 
 const ReservaViaje = () => {
   const router = useRouter();
@@ -84,26 +93,17 @@ const ReservaViaje = () => {
 
       {/* Seleccionar Vehículo */}
       <div className="flex-shrink-0 mb-4">
-        <h2 className="text-2xl font-semibold mb-3">Seleccionar Vehículo</h2>
+        <h2 className="text-2xl font-semibold mb-5">Seleccionar Vehículo</h2>
         {isLoading ? (
           <p className="text-gray-400">Cargando vehículos...</p>
+          
         ) : (
-          <select
-            className="bg-gray-800 text-white py-2 px-4 rounded w-full"
-            value={selectedVehicle || ''}
-            onChange={(e) => handleSelectVehicle(e.target.value)}
-          >
-            <option value="" disabled>
-              Selecciona un vehículo disponible
-            </option>
-            {vehiculos
-              .filter((vehiculo) => vehiculo.status === 'AVAILABLE')
-              .map((vehiculo) => (
-                <option key={vehiculo.id} value={vehiculo.id}>
-                  {vehiculo.brand} {vehiculo.model} - {vehiculo.id}
-                </option>
-              ))}
-          </select>
+          <Carousel 
+            vehicles={vehiculos.filter(v => v.status === 'AVAILABLE')} 
+            options={OPTIONS}
+            onSelectVehicle={handleSelectVehicle}
+            selectedVehicleId={selectedVehicle}
+          />
         )}
       </div>
 
