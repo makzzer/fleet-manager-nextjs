@@ -33,7 +33,9 @@ function processInterval(avg: Avg): number {
 }
 
 //Función que se encarga de procesar cada grafico de tipo barra
-function processBarChartData(chart: AnalyticsData): ProcessedChartData {
+function processBarChartData(chart: AnalyticsData): ProcessedChartData | null {
+  if (chart.values.length === 0) return null;
+
   //Determina si el grafico de barras es uno común o uno apilado (stacked)
   // Si hay mas de un valor con el mismo 'type' o 'status', se considera un grafico apilado.
   const isStacked = chart.values.some(
@@ -109,7 +111,9 @@ function processBarChartData(chart: AnalyticsData): ProcessedChartData {
 }
 
 //Función que estructura los graficos de tipo pie
-function processPieChartData(chart: AnalyticsData): ProcessedChartData {
+function processPieChartData(chart: AnalyticsData): ProcessedChartData | null {
+  if (chart.values.length === 0) return null;
+
   return {
     origin: chart.origin,
     title: chart.description,
@@ -129,7 +133,9 @@ function processPieChartData(chart: AnalyticsData): ProcessedChartData {
 
 // Función que estructura los gráficos de tipo valor unico
 // (valor unico - Se puede implementar una statCard como en el dashboard)
-function processValueData(chart: AnalyticsData): ProcessedChartData {
+function processValueData(chart: AnalyticsData): ProcessedChartData | null {
+  if (chart.values.length === 0) return null;
+
   const value =
     chart.values[0].quantity ||
     (chart.values[0].avg ? processInterval(chart.values[0].avg) : 0) ||
@@ -159,6 +165,11 @@ export function processChartData(
 ): ProcessedChartData[] {
   return analyticsData
     .map((chart) => {
+
+      if (chart.values.length === 0) {
+        return null;
+      }
+
       switch (chart.type) {
         case "BARS":
           return processBarChartData(chart);
