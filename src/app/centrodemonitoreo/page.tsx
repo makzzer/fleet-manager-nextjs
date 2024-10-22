@@ -239,7 +239,7 @@ const CentroDeMonitoreoConTabs = () => {
                         <div className="text-lg font-bold">Reserva {reserva.vehicle_id}</div>
                         {/*<div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>*/}
                         <div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>
-                        <div className={`text-sm ${reserva.status === 'CREATED' ? 'text-blue-400' : 'text-green-400'}`}>
+                        <div className={`text-sm font-semibold ${reserva.status === 'CREATED' ? 'text-blue-400' : reserva.status === 'COMPLETED' ? 'text-green-400' : 'text-yellow-400'}`}>
                           {reserva.status}
                         </div>
                       </div>
@@ -289,8 +289,8 @@ const CentroDeMonitoreoConTabs = () => {
                         <div className="text-lg font-bold">Reserva {reserva.vehicle_id}</div>
                         {/*<div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>*/}
                         <div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>
-                        <div className={`text-sm ${reserva.status === 'CREATED' ? 'text-blue-400' : 'text-green-400'}`}>
-                          {reserva.status}
+                        <div className={`text-sm font-semibold ${reserva.status === 'CREATED' ? 'text-blue-400' : reserva.status === 'COMPLETED' ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {reserva.status}
                         </div>
                       </div>
                     </li>
