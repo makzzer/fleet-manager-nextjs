@@ -18,7 +18,6 @@ const MapSimuladorVehiculo = dynamic(() => import("../components/Maps/MapSimulad
   loading: () => <p>Cargando mapa...</p>, // Mostrar un loading en lugar del error
 });
 
-// Página con pestañas para cambiar entre el monitoreo, el trazado de rutas y el simulador
 const CentroDeMonitoreoConTabs = () => {
   const { reservas, fetchReservas } = useReserva(); // Obtener reservas desde el contexto de reservas
   const { vehiculos, fetchVehiculos } = useVehiculo(); // Obtener vehículos desde el contexto de vehículos
@@ -46,52 +45,57 @@ const CentroDeMonitoreoConTabs = () => {
   // Cargar reservas y vehículos al montar el componente
   useEffect(() => {
     const cargarDatos = async () => {
-      await fetchReservas();
-      await fetchVehiculos();
+      try {
+        console.log("Fetching reservas...");
+        await fetchReservas();
+        console.log("Fetching vehiculos...");
+        await fetchVehiculos();
+      } catch (error) {
+        console.error("Error al cargar reservas o vehículos", error);
+      }
     };
 
     cargarDatos();
   }, [fetchReservas, fetchVehiculos]);
 
-  // Procesar reservas activas y obtener coordenadas aleatorias
+  // Validar si las reservas están llegando correctamente
   useEffect(() => {
-    const vehiculosFiltrados = reservas
-      .filter((reserva) => reserva.status === "ACTIVATED") // Filtrar reservas activas
-      .map((reserva) => {
-        // Buscar el vehículo en el contexto de Vehiculos
-        const vehiculo = vehiculos.find((v) => v.id === reserva.vehicle_id);
+    console.log("Reservas obtenidas:", reservas);
+  }, [reservas]);
 
-        // Obtener las coordenadas aleatorias de los steps del viaje
-        if (reserva.trip.routes.length > 0 && reserva.trip.routes[0].steps.length > 0) {
-          const randomRouteIndex = Math.floor(Math.random() * reserva.trip.routes.length);
-          const randomStepIndex = Math.floor(Math.random() * reserva.trip.routes[randomRouteIndex].steps.length);
-          const randomStep = reserva.trip.routes[randomRouteIndex].steps[randomStepIndex];
+  // Procesar reservas activas y obtener coordenadas exactas de los vehículos
+  useEffect(() => {
+    if (reservas.length > 0 && vehiculos.length > 0) {
+      const vehiculosFiltrados = reservas
+        .filter((reserva) => reserva.status === "ACTIVATED") // Filtrar reservas activas
+        .map((reserva) => {
+          // Buscar el vehículo en el contexto de Vehiculos
+          const vehiculo = vehiculos.find((v) => v.id === reserva.vehicle_id);
 
-          if (randomStep && randomStep.latitude && randomStep.longitude) {
+          // Si el vehículo tiene coordenadas, las usamos directamente
+          if (vehiculo?.coordinates) {
             return {
               id: reserva.vehicle_id,
-              model: vehiculo?.model || "Modelo del vehículo", // Tomar el modelo desde el contexto
-              brand: vehiculo?.brand || "Marca del vehículo", // Tomar la marca desde el contexto
-              coordinates: {
-                latitude: randomStep.latitude,
-                longitude: randomStep.longitude,
-              },
+              model: vehiculo.model || "Modelo del vehículo", // Tomar el modelo desde el contexto
+              brand: vehiculo.brand || "Marca del vehículo", // Tomar la marca desde el contexto
+              coordinates: vehiculo.coordinates, // Usar coordenadas exactas del vehículo
             };
           }
-        }
 
-        return {
-          id: reserva.vehicle_id,
-          model: vehiculo?.model || "Modelo desconocido",
-          brand: vehiculo?.brand || "Marca desconocida",
-          coordinates: {
-            latitude: -34.603722, // Coordenadas predeterminadas
-            longitude: -58.381592,
-          },
-        };
-      });
+          // Si no tiene coordenadas, usar valores predeterminados
+          return {
+            id: reserva.vehicle_id,
+            model: vehiculo?.model || "Modelo desconocido",
+            brand: vehiculo?.brand || "Marca desconocida",
+            coordinates: {
+              latitude: -34.603722, // Coordenadas predeterminadas
+              longitude: -58.381592,
+            },
+          };
+        });
 
-    setVehiculosEnViaje(vehiculosFiltrados); // Actualizar el estado con los vehículos en viaje
+      setVehiculosEnViaje(vehiculosFiltrados); // Actualizar el estado con los vehículos en viaje
+    }
   }, [reservas, vehiculos]);
 
   // Manejar selección de un vehículo para el mapa de monitoreo
@@ -175,7 +179,7 @@ const CentroDeMonitoreoConTabs = () => {
             <h2 className="text-2xl font-semibold mb-4">Vehículos en viaje</h2>
             <ul className="space-y-4">
               {vehiculosEnViaje.length > 0 ? (
-                vehiculosEnViaje.map((vehiculo) => ( // Mostramos solo 5 vehículos a la vez
+                vehiculosEnViaje.map((vehiculo) => (
                   <li
                     key={vehiculo.id}
                     className={`bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer ${
@@ -206,6 +210,7 @@ const CentroDeMonitoreoConTabs = () => {
         </div>
       )}
 
+      {/* TAB VEHICULO */}
       {activeTab === "vehiculo" && (
         <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
           {/* Sidebar de vehículos con rutas */}
@@ -213,7 +218,7 @@ const CentroDeMonitoreoConTabs = () => {
             <h2 className="text-2xl font-semibold mb-4">Trazado de rutas</h2>
             <ul className="space-y-4">
               {reservas.length > 0 ? (
-                reservas.map((reserva) => ( // Mostramos solo 5 rutas a la vez
+                reservas.map((reserva) => (
                   <li
                     key={reserva.vehicle_id}
                     className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
@@ -251,6 +256,7 @@ const CentroDeMonitoreoConTabs = () => {
         </div>
       )}
 
+      {/* TAB SIMULADOR */}
       {activeTab === "simulador" && (
         <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
           {/* Sidebar para seleccionar una reserva */}
@@ -258,7 +264,7 @@ const CentroDeMonitoreoConTabs = () => {
             <h2 className="text-2xl font-semibold mb-4">Simulador de Viaje</h2>
             <ul className="space-y-4">
               {reservas.length > 0 ? (
-                reservas.map((reserva) => ( // Mostramos solo 5 reservas a la vez
+                reservas.map((reserva) => (
                   <li
                     key={reserva.vehicle_id}
                     className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
