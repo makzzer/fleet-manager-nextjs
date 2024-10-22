@@ -35,9 +35,10 @@ const customVehicle = new L.Icon({
 interface MapSimuladorVehiculoProps {
   startPosition: [number, number];
   endPosition: [number, number];
+  onActualizarCoordenadas: (nuevasCoordenadas: { latitude: number; longitude: number }) => void; // Prop para actualizar coordenadas
 }
 
-const MapSimuladorVehiculo = ({ startPosition, endPosition }: MapSimuladorVehiculoProps) => {
+const MapSimuladorVehiculo = ({ startPosition, endPosition, onActualizarCoordenadas }: MapSimuladorVehiculoProps) => {
   const mapRef = useRef<L.Map | null>(null); // Referencia al mapa
   const vehicleMarkerRef = useRef<L.Marker | null>(null); // Referencia al marcador del vehículo
   const [isSimulating, setIsSimulating] = useState(false); // Estado para manejar la simulación
@@ -104,6 +105,9 @@ const MapSimuladorVehiculo = ({ startPosition, endPosition }: MapSimuladorVehicu
             if (vehicleMarkerRef.current) {
               vehicleMarkerRef.current.setLatLng([latLng.lat, latLng.lng]);
             }
+
+            // Actualizar las coordenadas en el componente padre
+            onActualizarCoordenadas({ latitude: latLng.lat, longitude: latLng.lng });
 
             index++;
           } else {

@@ -42,6 +42,17 @@ const CentroDeMonitoreoConTabs = () => {
     reservaId: string | null;
   }>({ start: null, end: null, reservaId: null }); // Estado para manejar las coordenadas del simulador
 
+  // Método para actualizar las coordenadas de un vehículo
+  const actualizarCoordenadasVehiculo = (vehiculoId: string, nuevasCoordenadas: { latitude: number; longitude: number }) => {
+    setVehiculosEnViaje((prevVehiculos) =>
+      prevVehiculos.map((vehiculo) =>
+        vehiculo.id === vehiculoId
+          ? { ...vehiculo, coordinates: nuevasCoordenadas } // Actualiza las coordenadas
+          : vehiculo
+      )
+    );
+  };
+
   // Cargar reservas y vehículos al montar el componente
   useEffect(() => {
     const cargarDatos = async () => {
@@ -182,9 +193,7 @@ const CentroDeMonitoreoConTabs = () => {
                 vehiculosEnViaje.map((vehiculo) => (
                   <li
                     key={vehiculo.id}
-                    className={`bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer ${
-                      vehiculo.id === vehiculoSeleccionado ? "bg-blue-500" : ""
-                    }`}
+                    className={`bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer ${vehiculo.id === vehiculoSeleccionado ? "bg-blue-500" : ""}`}
                     onClick={() => handleSeleccionarVehiculo(vehiculo.id)}
                   >
                     <div className="flex flex-col items-center justify-between">
@@ -293,6 +302,9 @@ const CentroDeMonitoreoConTabs = () => {
                     key={coordenadasSimulador.reservaId} // Usar el ID de la reserva como clave única
                     startPosition={coordenadasSimulador.start}
                     endPosition={coordenadasSimulador.end}
+                    onActualizarCoordenadas={(nuevasCoordenadas) =>
+                      actualizarCoordenadasVehiculo(coordenadasSimulador.reservaId!, nuevasCoordenadas)
+                    }
                   />
                 </div>
               )}
