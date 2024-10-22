@@ -166,13 +166,13 @@ const CentroDeMonitoreoConTabs = () => {
           className={`px-4 py-2 rounded-lg ${activeTab === "reservas" ? "bg-blue-500" : "bg-gray-700"}`}
           onClick={() => setActiveTab("reservas")}
         >
-          Reservas
+          Vehículos
         </button>
         <button
           className={`px-4 py-2 rounded-lg ${activeTab === "vehiculo" ? "bg-blue-500" : "bg-gray-700"}`}
           onClick={() => setActiveTab("vehiculo")}
         >
-          Vehículo
+          Reservas
         </button>
         <button
           className={`px-4 py-2 rounded-lg ${activeTab === "simulador" ? "bg-blue-500" : "bg-gray-700"}`}
