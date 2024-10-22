@@ -14,7 +14,7 @@ const Navbar = () => {
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const { authenticatedUser, logoutUser } = useAuth();
+  const { authenticatedUser, logoutUser,hasModuleAccess } = useAuth();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -82,6 +82,7 @@ const Navbar = () => {
           {authenticatedUser && (
             <>
               {/* Icono de la campanita con el indicador de notificación */}
+              {hasModuleAccess("ALERTS") && (
               <Link href="/alertas">
                 <div className="relative">
                   <button className="relative focus:outline-none">
@@ -103,7 +104,7 @@ const Navbar = () => {
                     </span>
                   )}
                 </div>
-              </Link>
+              </Link>)}
 
               {/* Menú de perfil */}
               <div ref={profileMenuRef} className="relative">

@@ -5,6 +5,7 @@ import { useVehiculo } from "@/app/context/VehiculoContext"; // Importar el cont
 import dynamic from "next/dynamic";
 import { MapContainer } from "react-leaflet";
 import { TileLayer } from "react-leaflet";
+import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
 // Cargar los componentes del mapa dinámicamente sin SSR
 const MapCentroMonitoreo = dynamic(() => import("../components/Maps/MapCentroMonitoreo"), {
@@ -158,6 +159,7 @@ const CentroDeMonitoreoConTabs = () => {
   };
 
   return (
+    <ProtectedRoute requiredModule="ANALYTICS">
     <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
       <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">Centro de monitoreo</h1>
       {/* Tabs para cambiar entre Reservas, Vehículo y Simulador */}
@@ -312,6 +314,7 @@ const CentroDeMonitoreoConTabs = () => {
         </div>
       )}
     </div>
+    </ProtectedRoute>
   );
 };
 

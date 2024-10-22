@@ -11,6 +11,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { es } from 'date-fns/locale';
 import dynamic from 'next/dynamic';
+import ProtectedRoute from '../components/Routes/ProtectedRoutes';
 
 // Carga dinámica del componente MapPickCoordinates solo en el cliente
 const MapPickCoordinates = dynamic(() => import('../components/Maps/MapPickCoordinates'), { ssr: false });
@@ -90,6 +91,7 @@ const ReservaViaje = () => {
   };
 
   return (
+    <ProtectedRoute requiredModule="RESERVES">
     <div className="bg-gray-900 text-white min-h-screen rounded-xl flex flex-col p-4">
       {/* Encabezado */}
       <div className="flex-shrink-0 mb-4">
@@ -147,6 +149,7 @@ const ReservaViaje = () => {
         </button>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

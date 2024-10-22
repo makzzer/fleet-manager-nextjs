@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { FaCar, FaClipboardList, FaTools } from "react-icons/fa"; // Importar íconos de react-icons
+import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
 const Home_reservas = () => {
+  
   return (
+    <ProtectedRoute requiredModule="RESERVES">
     <div className="flex items-center justify-center rounded-lg bg-gray-900 text-white p-6 min-h-screen">
       <div className="text-center rounded-xl w-full max-w-lg md:max-w-2xl lg:max-w-3xl mt-[-30vh]">
         {/* Ajuste de margen superior negativo */}
@@ -43,6 +46,7 @@ const Home_reservas = () => {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

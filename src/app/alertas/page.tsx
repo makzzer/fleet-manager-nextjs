@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { useAlert } from "../context/AlertsContext";
 import AlertCard from "../components/Cards/AlertCard";
+import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 
 const AlertList = () => {
   const { alerts, fetchAlerts, acknowledgeAlert, filterAlertsByPriority } =
@@ -22,6 +23,7 @@ const AlertList = () => {
   const lowPriorityAlerts = filterAlertsByPriority("LOW");
 
   return (
+    <ProtectedRoute requiredModule="ALERTS">
     <div className="p-6 bg-gray-900 text-gray-100 rounded-lg">
       <h2 className="text-3xl font-bold mb-8 text-blue-400">Alertas</h2>
 
@@ -84,6 +86,7 @@ const AlertList = () => {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 
