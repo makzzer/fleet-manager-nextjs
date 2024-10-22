@@ -160,160 +160,168 @@ const CentroDeMonitoreoConTabs = () => {
 
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
-    <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
-      <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">Centro de monitoreo</h1>
-      {/* Tabs para cambiar entre Reservas, Vehículo y Simulador */}
-      <div className="flex space-x-4 mb-6">
-        <button
-          className={`px-4 py-2 rounded-lg ${activeTab === "reservas" ? "bg-blue-500" : "bg-gray-700"}`}
-          onClick={() => setActiveTab("reservas")}
-        >
-          Vehículos
-        </button>
-        <button
-          className={`px-4 py-2 rounded-lg ${activeTab === "vehiculo" ? "bg-blue-500" : "bg-gray-700"}`}
-          onClick={() => setActiveTab("vehiculo")}
-        >
-          Reservas
-        </button>
-        <button
-          className={`px-4 py-2 rounded-lg ${activeTab === "simulador" ? "bg-blue-500" : "bg-gray-700"}`}
-          onClick={() => setActiveTab("simulador")}
-        >
-          Simulador
-        </button>
-      </div>
+      <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
+        <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">Centro de monitoreo</h1>
+        {/* Tabs para cambiar entre Reservas, Vehículo y Simulador */}
+        <div className="flex space-x-4 mb-6">
+          <button
+            className={`px-4 py-2 rounded-lg ${activeTab === "reservas" ? "bg-blue-500" : "bg-gray-700"}`}
+            onClick={() => setActiveTab("reservas")}
+          >
+            Vehículos
+          </button>
+          <button
+            className={`px-4 py-2 rounded-lg ${activeTab === "vehiculo" ? "bg-blue-500" : "bg-gray-700"}`}
+            onClick={() => setActiveTab("vehiculo")}
+          >
+            Reservas
+          </button>
+          <button
+            className={`px-4 py-2 rounded-lg ${activeTab === "simulador" ? "bg-blue-500" : "bg-gray-700"}`}
+            onClick={() => setActiveTab("simulador")}
+          >
+            Simulador
+          </button>
+        </div>
 
-      {/* Contenido de las tabs */}
-      {activeTab === "reservas" && (
-        <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
-          {/* Sidebar de vehículos en viaje */}
-          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
-            <h2 className="text-2xl font-semibold mb-4">Vehículos en viaje</h2>
-            <ul className="space-y-4">
-              {vehiculosEnViaje.length > 0 ? (
-                vehiculosEnViaje.map((vehiculo) => (
-                  <li
-                    key={vehiculo.id}
-                    className={`bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer ${vehiculo.id === vehiculoSeleccionado ? "bg-blue-500" : ""}`}
-                    onClick={() => handleSeleccionarVehiculo(vehiculo.id)}
-                  >
-                    <div className="flex flex-col items-center justify-between">
-                      <div className="text-lg font-bold">
-                        {vehiculo.brand} {vehiculo.model}
+        {/* Contenido de las tabs */}
+        {activeTab === "reservas" && (
+          <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
+            {/* Sidebar de vehículos en viaje */}
+            <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
+              <h2 className="text-2xl font-semibold mb-4">Vehículos en viaje</h2>
+              <ul className="space-y-4">
+                {vehiculosEnViaje.length > 0 ? (
+                  vehiculosEnViaje.map((vehiculo) => (
+                    <li
+                      key={vehiculo.id}
+                      className={`bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer ${vehiculo.id === vehiculoSeleccionado ? "bg-blue-500" : ""}`}
+                      onClick={() => handleSeleccionarVehiculo(vehiculo.id)}
+                    >
+                      <div className="flex flex-col items-center justify-between">
+                        <div className="text-lg font-bold">
+                          {vehiculo.brand} {vehiculo.model}
+                        </div>
+                        <div className="text-sm text-gray-400">ID: {vehiculo.id}</div>
                       </div>
-                      <div className="text-sm text-gray-400">ID: {vehiculo.id}</div>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500">No hay vehículos en viaje</li>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-500">No hay vehículos en viaje</li>
+                )}
+              </ul>
+            </div>
+
+            {/* Mapa de monitoreo */}
+            <div className="w-full lg:w-3/4 h-full relative z-0">
+              {typeof window !== "undefined" && (
+                <MapCentroMonitoreo vehiculos={vehiculosEnViaje} vehiculoSeleccionado={vehiculoSeleccionado} />
               )}
-            </ul>
+            </div>
           </div>
+        )}
 
-          {/* Mapa de monitoreo */}
-          <div className="w-full lg:w-3/4 h-full relative z-0">
-            {typeof window !== "undefined" && (
-              <MapCentroMonitoreo vehiculos={vehiculosEnViaje} vehiculoSeleccionado={vehiculoSeleccionado} />
-            )}
-          </div>
-        </div>
-      )}
+        {/* TAB VEHICULO */}
+        {activeTab === "vehiculo" && (
+          <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
+            {/* Sidebar de vehículos con rutas */}
+            <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
+              <h2 className="text-2xl font-semibold mb-4">Trazado de rutas</h2>
+              <ul className="space-y-4">
+                {reservas.length > 0 ? (
+                  reservas.map((reserva) => (
+                    <li
+                      key={reserva.vehicle_id}
+                      className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
+                      onClick={() => handleSeleccionarVehiculoConRuta(reserva.vehicle_id)}
+                    >
+                      <div className="flex flex-col items-center justify-between">
+                        <div className="text-lg font-bold">Reserva {reserva.vehicle_id}</div>
+                        {/*<div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>*/}
+                        <div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>
+                        <div className={`text-sm ${reserva.status === 'CREATED' ? 'text-blue-400' : 'text-green-400'}`}>
+                          {reserva.status}
+                        </div>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-500">No hay reservas disponibles</li>
+                )}
+              </ul>
+            </div>
 
-      {/* TAB VEHICULO */}
-      {activeTab === "vehiculo" && (
-        <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
-          {/* Sidebar de vehículos con rutas */}
-          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
-            <h2 className="text-2xl font-semibold mb-4">Trazado de rutas</h2>
-            <ul className="space-y-4">
-              {reservas.length > 0 ? (
-                reservas.map((reserva) => (
-                  <li
-                    key={reserva.vehicle_id}
-                    className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
-                    onClick={() => handleSeleccionarVehiculoConRuta(reserva.vehicle_id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="text-lg font-bold">Reserva {reserva.vehicle_id}</div>
-                      <div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500">No hay reservas disponibles</li>
-              )}
-            </ul>
-          </div>
-
-          {/* Mapa con el trazado de rutas */}
-          <div className="w-full lg:w-3/4 h-full relative z-0">
-            {typeof window !== "undefined" && (
-              <MapContainer
-                center={[-34.493027, -58.639397]} // Coordenadas predeterminadas
-                zoom={14}
-                scrollWheelZoom={false}
-                style={{ height: "100%", width: "100%" }}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {vehiculoConRuta && <MapTrazadoRuta2 vehiculoSeleccionado={vehiculoConRuta} />}
-              </MapContainer>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* TAB SIMULADOR */}
-      {activeTab === "simulador" && (
-        <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
-          {/* Sidebar para seleccionar una reserva */}
-          <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
-            <h2 className="text-2xl font-semibold mb-4">Simulador de Viaje</h2>
-            <ul className="space-y-4">
-              {reservas.length > 0 ? (
-                reservas.map((reserva) => (
-                  <li
-                    key={reserva.vehicle_id}
-                    className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
-                    onClick={() => handleSeleccionarVehiculoSimulador(reserva.vehicle_id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="text-lg font-bold">Reserva {reserva.vehicle_id}</div>
-                      <div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500">No hay reservas disponibles</li>
-              )}
-            </ul>
-          </div>
-
-          {/* Simulador del viaje */}
-          <div className="w-full lg:w-3/4 h-full relative z-0">
-            {typeof window !== "undefined" &&
-              coordenadasSimulador.start &&
-              coordenadasSimulador.end &&
-              coordenadasSimulador.reservaId && (
-                <div style={{ height: "100%", width: "100%" }}>
-                  <MapSimuladorVehiculo
-                    key={coordenadasSimulador.reservaId} // Usar el ID de la reserva como clave única
-                    startPosition={coordenadasSimulador.start}
-                    endPosition={coordenadasSimulador.end}
-                    onActualizarCoordenadas={(nuevasCoordenadas) =>
-                      actualizarCoordenadasVehiculo(coordenadasSimulador.reservaId!, nuevasCoordenadas)
-                    }
+            {/* Mapa con el trazado de rutas */}
+            <div className="w-full lg:w-3/4 h-full relative z-0">
+              {typeof window !== "undefined" && (
+                <MapContainer
+                  center={[-34.493027, -58.639397]} // Coordenadas predeterminadas
+                  zoom={14}
+                  scrollWheelZoom={false}
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                </div>
+                  {vehiculoConRuta && <MapTrazadoRuta2 vehiculoSeleccionado={vehiculoConRuta} />}
+                </MapContainer>
               )}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        {/* TAB SIMULADOR */}
+        {activeTab === "simulador" && (
+          <div className="flex flex-col lg:flex-row h-screen relative overflow-hidden bg-gray-900 text-white">
+            {/* Sidebar para seleccionar una reserva */}
+            <div className="w-full lg:w-1/4 bg-gray-800 p-6 space-y-6 border-r border-gray-700 shadow-lg z-10 overflow-y-auto max-h-screen">
+              <h2 className="text-2xl font-semibold mb-4">Simulador de Viaje</h2>
+              <ul className="space-y-4">
+                {reservas.length > 0 ? (
+                  reservas.map((reserva) => (
+                    <li
+                      key={reserva.vehicle_id}
+                      className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
+                      onClick={() => handleSeleccionarVehiculoSimulador(reserva.vehicle_id)}
+                    >
+                      <div className="flex flex-col items-center justify-between">
+                        <div className="text-lg font-bold">Reserva {reserva.vehicle_id}</div>
+                        {/*<div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>*/}
+                        <div className="text-sm text-gray-400">ID: {reserva.vehicle_id}</div>
+                        <div className={`text-sm ${reserva.status === 'CREATED' ? 'text-blue-400' : 'text-green-400'}`}>
+                          {reserva.status}
+                        </div>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-500">No hay reservas disponibles</li>
+                )}
+              </ul>
+            </div>
+
+            {/* Simulador del viaje */}
+            <div className="w-full lg:w-3/4 h-full relative z-0">
+              {typeof window !== "undefined" &&
+                coordenadasSimulador.start &&
+                coordenadasSimulador.end &&
+                coordenadasSimulador.reservaId && (
+                  <div style={{ height: "100%", width: "100%" }}>
+                    <MapSimuladorVehiculo
+                      key={coordenadasSimulador.reservaId} // Usar el ID de la reserva como clave única
+                      startPosition={coordenadasSimulador.start}
+                      endPosition={coordenadasSimulador.end}
+                      onActualizarCoordenadas={(nuevasCoordenadas) =>
+                        actualizarCoordenadasVehiculo(coordenadasSimulador.reservaId!, nuevasCoordenadas)
+                      }
+                    />
+                  </div>
+                )}
+            </div>
+          </div>
+        )}
+      </div>
     </ProtectedRoute>
   );
 };
