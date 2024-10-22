@@ -57,7 +57,7 @@ function processBarChartData(chart: AnalyticsData): ProcessedChartData | null {
 
     // Itera sobre cada valor para agruparlos por 'type' y subgrupos ('status' o 'priority')
     chart.values.forEach((value) => {
-      const mainKey = value.type || value.status || value.title || value.brand || ''; // 'type' principal (o 'status' si no tiene 'type')
+      const mainKey = value.type || value.status || value.title || value.brand || value.model || value.year || value.axles || value.seats || value.load || value.provider_name || value.name || ''; // 'type' principal (o 'status' si no tiene 'type')
       const subKey = value.status || value.priority || value.category || ''; // Subgrupo (primero 'status', despues 'priority' si aplica)
       const count = value.count || value.quantity || (value.avg ? processInterval(value.avg) : 0);// Calcula la cantidad (usa avg si no hay 'count')
 

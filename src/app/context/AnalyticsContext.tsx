@@ -48,6 +48,7 @@ export interface Value {
   acknowledge?: boolean;
   title?: string;
   category?: string;
+  provider_name?: string;
 }
 
 export interface AnalyticsData {
