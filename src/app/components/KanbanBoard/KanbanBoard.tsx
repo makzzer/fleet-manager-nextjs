@@ -11,6 +11,7 @@ import {
   useSensor,
   DragOverEvent,
   TouchSensor,
+  pointerWithin,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
@@ -175,6 +176,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
   return (
     <div className="min-h-screen w-full overflow-x-auto overflow-y-hidden">
       <DndContext
+      collisionDetection={pointerWithin}
         sensors={sensors}
         onDragStart={onDragStart}
         onDragOver={onDragOver}
