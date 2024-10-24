@@ -66,7 +66,7 @@ const Navbar = () => {
         <div className="hidden md:block">
           <div className="flex space-x-4 mt-2 items-center">
             <Link href="/" className="text-3xl ms-20 font-bold text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Fleet Manager
+              Fleetfly
             </Link>
           </div>
         </div>
