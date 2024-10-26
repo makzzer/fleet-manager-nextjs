@@ -1,26 +1,29 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import VehiculoCard from "../components/Cards/VehiculoCards";
-import { useVehiculo, tiposCombustible, unidadesCombustible, tiposVehiculo } from "../context/VehiculoContext";
+import { useVehiculo } from "../context/VehiculoContext";
 import Swal from 'sweetalert2';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import SearchBar from "../../app/components/SearchBar/SearchBar";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { FiPlus, FiDownload } from 'react-icons/fi'; // React Icons
+import { useRouter } from "next/navigation";
 
-function generarSelect(map: { [key: string]: string }, id: string, textSeleccione: string) {
-  const options = Object.entries(map)
-    .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
 
-  return `<select id="${id}" class="swal2-select">
-            <option value="" selected>${textSeleccione}</option>
-            ${options}
-          </select>`;
-}
+// function generarSelect(map: { [key: string]: string }, id: string, textSeleccione: string) {
+//   const options = Object.entries(map)
+//     .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
+
+//   return `<select id="${id}" class="swal2-select">
+//             <option value="" selected>${textSeleccione}</option>
+//             ${options}
+//           </select>`;
+// }
 
 const Vehiculos = () => {
-  const { vehiculos, fetchVehiculos, createVehiculo, exportVehiculosToExcel } = useVehiculo();
+  const router = useRouter();
+  const { vehiculos, fetchVehiculos, exportVehiculosToExcel } = useVehiculo();
   const [isLoading, setIsLoading] = useState(true);
   const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos);
   const [showUnavailable, setShowUnavailable] = useState(false); // Filtro para ocultar/mostrar vehículos deshabilitados
@@ -81,6 +84,7 @@ const Vehiculos = () => {
     filterVehiculos(); // Aplicamos el filtro con el nuevo límite
   };
 
+  /*
   const handleAgregarVehiculo = () => {
     // Lista de marcas de vehículos
     //const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
@@ -295,6 +299,34 @@ const Vehiculos = () => {
       }
     });
   };
+  */
+
+    const handleAgregarVehiculo = () => {
+    Swal.fire({
+      title: 'Agregar Vehículo',
+      html: `
+        <button id="addIndividual" class="swal2-confirm swal2-styled">Agregar Vehículo Individual</button>
+        <button id="addMasivo" class="swal2-confirm swal2-styled">Carga Masiva (CSV)</button>
+      `,
+      showConfirmButton: false,
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar',
+      focusConfirm: false,
+      didOpen: () => {
+        document.getElementById('addIndividual')?.addEventListener('click', () => {
+          Swal.close();
+          router.push('/vehiculos/agregar');
+        });
+        document.getElementById('addMasivo')?.addEventListener('click', () => {
+          Swal.close();
+          // Implementar lógica para carga masiva de vehículos mediante csv :) 
+          Swal.fire('Carga Masiva', 'Funcionalidad aún no implementada', 'info');
+        });
+      }
+    });
+  };
+
+
   return (
     <ProtectedRoute requiredModule="VEHICLES">
       <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">

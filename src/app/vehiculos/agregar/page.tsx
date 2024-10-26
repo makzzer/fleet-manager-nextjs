@@ -1,6 +1,7 @@
 "use client";
 
 import { useVehiculo } from "@/app/context/VehiculoContext";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaTruck, FaCar, FaMotorcycle } from "react-icons/fa";
 import { FaVanShuttle } from "react-icons/fa6";
@@ -20,7 +21,7 @@ interface VehicleRegisterData {
   model: string;
   brand: string;
   year: number;
-  type: VehicleType;
+  type: keyof typeof vehicleOptions;
   color: string;
   fuel_type: FuelType;
   fuel_measurement: FuelMeasurement;
@@ -61,52 +62,56 @@ const steps = [
 ];
 
 // Datos estaticos, hay que cambiarlos si en un futuro se usa alguna api, etc.
-const vehicleOptions = {
+const vehicleOptions: Record<VehicleType, {
+  brands: string[];
+  models: Record<string, string[]>;
+  years: number[];
+}> = {
   CAR: {
-    brands: ["Toyota", "Ford", "Chevrolet", "Honda", "Volkswagen"],
+    brands: ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Volkswagen'],
     models: {
-      Toyota: ["Corolla", "Camry", "RAV4"],
-      Ford: ["Fiesta", "Focus", "Mustang"],
-      Chevrolet: ["Cruze", "Malibu", "Equinox"],
-      Honda: ["Civic", "Accord", "CR-V"],
-      Volkswagen: ["Golf", "Jetta", "Passat"],
+      Toyota: ['Corolla', 'Camry', 'RAV4'],
+      Ford: ['Fiesta', 'Focus', 'Mustang'],
+      Chevrolet: ['Cruze', 'Malibu', 'Equinox'],
+      Honda: ['Civic', 'Accord', 'CR-V'],
+      Volkswagen: ['Golf', 'Jetta', 'Passat']
     },
-    years: Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i),
+    years: Array.from({length: 30}, (_, i) => new Date().getFullYear() - i)
   },
   MOTORCYCLE: {
-    brands: ["Honda", "Yamaha", "Suzuki", "Kawasaki", "Harley-Davidson"],
+    brands: ['Honda', 'Yamaha', 'Suzuki', 'Kawasaki', 'Harley-Davidson'],
     models: {
-      Honda: ["CBR600RR", "CB500F", "Africa Twin"],
-      Yamaha: ["YZF-R6", "MT-07", "Ténéré 700"],
-      Suzuki: ["GSX-R750", "V-Strom 650", "SV650"],
-      Kawasaki: ["Ninja 650", "Z900", "Versys 650"],
-      "Harley-Davidson": ["Sportster", "Street Glide", "Fat Boy"],
+      Honda: ['CBR600RR', 'CB500F', 'Africa Twin'],
+      Yamaha: ['YZF-R6', 'MT-07', 'Ténéré 700'],
+      Suzuki: ['GSX-R750', 'V-Strom 650', 'SV650'],
+      Kawasaki: ['Ninja 650', 'Z900', 'Versys 650'],
+      'Harley-Davidson': ['Sportster', 'Street Glide', 'Fat Boy']
     },
-    years: Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i),
+    years: Array.from({length: 30}, (_, i) => new Date().getFullYear() - i)
   },
   TRUCK: {
-    brands: ["Volvo", "Scania", "Mercedes-Benz", "MAN", "DAF"],
+    brands: ['Volvo', 'Scania', 'Mercedes-Benz', 'MAN', 'DAF'],
     models: {
-      Volvo: ["FH", "FM", "FMX"],
-      Scania: ["R Series", "S Series", "G Series"],
-      "Mercedes-Benz": ["Actros", "Arocs", "Atego"],
-      MAN: ["TGX", "TGS", "TGM"],
-      DAF: ["XF", "CF", "LF"],
+      Volvo: ['FH', 'FM', 'FMX'],
+      Scania: ['R Series', 'S Series', 'G Series'],
+      'Mercedes-Benz': ['Actros', 'Arocs', 'Atego'],
+      MAN: ['TGX', 'TGS', 'TGM'],
+      DAF: ['XF', 'CF', 'LF']
     },
-    years: Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i),
+    years: Array.from({length: 30}, (_, i) => new Date().getFullYear() - i)
   },
   VAN: {
-    brands: ["Mercedes-Benz", "Ford", "Volkswagen", "Renault", "Fiat"],
+    brands: ['Mercedes-Benz', 'Ford', 'Volkswagen', 'Renault', 'Fiat'],
     models: {
-      "Mercedes-Benz": ["Sprinter", "Vito", "Citan"],
-      Ford: ["Transit", "Transit Custom", "Transit Connect"],
-      Volkswagen: ["Crafter", "Transporter", "Caddy"],
-      Renault: ["Master", "Trafic", "Kangoo"],
-      Fiat: ["Ducato", "Talento", "Doblò"],
+      'Mercedes-Benz': ['Sprinter', 'Vito', 'Citan'],
+      Ford: ['Transit', 'Transit Custom', 'Transit Connect'],
+      Volkswagen: ['Crafter', 'Transporter', 'Caddy'],
+      Renault: ['Master', 'Trafic', 'Kangoo'],
+      Fiat: ['Ducato', 'Talento', 'Doblò']
     },
-    years: Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i),
-  },
-};
+    years: Array.from({length: 30}, (_, i) => new Date().getFullYear() - i)
+  }
+}
 
 const fuelConsumptionOptions = {
   CAR: [5, 6, 7, 8, 9, 10],
@@ -123,23 +128,24 @@ const loadCapacityOptions = {
 };
 
 const AddVehicle = () => {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [vehicleData, setVehicleData] =
     useState<VehicleRegisterData>(initialVehicleData);
   const [errors, setErrors] = useState({
     id: "",
-      model: "",
-      brand: "",
-      year: "",
-      type: "",
-      color: "",
-      fuel_type: "",
-      fuel_measurement: "",
-      fuel_consumption: "",
-      cant_axles: "",
-      cant_seats: "",
-      load: "",
-      has_trailer: "",
+    model: "",
+    brand: "",
+    year: "",
+    type: "",
+    color: "",
+    fuel_type: "",
+    fuel_measurement: "",
+    fuel_consumption: "",
+    cant_axles: "",
+    cant_seats: "",
+    load: "",
+    has_trailer: "",
   });
 
   const { createVehiculo } = useVehiculo();
@@ -171,7 +177,7 @@ const AddVehicle = () => {
         if (!vehicleData.year) newErrors.year = "El año es requerido";
         if (!vehicleData.color) newErrors.color = "El color es requerido";
         break;
-      case 1: 
+      case 1:
         if (!vehicleData.fuel_type)
           newErrors.fuel_type = "El tipo de combustible es requerido";
         if (
@@ -181,7 +187,10 @@ const AddVehicle = () => {
           newErrors.fuel_measurement =
             "La medición de combustible es requerida";
         }
-        if (vehicleData.fuel_consumption <= 0 || !vehicleData.fuel_consumption) {
+        if (
+          vehicleData.fuel_consumption <= 0 ||
+          !vehicleData.fuel_consumption
+        ) {
           newErrors.fuel_consumption = "El consumo debe ser mayor que 0";
         }
         break;
@@ -205,11 +214,11 @@ const AddVehicle = () => {
 
   // Función para pasar al siguiente paso del formulario
   const handleNext = () => {
-    if(validateStep(currentStep)) {
+    if (validateStep(currentStep)) {
       if (currentStep < steps.length - 1) {
         setCurrentStep((step) => step + 1);
       }
-  }
+    }
   };
 
   // Función para volver un paso atras en el formulario
@@ -240,56 +249,70 @@ const AddVehicle = () => {
     }));
   };
 
-  // Función que se ejecuta para mandar el formulario (todavia no manda nada al back)
+  const resetForm = () => {
+    setVehicleData(initialVehicleData);
+    setCurrentStep(0);
+  };
+
+  // Función que se ejecuta para mandar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
-    if(validateStep(currentStep)){
+    if (validateStep(currentStep)) {
       e.preventDefault();
-      const formatedNewVehicle = {
-        id: vehicleData.id,
-        type: vehicleData.type,
-        brand: vehicleData.brand,
-        model: vehicleData.model,
-        year: vehicleData.year as number,
-        color: vehicleData.color,
-        fuel_type: vehicleData.fuel_type,
-        fuel_measurement: vehicleData.fuel_measurement,
-        fuel_consumption: vehicleData.fuel_consumption as number,
-        cant_seats: vehicleData.cant_seats as number,
-        cant_axles: vehicleData.cant_axles as number,
-        load: vehicleData.load as number,
-        has_trailer: vehicleData.has_trailer,
-        status: (vehicleData.status ? "AVAILABLE" : "UNAVAILABLE") ,
-        coordinates: {
-          latitude: 0,
-          longitude: 0,
-        }
-      }
+      try {
+        const formatedNewVehicle = {
+          id: vehicleData.id,
+          type: vehicleData.type,
+          brand: vehicleData.brand,
+          model: vehicleData.model,
+          year: vehicleData.year as number,
+          color: vehicleData.color,
+          fuel_type: vehicleData.fuel_type,
+          fuel_measurement: vehicleData.fuel_measurement,
+          fuel_consumption: vehicleData.fuel_consumption as number,
+          cant_seats: vehicleData.cant_seats as number,
+          cant_axles: vehicleData.cant_axles as number,
+          load: vehicleData.load as number,
+          has_trailer: vehicleData.has_trailer,
+          status: vehicleData.status ? "AVAILABLE" : "UNAVAILABLE",
+          coordinates: {
+            latitude: 0,
+            longitude: 0,
+          },
+        };
 
-      const { resultado, mensaje } = await createVehiculo(formatedNewVehicle);
+        const { resultado, mensaje } = await createVehiculo(formatedNewVehicle);
 
-      if (resultado) {
-        Swal.fire({
-          title: "Vehículo agregado con éxito",
-          text: "El nuevo vehículo ha sido creado y registrado correctamente.",
-          icon: "success",
-        });
-      } else {
-        if (mensaje && mensaje.includes("already exists")) {
+        if (resultado) {
           Swal.fire({
-            title: "Error al agregar vehículo",
-            text: "La patente ya existe. Por favor, usa una diferente.",
-            icon: "error",
+            title: "Vehículo agregado con éxito",
+            text: "¿Desea agregar otro vehículo?",
+            icon: "success",
+            showCancelButton: true,
+            confirmButtonText: "Sí, agregar otro",
+            cancelButtonText: "No, volver a la lista",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              resetForm();
+            } else {
+              router.push("/vehiculos");
+            }
           });
         } else {
-          Swal.fire({
-            title: "Error",
-            text: "Ha ocurrido un error al crear el vehículo.",
-            icon: "error",
-          });
+          throw new Error(mensaje || "Error desconocido al crear el vehículo");
         }
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text:
+            error instanceof Error
+              ? error.message
+              : "Ha ocurrido un error al crear el vehículo.",
+          icon: "error",
+          confirmButtonText: "Volver a la lista de vehículos",
+        }).then(() => {
+          router.push("/vehiculos");
+        });
       }
-      
-      console.log("Datos del vehiculo:", formatedNewVehicle);
     }
   };
 
@@ -327,9 +350,7 @@ const AddVehicle = () => {
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen rounded-lg text-white flex justify-center items-center">
-      <form
-        className="max-w-lg w-full flex flex-col justify-between bg-gray-800 p-8 rounded-2xl shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
-      >
+      <form className="max-w-lg w-full flex flex-col justify-between bg-gray-800 p-8 rounded-2xl shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-[1.01]">
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-4 text-blue-500">
             {steps[currentStep]}
@@ -350,7 +371,9 @@ const AddVehicle = () => {
                   placeholder="Ingrese la patente"
                   maxLength={7}
                 />
-                {errors.id && <p className="text-red-500 text-sm mt-1">{errors.id}</p>}
+                {errors.id && (
+                  <p className="text-red-500 text-sm mt-1">{errors.id}</p>
+                )}
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium">
@@ -395,87 +418,92 @@ const AddVehicle = () => {
                       <span className="mt-2 text-sm">{name}</span>
                     </button>
                   ))}
-                  {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type}</p>}
+                  {errors.type && (
+                    <p className="text-red-500 text-sm mt-1">{errors.type}</p>
+                  )}
                 </div>
               </div>
               <div>
-              <div className="flex space-x-4">
-                <div className="flex-1">
-                  <label
-                    htmlFor="brand"
-                    className="block mb-2 text-sm font-medium"
-                  >
-                    Marca
-                  </label>
-                  <select
-                    id="brand"
-                    name="brand"
-                    value={vehicleData.brand}
-                    onChange={handleInputChange}
-                    className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out"
-                  >
-                    <option value="">Seleccionar marca</option>
-                    {vehicleOptions[vehicleData.type].brands.map((brand) => (
-                      <option key={brand} value={brand}>
-                        {brand}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex-1">
-                  <label
-                    htmlFor="model"
-                    className="block mb-2 text-sm font-medium"
-                  >
-                    Modelo
-                  </label>
-                  <select
-                    id="model"
-                    name="model"
-                    value={vehicleData.model}
-                    onChange={handleInputChange}
-                    className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out"
-                    disabled={!vehicleData.brand}
-                  >
-                    <option value="">Seleccionar modelo</option>
-                    {vehicleData.brand &&
-                      vehicleOptions[vehicleData.type].models[
-                        vehicleData.brand as keyof (typeof vehicleOptions)[typeof vehicleData.type]["models"]
-                      ].map((model) => (
-                        <option key={model} value={model}>
-                          {model}
+                <div className="flex space-x-4">
+                  <div className="flex-1">
+                    <label
+                      htmlFor="brand"
+                      className="block mb-2 text-sm font-medium"
+                    >
+                      Marca
+                    </label>
+                    <select
+                      id="brand"
+                      name="brand"
+                      value={vehicleData.brand}
+                      onChange={handleInputChange}
+                      className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out"
+                    >
+                      <option value="">Seleccionar marca</option>
+                      {vehicleOptions[vehicleData.type].brands.map((brand) => (
+                        <option key={brand} value={brand}>
+                          {brand}
                         </option>
                       ))}
-                  </select>
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label
+                      htmlFor="model"
+                      className="block mb-2 text-sm font-medium"
+                    >
+                      Modelo
+                    </label>
+                    <select
+                      id="model"
+                      name="model"
+                      value={vehicleData.model}
+                      onChange={handleInputChange}
+                      className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out"
+                      disabled={!vehicleData.brand}
+                    >
+                      <option value="">Seleccionar modelo</option>
+                      {vehicleData.brand &&
+                        vehicleOptions[vehicleData.type].models[
+                          vehicleData.brand as keyof (typeof vehicleOptions)[typeof vehicleData.type]["models"]
+                        ].map((model) => (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label
+                      htmlFor="year"
+                      className="block mb-2 text-sm font-medium"
+                    >
+                      Año
+                    </label>
+                    <select
+                      id="year"
+                      name="year"
+                      value={vehicleData.year}
+                      onChange={handleInputChange}
+                      className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out"
+                      disabled={!vehicleData.model}
+                    >
+                      <option value="">Seleccionar año</option>
+                      {vehicleOptions[vehicleData.type].years.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <label
-                    htmlFor="year"
-                    className="block mb-2 text-sm font-medium"
-                  >
-                    Año
-                  </label>
-                  <select
-                    id="year"
-                    name="year"
-                    value={vehicleData.year}
-                    onChange={handleInputChange}
-                    className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out"
-                    disabled={!vehicleData.model}
-                  >
-                    <option value="">Seleccionar año</option>
-                    {vehicleOptions[vehicleData.type].years.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {(errors.brand || errors.model || errors.year) && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Seleccione un modelo valido
+                  </p>
+                )}
               </div>
-                {(errors.brand || errors.model || errors.year) && <p className="text-red-500 text-sm mt-1">Seleccione un modelo valido</p>}
-              </div>
-              <div>
-              </div>
+              <div></div>
               <div>
                 <label
                   htmlFor="color"
@@ -496,7 +524,9 @@ const AddVehicle = () => {
                   <option value="amarillo">Amarillo</option>
                   <option value="azul">Azul</option>
                 </select>
-                {errors.color && <p className="text-red-500 text-sm mt-1">{errors.color}</p>}
+                {errors.color && (
+                  <p className="text-red-500 text-sm mt-1">{errors.color}</p>
+                )}
               </div>
             </div>
           )}
@@ -562,7 +592,11 @@ const AddVehicle = () => {
                       <option value="DIESEL">Diesel</option>
                       <option value="GAS">Gas</option>
                     </select>
-                    {errors.fuel_type && <p className="text-red-500 text-sm mt-1">{errors.fuel_type}</p>}
+                    {errors.fuel_type && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fuel_type}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label
@@ -582,7 +616,11 @@ const AddVehicle = () => {
                       <option value="LITER">Litros</option>
                       <option value="GALON">Galones</option>
                     </select>
-                    {errors.fuel_measurement && <p className="text-red-500 text-sm mt-1">{errors.fuel_measurement}</p>}
+                    {errors.fuel_measurement && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fuel_measurement}
+                      </p>
+                    )}
                   </div>
                 </>
               )}
@@ -607,7 +645,11 @@ const AddVehicle = () => {
                     </option>
                   ))}
                 </select>
-                {errors.fuel_consumption && <p className="text-red-500 text-sm mt-1">{errors.fuel_consumption}</p>}
+                {errors.fuel_consumption && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.fuel_consumption}
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -646,7 +688,11 @@ const AddVehicle = () => {
                     </option>
                   ))}
                 </select>
-                {errors.cant_seats && <p className="text-red-500 text-sm mt-1">{errors.cant_axles}</p>}
+                {errors.cant_seats && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.cant_axles}
+                  </p>
+                )}
               </div>
               {(vehicleData.type === "TRUCK" || vehicleData.type === "VAN") && (
                 <div>
@@ -673,7 +719,11 @@ const AddVehicle = () => {
                       </option>
                     ))}
                   </select>
-                  {errors.cant_axles && <p className="text-red-500 text-sm mt-1">{errors.cant_axles}</p>}
+                  {errors.cant_axles && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.cant_axles}
+                    </p>
+                  )}
                 </div>
               )}
               <div>
@@ -697,7 +747,9 @@ const AddVehicle = () => {
                     </option>
                   ))}
                 </select>
-                {errors.load && <p className="text-red-500 text-sm mt-1">{errors.load}</p>}
+                {errors.load && (
+                  <p className="text-red-500 text-sm mt-1">{errors.load}</p>
+                )}
               </div>
               {vehicleData.type === "TRUCK" && (
                 <div>
