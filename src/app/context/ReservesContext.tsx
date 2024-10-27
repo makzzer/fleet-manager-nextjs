@@ -46,8 +46,9 @@ export interface Reserva {
   };
   date_created: string;
   date_updated: string;
+  date_reserve: string; // Agregamos este campo
+  date_finish_reserve: string; // Agregamos este campo
 }
-
 
 // Interfaz para los métodos del contexto
 interface ReservaContextProps {
@@ -80,7 +81,10 @@ export const ReservaProvider = ({ children }: { children: ReactNode }) => {
       if (Array.isArray(fetchedReservas)) {
         setReservas(fetchedReservas);
       } else {
-        console.error("Error: La respuesta de la API no es un array válido", fetchedReservas);
+        console.error(
+          "Error: La respuesta de la API no es un array válido",
+          fetchedReservas
+        );
       }
     } catch (error) {
       console.error("Error al obtener reservas:", error);
