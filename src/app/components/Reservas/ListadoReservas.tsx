@@ -6,12 +6,17 @@ import ReservaCard from "./ReservaCard";
 import ProtectedRoute from "../Routes/ProtectedRoutes";
 import { Reserva } from "@/app/context/ReservesContext";
 import * as XLSX from 'xlsx';
+import { FaFileExcel } from 'react-icons/fa'; // Importamos el ícono de Excel
 
 const ListadoReservas = () => {
   const { reservas, fetchReservas } = useReserva();
   const { authenticatedUser } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [userReservas, setUserReservas] = useState<Reserva[]>([]);
+  const [filtroEstado, setFiltroEstado] = useState<string>("Todos");
+
+  // Opciones de estado para el filtro
+  const opcionesEstado = ["Todos", "CREATED", "ACTIVATED", "COMPLETED", "CANCELED"];
 
   // Fetch reservas when authenticatedUser changes
   useEffect(() => {
@@ -37,6 +42,7 @@ const ListadoReservas = () => {
     }
   }, [authenticatedUser, reservas]);
 
+  // Función para exportar a Excel
   const exportReservasToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(userReservas);
     const workbook = XLSX.utils.book_new();
@@ -44,26 +50,56 @@ const ListadoReservas = () => {
     XLSX.writeFile(workbook, 'reservas.xlsx');
   };
 
+  // Filtrar las reservas según el estado seleccionado
+  const reservasFiltradasPorEstado = userReservas.filter((reserva) =>
+    filtroEstado === "Todos" ? true : reserva.status === filtroEstado
+  );
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-900 text-white p-6">
         <h1 className="text-4xl font-bold text-blue-400 mb-8">Mis Reservas</h1>
+
+        {/* Filtro por estado */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-4 sm:mb-0">
+            <label className="block text-sm font-medium mb-2">
+              Filtrar por estado:
+            </label>
+            <select
+              className="w-full sm:w-64 bg-gray-800 text-white rounded-md p-2"
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+            >
+              {opcionesEstado.map((estado) => (
+                <option key={estado} value={estado}>
+                  {estado === "Todos" ? "Todos los estados" : estado}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Botón de exportar a Excel */}
+          <button
+            onClick={exportReservasToExcel}
+            className="flex items-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300"
+          >
+            <FaFileExcel className="mr-2" />
+            Exportar a Excel
+          </button>
+        </div>
+
         {isLoading ? (
           <p className="text-gray-400">Cargando reservas...</p>
-        ) : userReservas.length > 0 ? (
+        ) : reservasFiltradasPorEstado.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userReservas.map((reserva) => (
+            {reservasFiltradasPorEstado.map((reserva) => (
               <ReservaCard key={reserva.id} reserva={reserva} />
             ))}
           </div>
         ) : (
           <p className="text-gray-400">No tienes reservas disponibles.</p>
         )}
-         <button
-            onClick={exportReservasToExcel}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-            Exportar a Excel
-          </button>
       </div>
     </ProtectedRoute>
   );
