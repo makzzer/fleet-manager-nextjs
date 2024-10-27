@@ -47,6 +47,8 @@ const AlertList = () => {
           </div>
         </div>
 
+
+{/*
         <div>
           <h3 className="text-xl font-semibold text-yellow-400 mb-4">
             Media Prioridad
@@ -65,7 +67,6 @@ const AlertList = () => {
             ))}
           </div>
         </div>
-
         <div>
           <h3 className="text-xl font-semibold text-green-400 mb-4">
             Baja Prioridad
@@ -84,6 +85,9 @@ const AlertList = () => {
             ))}
           </div>
         </div>
+*/}
+
+
       </div>
     </div>
     </ProtectedRoute>
