@@ -1,55 +1,53 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { TextField, InputAdornment, MenuItem } from '@mui/material';
-import { FaSearch, FaFilter } from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa';
+import { Proveedor } from "../../context/OrdenesCompraContext";
 
-interface FiltrosOrdenesProps {
-    onFilter: (filters: { searchTerm: string; selectedStatus: string }) => void;
-    status: string[];
+const statusMap = new Map<string, string>([
+    ["CREATED", "Creada"],
+    ["REJECTED", "Rechazada"],
+    ["APPROVED", "Aprobada"],
+    ["COMPLETED", "Completa"],
+    ["INACTIVE", "Inactiva"]
+  ]);
+
+  interface FiltrosOrdenesProps {
+    onFilter: (filters: { provider: string; status: string, date: string }) => void;
+    providers: Proveedor[];
+    dates: string[];
 }
 
-const FiltrosOrdenes: React.FC<FiltrosOrdenesProps> = ({ onFilter, status }) => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState('');
+const FiltrosOrdenes: React.FC<FiltrosOrdenesProps> = ({ onFilter, providers, dates }) => {
+    const [selectedProvider, setSelectedProvider] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
+    const [selecteStatus, setSelectedStatus] = useState('');
 
-    const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleProviderChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        setSearchTerm(value);
-        onFilter({ searchTerm: value, selectedStatus });
+        setSelectedProvider(value);
     };
 
-    const handleCategoryChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setSelectedStatus(value);
-        onFilter({ searchTerm, selectedStatus: value });
-      };
+    };
+
+    const handleDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setSelectedDate(value);
+    };
+
+    useEffect(() => {
+        onFilter({ provider: selectedProvider, date: selectedDate, status: selecteStatus });
+    }, [selectedProvider, selectedDate, selecteStatus]);
 
     return (
         <div className="flex flex-col md:flex-row gap-6 mb-6">
             <TextField
-                label="Buscar orden de compra"
-                variant="outlined"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                fullWidth
-                className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
-                InputProps={{
-                    style: { color: "#fff" },
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <FaSearch className="text-gray-300" />
-                        </InputAdornment>
-                    ),
-                }}
-                InputLabelProps={{
-                    style: { color: "#b0b0b0" },
-                }}
-            />
-
-            <TextField
                 select
-                label="Filtrar por categoría"
-                value={status}
-                onChange={handleCategoryChange}
+                label="Filtrar por proveedor"
+                value={selectedProvider}
+                onChange={handleProviderChange}
                 fullWidth
                 className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
                 InputProps={{
@@ -64,8 +62,52 @@ const FiltrosOrdenes: React.FC<FiltrosOrdenesProps> = ({ onFilter, status }) => 
                     style: { color: "#b0b0b0" },
                 }}
             >
-                <MenuItem value=""><em>Todas las categorías</em></MenuItem>
-                {status.map(estado => <MenuItem key={estado} value={estado}><em>{estado}</em></MenuItem>)}
+                <MenuItem value=""><em>Todos los proveedores</em></MenuItem>
+                {providers.map(provider => <MenuItem key={provider.id} value={provider.id}><em>{provider.name}</em></MenuItem>)}
+            </TextField>
+            <TextField
+                select
+                label="Filtrar por fecha"
+                value={selectedDate}
+                onChange={handleDateChange}
+                fullWidth
+                className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+                InputProps={{
+                    style: { color: "#fff" },
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <FaFilter className="text-gray-300" />
+                        </InputAdornment>
+                    ),
+                }}
+                InputLabelProps={{
+                    style: { color: "#b0b0b0" },
+                }}
+            >
+                <MenuItem value=""><em>Todas las fechas</em></MenuItem>
+                {dates.map(date => <MenuItem key={date} value={date}><em>{date}</em></MenuItem>)}
+            </TextField>
+            <TextField
+                select
+                label="Filtrar por estado"
+                value={selecteStatus}
+                onChange={handleStatusChange}
+                fullWidth
+                className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+                InputProps={{
+                    style: { color: "#fff" },
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <FaFilter className="text-gray-300" />
+                        </InputAdornment>
+                    ),
+                }}
+                InputLabelProps={{
+                    style: { color: "#b0b0b0" },
+                }}
+            >
+                <MenuItem value=""><em>Todos los estados</em></MenuItem>
+                {Array.from(statusMap.entries()).map(([key, value]) => <MenuItem key={key} value={key}><em>{value}</em></MenuItem>)}
             </TextField>
         </div>
     );

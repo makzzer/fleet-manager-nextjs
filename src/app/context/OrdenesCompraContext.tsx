@@ -14,7 +14,7 @@ const apiOrdenesDeCompraBackend = `https://fleet-manager-gzui.onrender.com/api/o
 const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
 const apiProductosBackend = `https://fleet-manager-gzui.onrender.com/api/products`;
 
-interface Proveedor {
+export interface Proveedor {
   id: string;
   name: string;
   email: string;
