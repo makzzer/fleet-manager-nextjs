@@ -1,107 +1,113 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import { useReserva } from "@/app/context/ReservesContext";
-import { useAuth } from "@/app/context/AuthContext";
-import { useEffect, useState } from "react";
-import ReservaCard from "./ReservaCard";
-import ProtectedRoute from "../Routes/ProtectedRoutes";
 import { Reserva } from "@/app/context/ReservesContext";
-import * as XLSX from 'xlsx';
-import { FaFileExcel } from 'react-icons/fa'; // Importamos el ícono de Excel
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
-const ListadoReservas = () => {
+interface ListadoReservasProps {
+  startDate: Date | null;
+  endDate: Date | null;
+  filtroEstado: string;
+}
+
+const ListadoReservas: React.FC<ListadoReservasProps> = ({
+  startDate,
+  endDate,
+  filtroEstado,
+}) => {
   const { reservas, fetchReservas } = useReserva();
   const { authenticatedUser } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-  const [userReservas, setUserReservas] = useState<Reserva[]>([]);
-  const [filtroEstado, setFiltroEstado] = useState<string>("Todos");
+  const [reservasFiltradas, setReservasFiltradas] = useState<Reserva[]>([]);
+  const router = useRouter();
 
-  // Opciones de estado para el filtro
-  const opcionesEstado = ["Todos", "CREATED", "ACTIVATED", "COMPLETED", "CANCELED"];
-
-  // Fetch reservas when authenticatedUser changes
   useEffect(() => {
-    const loadReservas = async () => {
-      setIsLoading(true);
-      await fetchReservas();
-    };
+    fetchReservas();
+  }, [fetchReservas]);
 
-    if (authenticatedUser) {
-      loadReservas();
+  useEffect(() => {
+    // Filtrar las reservas según el usuario autenticado
+    const reservasUsuario = reservas.filter(
+      (reserva) => reserva.user_id === authenticatedUser?.id
+    );
+
+    let reservasFiltradasPorFecha = reservasUsuario;
+
+    // Filtrar por rango de fechas
+    if (startDate && endDate) {
+      reservasFiltradasPorFecha = reservasFiltradasPorFecha.filter((reserva) => {
+        const fechaReserva = new Date(reserva.date_created);
+        // Crear copias de las fechas para evitar mutaciones
+        const inicio = new Date(startDate);
+        inicio.setHours(0, 0, 0, 0);
+        const fin = new Date(endDate);
+        fin.setHours(23, 59, 59, 999);
+        return fechaReserva >= inicio && fechaReserva <= fin;
+      });
     }
-  }, [fetchReservas, authenticatedUser]);
 
-  // Filter reservas when reservas change
-  useEffect(() => {
-    if (authenticatedUser && reservas.length > 0) {
-      const reservasFiltradas = reservas.filter(
-        (reserva) => reserva.user_id === authenticatedUser.id
+    // Filtrar por estado
+    let reservasFiltradasPorEstado = reservasFiltradasPorFecha;
+    if (filtroEstado !== "Todos") {
+      reservasFiltradasPorEstado = reservasFiltradasPorFecha.filter(
+        (reserva) => reserva.status === filtroEstado
       );
-      setUserReservas(reservasFiltradas);
-      console.log("Reservas filtradas para el usuario:", reservasFiltradas);
-      setIsLoading(false);
     }
-  }, [authenticatedUser, reservas]);
 
-  // Función para exportar a Excel
-  const exportReservasToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(userReservas);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reservas');
-    XLSX.writeFile(workbook, 'reservas.xlsx');
-  };
-
-  // Filtrar las reservas según el estado seleccionado
-  const reservasFiltradasPorEstado = userReservas.filter((reserva) =>
-    filtroEstado === "Todos" ? true : reserva.status === filtroEstado
-  );
+    setReservasFiltradas(reservasFiltradasPorEstado);
+  }, [reservas, authenticatedUser, startDate, endDate, filtroEstado]);
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-gray-900 text-white p-6">
-        <h1 className="text-4xl font-bold text-blue-400 mb-8">Mis Reservas</h1>
-
-        {/* Filtro por estado */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div className="mb-4 sm:mb-0">
-            <label className="block text-sm font-medium mb-2">
-              Filtrar por estado:
-            </label>
-            <select
-              className="w-full sm:w-64 bg-gray-800 text-white rounded-md p-2"
-              value={filtroEstado}
-              onChange={(e) => setFiltroEstado(e.target.value)}
+    <div>
+      {reservasFiltradas.length > 0 ? (
+        <ul className="space-y-4">
+          {reservasFiltradas.map((reserva) => (
+            <li
+              key={reserva.id}
+              className="bg-gray-800 p-6 rounded-lg shadow-md cursor-pointer hover:bg-gray-700 transition"
+              onClick={() => router.push(`/detalleReserva/${reserva.id}`)}
             >
-              {opcionesEstado.map((estado) => (
-                <option key={estado} value={estado}>
-                  {estado === "Todos" ? "Todos los estados" : estado}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Botón de exportar a Excel */}
-          <button
-            onClick={exportReservasToExcel}
-            className="flex items-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300"
-          >
-            <FaFileExcel className="mr-2" />
-            Exportar a Excel
-          </button>
-        </div>
-
-        {isLoading ? (
-          <p className="text-gray-400">Cargando reservas...</p>
-        ) : reservasFiltradasPorEstado.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reservasFiltradasPorEstado.map((reserva) => (
-              <ReservaCard key={reserva.id} reserva={reserva} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-400">No tienes reservas disponibles.</p>
-        )}
-      </div>
-    </ProtectedRoute>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    Reserva ID: {reserva.id}
+                  </h2>
+                  <p className="text-gray-400">
+                    Fecha de creación:{" "}
+                    {new Date(reserva.date_created).toLocaleDateString()}
+                  </p>
+                  <p className="text-gray-400">
+                    Fecha de inicio:{" "}
+                    {new Date(reserva.date_reserve).toLocaleDateString()}
+                  </p>
+                  <p className="text-gray-400">
+                    Fecha de fin:{" "}
+                    {new Date(reserva.date_finish_reserve).toLocaleDateString()}
+                  </p>
+                </div>
+                <div
+                  className={`text-sm font-semibold ${
+                    reserva.status === "COMPLETED"
+                      ? "text-green-400"
+                      : reserva.status === "CANCELED"
+                      ? "text-red-400"
+                      : "text-yellow-400"
+                  }`}
+                >
+                  {reserva.status}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-400">
+          {startDate || endDate || filtroEstado !== "Todos"
+            ? "No tienes reservas que coincidan con los filtros aplicados."
+            : "No tienes reservas registradas."}
+        </p>
+      )}
+    </div>
   );
 };
 
