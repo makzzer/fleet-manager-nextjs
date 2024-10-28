@@ -1,29 +1,23 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 import VehiculoCard from "../components/Cards/VehiculoCards";
-import { useVehiculo } from "../context/VehiculoContext";
-import Swal from 'sweetalert2';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
+import { useVehiculo, Vehiculo } from "../context/VehiculoContext";
+import Swal from "sweetalert2";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import SearchBar from "../../app/components/SearchBar/SearchBar";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-import { FiPlus, FiDownload } from 'react-icons/fi'; // React Icons
+import { FiPlus, FiDownload } from "react-icons/fi"; // React Icons
 import { useRouter } from "next/navigation";
-
-
-// function generarSelect(map: { [key: string]: string }, id: string, textSeleccione: string) {
-//   const options = Object.entries(map)
-//     .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
-
-//   return `<select id="${id}" class="swal2-select">
-//             <option value="" selected>${textSeleccione}</option>
-//             ${options}
-//           </select>`;
-// }
+import {
+  generateExcelTemplate,
+  processFile,
+} from "../util/excelProcessor";
 
 const Vehiculos = () => {
   const router = useRouter();
-  const { vehiculos, fetchVehiculos, exportVehiculosToExcel } = useVehiculo();
+  const { vehiculos, fetchVehiculos, createVehiculo, exportVehiculosToExcel } =
+    useVehiculo();
   const [isLoading, setIsLoading] = useState(true);
   const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos);
   const [showUnavailable, setShowUnavailable] = useState(false); // Filtro para ocultar/mostrar vehículos deshabilitados
@@ -64,12 +58,14 @@ const Vehiculos = () => {
 
     // Filtro por tipo de combustible
     if (fuelFilter) {
-      filtered = filtered.filter((vehiculo) => vehiculo.fuel_type === fuelFilter);
+      filtered = filtered.filter(
+        (vehiculo) => vehiculo.fuel_type === fuelFilter
+      );
     }
 
     if (searchTerm) {
       filtered = filtered.filter(
-        vehiculo =>
+        (vehiculo) =>
           vehiculo.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
           vehiculo.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
           vehiculo.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -84,248 +80,167 @@ const Vehiculos = () => {
     filterVehiculos(); // Aplicamos el filtro con el nuevo límite
   };
 
-  /*
+  // Despliega una alerta que te da a elegir dos opciones:
+  // - Cargar un vehículo individualmente
+  // - Cargar multiples vehículos de una sola vez 
   const handleAgregarVehiculo = () => {
-    // Lista de marcas de vehículos
-    //const marcas = ['Toyota', 'Ford', 'Chevrolet', 'Honda', 'Nissan', 'Volkswagen', 'Fiat'];
-
-    const camiones = {
-      marcas: [
-        {
-          marca: 'Toyota',
-          modelos: ['Hino 300', 'Dyna', 'Toyotace']
-        },
-        {
-          marca: 'Ford',
-          modelos: ['F-750', 'Cargo 1723', 'Transit Chasis']
-        },
-        {
-          marca: 'Chevrolet',
-          modelos: ['N-Series', 'T-Series', 'C4500 Kodiak']
-        },
-        {
-          marca: 'Volkswagen',
-          modelos: ['Constellation 24.280', 'Delivery 9.170', 'Worker 17.220']
-        },
-        {
-          marca: 'Mercedes-Benz',
-          modelos: ['Atego 1726', 'Accelo 1016', 'Actros 2545']
-        }
-      ]
-    };
-
-
-    const obtenerOpcionesAnios = () => {
-      const currentYear = new Date().getFullYear();
-      const startYear = currentYear - 30;
-      let opciones = '';
-
-      for (let i = currentYear; i >= startYear; i--) {
-        opciones += `<option value="${i}">${i}</option>`;
-      }
-
-      return opciones;
-    };
-
-
-    // Construir las opciones del select
-    const opcionesMarcas = camiones.marcas.map(marca => `<option value="${marca.marca}">${marca.marca}</option>`).join('');
-
-    // Función que construye las opciones de modelos para una marca específica
-    // const obtenerOpcionesModelos = (marcaSeleccionada: string) => {
-    //   const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
-    //   if (marca) {
-    //     return marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
-    //   }
-    //   return '<option value="" disabled>No hay modelos disponibles</option>'; // Si no hay modelos
-    // };
-
     Swal.fire({
-      title: 'Agregar Vehículo',
+      title: "Agregar Vehículo",
       html: `
-        <style>
-          input.swal2-input, select.swal2-select {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-            width: 80%;
-            height: 54px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-          }
-        </style>
-        <input type="text" id="id" class="swal2-input" placeholder="Patente" oninput="this.value"/>
-        <select id="brand" class="swal2-select">
-          <option value="" disabled selected>Seleccione una marca</option>
-          ${opcionesMarcas}
-        </select>
-        <select id="model" class="swal2-select" disabled>
-          <option value="" disabled selected>Seleccione una marca primero</option>
-        </select>
-        <select id="year" class="swal2-select">
-          <option value="" disabled selected>Selecciona un año</option>
-          ${obtenerOpcionesAnios()}
-        </select>
-        <input type="text" id="color" class="swal2-input" placeholder="Color" oninput="this.value"/>
-        ${generarSelect(tiposCombustible, "tipoCombustible", "Seleccione tipo de combustible")}
-        ${generarSelect(unidadesCombustible, "unidadCombustible", "Seleccione unidad de medida")}
-        <input type="number" id="consumo" class="swal2-input" placeholder="Consumo(cada 100 km)" oninput="this.value"/>
-        ${generarSelect(tiposVehiculo, "tipoVehiculo", "Seleccione tipo de vehiculo")}
-        <input type="number" id="cantEjes" class="swal2-input" placeholder="Cantidad de ejes" oninput="this.value"/>
-        <input type="number" id="cantAsientos" class="swal2-input" placeholder="Cantidad de asientos" oninput="this.value"/>
-        <input type="number" id="cargaMax" class="swal2-input" placeholder="Carga máxima(Ton)" oninput="this.value" />
-        <label style="display: block; margin-top: 10px;">
-        <input type="checkbox" id="acoplado" />
-         Tiene acoplado
-        </label>
-      `,
-      confirmButtonText: 'Agregar',
-      cancelButtonText: 'Cancelar',
-      showCancelButton: true,
-      focusConfirm: false,
-      preConfirm: () => {
-        const idElement = document.getElementById('id') as HTMLInputElement;
-        const brandElement = document.getElementById('brand') as HTMLInputElement;
-        const modelElement = document.getElementById('model') as HTMLInputElement;
-        const yearElement = document.getElementById('year') as HTMLInputElement;
-        const colorElement = document.getElementById('color') as HTMLInputElement;
-        const tipoCombustibleElement = document.getElementById('tipoCombustible') as HTMLInputElement;
-        const unidadCombustibleElement = document.getElementById('unidadCombustible') as HTMLInputElement;
-        const consumoElement = document.getElementById('consumo') as HTMLInputElement;
-        const tipoVehiculoElement = document.getElementById('tipoVehiculo') as HTMLInputElement;
-        const cantEjesElement = document.getElementById('cantEjes') as HTMLInputElement;
-        const cantAsientosElement = document.getElementById('cantAsientos') as HTMLInputElement;
-        const cargaMaxElement = document.getElementById('cargaMax') as HTMLInputElement;
-        const acopladoElement = document.getElementById('acoplado') as HTMLInputElement;
-
-        const id = idElement?.value;
-        const brand = brandElement?.value;
-        const model = modelElement?.value;
-        const year = yearElement?.value;
-        const tipoCombustible = tipoCombustibleElement?.value;
-        const consumo = consumoElement?.value;
-        const tipoVehiculo = tipoVehiculoElement?.value;
-        const cargaMax = cargaMaxElement?.value;
-        const acoplado = acopladoElement?.checked;
-        const color = colorElement?.value;
-        const unidadCombustible = unidadCombustibleElement?.value;
-        const cantEjes = cantEjesElement?.value;
-        const cantAsientos = cantAsientosElement?.value;
-
-        // Validación de la patente
-        const validarPatente = (patente: string) => {
-          const regex = /^(?:[A-Z]{3}-\d{3}|[A-Z]{2}-\d{3}-[A-Z]{2})$/;
-          return regex.test(patente);
-        }
-
-        if (!id || !brand || !model || !year || !tipoCombustible || !consumo || !tipoVehiculo || !color || !unidadCombustible) {
-          Swal.showValidationMessage('Completa todos los campos');
-          return null;
-        }
-
-        if (!validarPatente(id)) {
-          Swal.showValidationMessage('La patente no es válida');
-          return null;
-        }
-
-        return { id, brand, model, year, tipoCombustible, consumo, tipoVehiculo, cargaMax, acoplado, color, unidadCombustible, cantEjes, cantAsientos };
-      },
-      didOpen: () => {
-        const brandSelect = document.getElementById('brand') as HTMLSelectElement;
-        const modelSelect = document.getElementById('model') as HTMLSelectElement;
-
-        brandSelect.addEventListener('change', function () {
-          const marcaSeleccionada = brandSelect.value;
-          const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
-
-          if (marca) {
-            const opcionesModelos = marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
-            modelSelect.innerHTML = opcionesModelos;
-            modelSelect.disabled = false;
-          } else {
-            modelSelect.disabled = true;
-            modelSelect.innerHTML = '<option value="" disabled selected>Seleccione una marca primero</option>';
-          }
-        });
-      }
-    }).then(async (result) => {
-      if (result.isConfirmed && result.value) {
-        const vehiculo = {
-          id: result.value.id,
-          status: result.value.status,
-          brand: result.value.brand,
-          model: result.value.model,
-          year: result.value.year,
-          coordinates: {
-            "latitude": -34.5347879,
-            "longitude": -58.7133719
-          },
-          fuel_type: result.value.tipoCombustible,
-          fuel_consumption: result.value.consumo,
-          type: result.value.tipoVehiculo,
-          load: result.value.cargaMax,
-          has_trailer: result.value.acoplado,
-          color: result.value.color,
-          fuel_measurement: result.value.unidadCombustible,
-          cant_axles: result.value.cantEjes,
-          cant_seats: result.value.cantAsientos,
-        };
-
-        const { resultado, mensaje } = await createVehiculo(vehiculo);
-
-        if (resultado) {
-          Swal.fire({
-            title: "Vehículo agregado con éxito",
-            text: "El nuevo vehículo ha sido creado y registrado correctamente.",
-            icon: "success",
-          });
-        } else {
-          if (mensaje && mensaje.includes("already exists")) {
-            Swal.fire({
-              title: "Error al agregar vehículo",
-              text: "La patente ya existe. Por favor, usa una diferente.",
-              icon: "error",
-            });
-          } else {
-            Swal.fire({
-              title: "Error",
-              text: "Ha ocurrido un error al crear el vehículo.",
-              icon: "error",
-            });
-          }
-        }
-
-      }
-    });
-  };
-  */
-
-    const handleAgregarVehiculo = () => {
-    Swal.fire({
-      title: 'Agregar Vehículo',
-      html: `
-        <button id="addIndividual" class="swal2-confirm swal2-styled">Agregar Vehículo Individual</button>
-        <button id="addMasivo" class="swal2-confirm swal2-styled">Carga Masiva (CSV)</button>
+      <div class="grid grid-cols-2">
+        <button id="addIndividual" class="swal2-confirm swal2-styled flex flex-col justify-center items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+          </svg>
+          <span>Individual</span>
+        </button>
+        <button id="addMasivo" class="swal2-confirm swal2-styled flex flex-col justify-center items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+        </svg>
+        <span>Carga Masiva</span>
+        </button>
+      </div>
       `,
       showConfirmButton: false,
       showCancelButton: true,
-      cancelButtonText: 'Cancelar',
+      cancelButtonText: "Cancelar",
       focusConfirm: false,
+      customClass: {
+        title: "text-white",
+        popup: "bg-gray-800",
+      },
       didOpen: () => {
-        document.getElementById('addIndividual')?.addEventListener('click', () => {
+        document
+          .getElementById("addIndividual")
+          ?.addEventListener("click", () => {
+            Swal.close();
+            router.push("/vehiculos/agregar");
+          });
+        document.getElementById("addMasivo")?.addEventListener("click", () => {
           Swal.close();
-          router.push('/vehiculos/agregar');
+          handleCargaMasiva();
         });
-        document.getElementById('addMasivo')?.addEventListener('click', () => {
-          Swal.close();
-          // Implementar lógica para carga masiva de vehículos mediante csv :) 
-          Swal.fire('Carga Masiva', 'Funcionalidad aún no implementada', 'info');
-        });
-      }
+      },
     });
   };
 
+  const handleCargaMasiva = () => {
+    Swal.fire({
+      title: "Carga Masiva de Vehículos",
+      html: `
+          <div class="text-left mb-4">
+            <p class="mb-2 ">Descargue la plantilla y luego suba el archivo Excel o CSV con los datos de los vehículos.</p>
+            <p class="text-sm text-gray-300">Formatos aceptados: .xlsx, .xls, .csv</p>
+          </div>
+          <div class="flex justify-start space-x-4 mb-4">
+            <button id="downloadTemplate" class="bg-blue-500 hover:bg-blue-600 text-white w-full font-bold py-2 px-4 rounded transition duration-200 ease-in-out">
+              Descargar Plantilla
+            </button>
+          </div>
+          <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="hidden">
+          <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition duration-200 ease-in-out">
+            <p class="">Arrastre y suelte su archivo aquí</p>
+            <p class="text-sm ">o haga clic para seleccionar</p>
+          </div>
+      `,
+      showCancelButton: true,
+      showConfirmButton: false,
+      cancelButtonText: "Cerrar",
+      customClass: {
+        popup: "rounded-lg bg-gray-800 text-white",
+        title: "font-bold text-blue-500",
+      },
+      didOpen: () => {
+        const dropZone = document.getElementById("dropZone");
+        const fileUpload = document.getElementById(
+          "fileUpload"
+        ) as HTMLInputElement;
+
+        document
+          .getElementById("downloadTemplate")
+          ?.addEventListener("click", generateExcelTemplate);
+
+        dropZone?.addEventListener("click", () => fileUpload?.click());
+
+        dropZone?.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          dropZone.classList.add("border-blue-500");
+        });
+
+        dropZone?.addEventListener("dragleave", () => {
+          dropZone.classList.remove("border-blue-500");
+        });
+
+        dropZone?.addEventListener("drop", (e) => {
+          e.preventDefault();
+          dropZone.classList.remove("border-blue-500");
+          if (e.dataTransfer?.files.length) {
+            handleFileUpload(e.dataTransfer.files[0]);
+          }
+        });
+
+        fileUpload?.addEventListener("change", (e) => {
+          const fileInput = e.target as HTMLInputElement;
+          if (fileInput.files && fileInput.files[0]) {
+            handleFileUpload(fileInput.files[0]);
+          }
+        });
+      },
+    });
+  };
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      const formatedVehicles = await processFile(file);
+      let successCount = 0;
+      let failedCount = 0;
+
+      for (const formatedVehicle of formatedVehicles) {
+        try {
+          const vehicle: Vehiculo = {
+            ...formatedVehicle,
+            coordinates: {
+              latitude: formatedVehicle.latitude,
+              longitude: formatedVehicle.longitude,
+            },
+          }
+          const result = await createVehiculo(vehicle);
+          if (result.resultado) {
+            successCount++;
+          } else {
+            failedCount++;
+          }
+          // Actualizar la barra de progreso
+          Swal.update({
+            title: "Procesando vehículos...",
+            html: `Procesados: ${successCount + failedCount} de ${
+              formatedVehicles.length
+            }
+                   <div class="progress-bar-container">
+                     <div class="progress-bar" style="width: ${
+                       ((successCount + failedCount) / formatedVehicles.length) * 100
+                     }%"></div>
+                   </div>`,
+          });
+        } catch (error) {
+          console.error("Error creando vehículo:", error);
+          failedCount++;
+        }
+      }
+
+      await Swal.fire({
+        title: "Carga completada",
+        html: `Vehículos agregados exitosamente: ${successCount}<br>Fallidos: ${failedCount}`,
+        icon: "success",
+      });
+
+      fetchVehiculos(); // Actualizar la lista de vehículos
+    } catch (error) {
+      console.error("Error processing file:", error);
+      Swal.fire("Error", "Hubo un problema al procesar el archivo", "error");
+    }
+  };
 
   return (
     <ProtectedRoute requiredModule="VEHICLES">
@@ -335,29 +250,26 @@ const Vehiculos = () => {
             Gestión de Vehículos
           </h1>
 
-
-
-
-
-
-
           {/* Botones mejorados con responsividad */}
           <div className="flex space-x-4">
             <button
               onClick={handleAgregarVehiculo}
-              className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out">
+              className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+            >
               <FiPlus className="h-5 w-5 mr-2" /> {/* Icono */}
-              <span className="hidden sm:inline">Agregar Vehículo</span> {/* Texto se oculta en pantallas pequeñas */}
+              <span className="hidden sm:inline">Agregar Vehículo</span>{" "}
+              {/* Texto se oculta en pantallas pequeñas */}
             </button>
 
             <button
               onClick={exportVehiculosToExcel}
-              className="flex items-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out">
+              className="flex items-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+            >
               <FiDownload className="h-5 w-5 mr-2" /> {/* Icono */}
-              <span className="hidden sm:inline">Exportar a Excel</span> {/* Texto se oculta en pantallas pequeñas */}
+              <span className="hidden sm:inline">Exportar a Excel</span>{" "}
+              {/* Texto se oculta en pantallas pequeñas */}
             </button>
           </div>
-
         </div>
 
         {/* Barra de búsqueda */}
@@ -373,14 +285,17 @@ const Vehiculos = () => {
               checked={showUnavailable}
               onChange={() => setShowUnavailable(!showUnavailable)}
             />
-            <label htmlFor="showUnavailable">Mostrar vehículos deshabilitados</label>
+            <label htmlFor="showUnavailable">
+              Mostrar vehículos deshabilitados
+            </label>
           </div>
 
           {/* Filtro por Carga Soportada de vehículo */}
           <select
             className="bg-gray-800 text-white py-2 px-4 rounded"
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}>
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
             <option value="">Todas las cargas</option>
             <option value="Camión">Menos de 1 Tonelada</option>
             <option value="Auto">De 1 a 2 Toneladas</option>
@@ -391,7 +306,8 @@ const Vehiculos = () => {
           <select
             className="bg-gray-800 text-white py-2 px-4 rounded"
             value={fuelFilter}
-            onChange={(e) => setFuelFilter(e.target.value)}>
+            onChange={(e) => setFuelFilter(e.target.value)}
+          >
             <option value="">Todos los combustibles</option>
             <option value="Gasoil">Gasoil</option>
             <option value="Eléctrico">Eléctrico</option>
@@ -405,10 +321,32 @@ const Vehiculos = () => {
               .fill(0)
               .map((_, index) => (
                 <div key={index} className="p-4 bg-gray-800 rounded-lg">
-                  <Skeleton height={200} baseColor="#2d3748" highlightColor="#4a5568" />
-                  <Skeleton width={`80%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
-                  <Skeleton width={`60%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
-                  <Skeleton width={`50%`} height={20} style={{ marginTop: 10 }} baseColor="#2d3748" highlightColor="#4a5568" />
+                  <Skeleton
+                    height={200}
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                  <Skeleton
+                    width={`80%`}
+                    height={20}
+                    style={{ marginTop: 10 }}
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                  <Skeleton
+                    width={`60%`}
+                    height={20}
+                    style={{ marginTop: 10 }}
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                  <Skeleton
+                    width={`50%`}
+                    height={20}
+                    style={{ marginTop: 10 }}
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
                 </div>
               ))
           ) : filteredVehiculos.length > 0 ? (
@@ -416,20 +354,24 @@ const Vehiculos = () => {
               <VehiculoCard key={index} vehiculo={vehiculo} />
             ))
           ) : (
-            <p className="text-center col-span-3 text-blue-300">No se encontraron vehículos</p>
+            <p className="text-center col-span-3 text-blue-300">
+              No se encontraron vehículos
+            </p>
           )}
         </div>
 
         {/* Botón de ver más */}
-        {filteredVehiculos.length > 0 && filteredVehiculos.length < vehiculos.length && (
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={handleLoadMore}
-              className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-              Ver más
-            </button>
-          </div>
-        )}
+        {filteredVehiculos.length > 0 &&
+          filteredVehiculos.length < vehiculos.length && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleLoadMore}
+                className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Ver más
+              </button>
+            </div>
+          )}
       </div>
     </ProtectedRoute>
   );
