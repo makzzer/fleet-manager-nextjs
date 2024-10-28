@@ -124,7 +124,7 @@ const OrdenesDeCompra = () => {
     }
 
     if(selectedDate) {
-      filtered = filtered.filter((orden) => orden.date_created == selectedDate);
+      filtered = filtered.filter((orden) => orden.date_created.slice(0, 10) == selectedDate);
     }
 
     setFilteredOrdenes(filtered);
