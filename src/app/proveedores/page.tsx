@@ -106,7 +106,9 @@ const Proveedores = () => {
       <input type="text" id="email" class="swal2-input" placeholder="Email">
       <input type="text" id="cuit" class="swal2-input" placeholder="CUIT">
       <input type="text" id="phone_number" class="swal2-input" placeholder="Teléfono">
-      <input type="text" id="address" class="swal2-input" placeholder="Dirección">
+      <input type="text" id="street" class="swal2-input" placeholder="Calle">
+      <input type="text" id="number" class="swal2-input" placeholder="Número">
+      <input type="text" id="locality" class="swal2-input" placeholder="Localidad">
     `,
       confirmButtonText: "Agregar",
       showCancelButton: true,
@@ -115,19 +117,25 @@ const Proveedores = () => {
         const emailElement = document.getElementById("email") as HTMLInputElement;
         const cuitElement = document.getElementById("cuit") as HTMLInputElement;
         const phone_numberElement = document.getElementById("phone_number") as HTMLInputElement;
-        const addressElement = document.getElementById("address") as HTMLInputElement;
+        const streetElement = document.getElementById("street") as HTMLInputElement;
+        const numberElement = document.getElementById("number") as HTMLInputElement;
+        const localityElement = document.getElementById("locality") as HTMLInputElement;
 
         const name = nameElement?.value;
         const email = emailElement?.value;
         const cuit = cuitElement?.value;
         const phone_number = phone_numberElement?.value;
-        const address = addressElement?.value;
+        const street = streetElement?.value;
+        const number = numberElement?.value;
+        const locality = localityElement?.value;
 
         const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const cuitRegex = /^\d{2}-\d{8}-\d{1}$/;
         const telefonoRegex = /^(?=(?:\D*\d){10})(?:\d+-?){0,2}\d+$/;
-        const direccionRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+ \d+, [a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/; // este regex respeta formato (calle numero, localidad)
+        const streetRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+$/; // Regex para la calle
+        const numberRegex = /^\d+$/; // Regex para el número
+        const localityRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/; // Regex para la localidad
 
         if (!name || !nameRegex.test(name)) {
           Swal.showValidationMessage("Nombre inválido. El nombre no puede estar vacío ni contener caracteres especiales o números.");
@@ -149,12 +157,22 @@ const Proveedores = () => {
           return null;
         }
 
-        if (!address || !direccionRegex.test(address)) {
-          Swal.showValidationMessage("Dirección inválida. No debe contener caracteres especiales (excepto '.' y ',').");
+        if (!street || !streetRegex.test(street)) {
+          Swal.showValidationMessage("Calle inválida.");
+          return null;
+        }
+  
+        if (!number || !numberRegex.test(number)) {
+          Swal.showValidationMessage("Número inválido.");
+          return null;
+        }
+  
+        if (!locality || !localityRegex.test(locality)) {
+          Swal.showValidationMessage("Localidad inválida.");
           return null;
         }
 
-        return { name, email, cuit, phone_number, address };
+        return { name, email, cuit, phone_number, address: `${street} ${number}, ${locality}`, };
       },
     }).then(async (result) => {
       if (result.isConfirmed && result.value) {

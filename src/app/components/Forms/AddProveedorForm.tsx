@@ -7,7 +7,9 @@ const AddProveedorForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     cuit: "",
-    address: "",
+    street: "", // Campo para la calle
+    number: "", // Campo para el número
+    locality: "", // Campo para la localidad
     phone_number: "",
     email: "", // Agregar campo email
   });
@@ -24,11 +26,14 @@ const AddProveedorForm = () => {
     e.preventDefault();
     // Crear proveedor con los datos del formulario
     try {
+      // Concatenar la dirección
+      const fullAddress = `${formData.street} ${formData.number}, ${formData.locality}`;
+
       await createProveedor({
         id: "",  // ID automático desde la BD.
         name: formData.name,
         cuit: formData.cuit,
-        address: formData.address,
+        address: fullAddress, // Usar la dirección completa
         phone_number: formData.phone_number,
         email: formData.email, // Agregar email al envío
       });
@@ -57,11 +62,27 @@ const AddProveedorForm = () => {
         onChange={handleInputChange}
         className="w-full p-2 mb-2"
       />
+       <input
+        type="text"
+        name="street"
+        placeholder="Calle"
+        value={formData.street}
+        onChange={handleInputChange}
+        className="w-full p-2 mb-2"
+      />
       <input
         type="text"
-        name="address" // Cambiado de direccion a address
-        placeholder="Dirección"
-        value={formData.address} // Actualizado
+        name="number"
+        placeholder="Número"
+        value={formData.number}
+        onChange={handleInputChange}
+        className="w-full p-2 mb-2"
+      />
+      <input
+        type="text"
+        name="locality"
+        placeholder="Localidad"
+        value={formData.locality}
         onChange={handleInputChange}
         className="w-full p-2 mb-2"
       />
