@@ -206,6 +206,7 @@ const Vehiculos = () => {
       let successCount = 0;
       let failedCount = 0;
 
+      console.log(formatedVehicles)
       for (const formatedVehicle of formatedVehicles) {
         try {
           const vehicle: Vehiculo = {

@@ -2,12 +2,11 @@
 import { useState, useEffect, useRef } from "react";
 import { FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy, FaCalendarAlt, FaTools } from "react-icons/fa";
 import { MdMonitor } from "react-icons/md";
-import { MdDashboard } from "react-icons/md"
+import { MdDashboard, MdBusinessCenter } from "react-icons/md"
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 import React from "react";
 import { IoAnalytics } from "react-icons/io5";
-
 
 interface SidebarProps {
   onToggleSidebar: (isOpen: boolean) => void;
@@ -182,6 +181,16 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                   </div>
                 </Link>
               )}
+
+              {hasModuleAccess("USERS") && (
+                <Link href="/empresas" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <MdBusinessCenter />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Empresas
+                    </span>
+                  </div>
+                </Link>)}
 
               {hasModuleAccess("USERS") && (
                 <Link href="/usuarios" onClick={handleLinkClick}>
