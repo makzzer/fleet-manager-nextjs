@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
@@ -15,6 +15,9 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
+import { InputAdornment, MenuItem, TextField } from "@mui/material";
+import { FaRegCalendarAlt, FaTools, FaUserCircle } from "react-icons/fa";
+import { useUser } from "@/app/context/UserContext";
 
 interface Coordinates {
   latitude: number;
@@ -82,7 +85,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
     { id: "DONE", title: "Terminado" },
   ]);
 
+  const { users } = useUser();
+  const operators = users.filter(user => user.roles.includes("OPERATOR"));
+
   const [internalTasks, setInternalTasks] = useState(initialTasks);
+  const [filter, setFilter] = useState("ALL")
+  const [dateFilter, setDateFilter] = useState("ALL")
+  const [operatorFilter, setOperatorFilter] = useState("ALL")
   const [onSetOperator, setOnSetOperator] = useState(false);
 
   useEffect(() => {
@@ -95,6 +104,31 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
   
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   
+  const filteredTasks = useMemo(() => {
+    return internalTasks.filter(task => {
+      const typeMatch = filter === "ALL" || task.content.type === filter
+      const operatorMatch = operatorFilter === "ALL" || task.content.operator?.id === operatorFilter
+      
+      let dateMatch = true
+      const taskDate = new Date(task.content.date_created)
+      const today = new Date()
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+      switch (dateFilter) {
+        case "TODAY":
+          dateMatch = taskDate.toDateString() === today.toDateString()
+          break
+        case "THIS_WEEK":
+          dateMatch = taskDate >= weekAgo && taskDate <= today
+          break
+        default:
+          dateMatch = true
+      }
+
+      return typeMatch && operatorMatch && dateMatch
+    })
+  }, [internalTasks, filter, dateFilter, operatorFilter])
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -171,10 +205,93 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
       })
     });
   };
+
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.target.value)
+  }
   
+  const handleDateFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDateFilter(event.target.value)
+  }
+
+  const handleOperatorFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOperatorFilter(event.target.value)
+  }
 
   return (
     <div className="min-h-screen w-full overflow-x-auto overflow-y-hidden">
+      <div className="flex flex-col md:flex-row gap-6 mb-6 mt-2 w-full">
+        <TextField
+          select
+          label="Filtrar por tipo"
+          value={filter}
+          onChange={handleFilterChange}
+          className="bg-gray-800 text-white rounded-lg shadow-md border w-full border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+          InputProps={{
+            style: { color: "#fff" },
+            startAdornment: (
+              <InputAdornment position="start">
+                <FaTools className="text-gray-300" />
+              </InputAdornment>
+            ),
+          }}
+          InputLabelProps={{
+            style: { color: "#b0b0b0" },
+          }}
+        >
+          <MenuItem value="ALL"><em>Todos los tipos</em></MenuItem>
+          <MenuItem value="CORRECTIVE"><em>Correctivo</em></MenuItem>
+          <MenuItem value="PREVENTIVE"><em>Preventivo</em></MenuItem>
+          <MenuItem value="PREDICTIVE"><em>Predictivo</em></MenuItem>
+        </TextField>
+        <TextField
+          select
+          label="Filtrar por fecha"
+          value={dateFilter}
+          onChange={handleDateFilterChange}
+          className="bg-gray-800 text-white rounded-lg shadow-md border w-full border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+          InputProps={{
+            style: { color: "#fff" },
+            startAdornment: (
+              <InputAdornment position="start">
+                <FaRegCalendarAlt className="text-gray-300" />
+              </InputAdornment>
+            ),
+          }}
+          InputLabelProps={{
+            style: { color: "#b0b0b0" },
+          }}
+        >
+          <MenuItem value="ALL"><em>Todas las fechas</em></MenuItem>
+          <MenuItem value="TODAY"><em>Hoy</em></MenuItem>
+          <MenuItem value="THIS_WEEK"><em>Esta semana</em></MenuItem>
+        </TextField>
+        <TextField
+          select
+          label="Filtrar por operador"
+          value={operatorFilter}
+          onChange={handleOperatorFilterChange}
+          className="bg-gray-800 text-white rounded-lg shadow-md border w-full border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+          InputProps={{
+            style: { color: "#fff" },
+            startAdornment: (
+              <InputAdornment position="start">
+                <FaUserCircle className="text-gray-300" />
+              </InputAdornment>
+            ),
+          }}
+          InputLabelProps={{
+            style: { color: "#b0b0b0" },
+          }}
+        >
+          <MenuItem value="ALL"><em>Todos los operadores</em></MenuItem>
+          {operators && operators.map((operator) => (
+            <MenuItem key={operator.id} value={operator.id}>
+              <em>{operator.full_name}</em>
+            </MenuItem>
+          ))}
+        </TextField>
+      </div>
       <DndContext
       collisionDetection={pointerWithin}
         sensors={sensors}
@@ -189,7 +306,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
                 key={col.id}
                 column={col}
                 createTask={addControlTask}
-                tasks={internalTasks.filter((task) => task.columnId === col.id)}
+                tasks={filteredTasks.filter((task) => task.columnId === col.id)}
                 assignOperator={assignOperator}
                 setOnSetOperator={setOnSetOperator}
               />
@@ -197,7 +314,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialTasks, setStatusTask, 
               <ColumnContainer
                 key={col.id}
                 column={col}
-                tasks={internalTasks.filter((task) => task.columnId === col.id)}
+                tasks={filteredTasks.filter((task) => task.columnId === col.id)}
                 assignOperator={assignOperator}
                 setOnSetOperator={setOnSetOperator}
               />
