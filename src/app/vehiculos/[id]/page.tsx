@@ -31,8 +31,9 @@ const VehiculoDinamicoPage = () => {
     );
   }
 
-  // Generar el valor del código QR
-  const qrValue = `${window.location.origin}/vehiculos/${vehiculoData.id}`;
+
+  // Usamos una ruta relativa en el QR para evitar problemas con diferentes dominios
+  const qrValue = `/vehiculos/${vehiculoData.id}`;
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
