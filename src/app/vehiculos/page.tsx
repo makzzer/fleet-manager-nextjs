@@ -3,23 +3,31 @@ import React, { useEffect, useState } from "react";
 import VehiculoCard from "../components/Cards/VehiculoCards";
 import { useVehiculo, Vehiculo } from "../context/VehiculoContext";
 import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content"; // Importamos el wrapper de SweetAlert2
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import SearchBar from "../../app/components/SearchBar/SearchBar";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-import { FiPlus, FiDownload } from "react-icons/fi"; // React Icons
+import { FiPlus, FiDownload, FiCamera } from "react-icons/fi"; // Importamos FiCamera
 import { useRouter } from "next/navigation";
 import {
   generateExcelTemplate,
   processFile,
 } from "../util/excelProcessor";
+import QrScanner from "../components/QR/QrScanner"; // Importamos el componente del escáner
+
+const MySwal = withReactContent(Swal); // Creamos una instancia de SweetAlert con ReactContent
 
 const Vehiculos = () => {
   const router = useRouter();
-  const { vehiculos, fetchVehiculos, createVehiculo, exportVehiculosToExcel } =
-    useVehiculo();
+  const {
+    vehiculos,
+    fetchVehiculos,
+    createVehiculo,
+    exportVehiculosToExcel,
+  } = useVehiculo();
   const [isLoading, setIsLoading] = useState(true);
-  const [filteredVehiculos, setFilteredVehiculos] = useState(vehiculos);
+  const [filteredVehiculos, setFilteredVehiculos] = useState<Vehiculo[]>([]);
   const [showUnavailable, setShowUnavailable] = useState(false); // Filtro para ocultar/mostrar vehículos deshabilitados
   const [typeFilter, setTypeFilter] = useState(""); // Filtro por tipo de vehículo
   const [fuelFilter, setFuelFilter] = useState(""); // Filtro por tipo de combustible
@@ -36,7 +44,7 @@ const Vehiculos = () => {
 
   useEffect(() => {
     filterVehiculos();
-  }, [vehiculos, showUnavailable, typeFilter, fuelFilter]);
+  }, [vehiculos, showUnavailable, typeFilter, fuelFilter, loadMoreCount]);
 
   const handleSearch = (query: string) => {
     filterVehiculos(query);
@@ -48,7 +56,9 @@ const Vehiculos = () => {
 
     // Filtro por disponibilidad
     if (!showUnavailable) {
-      filtered = filtered.filter((vehiculo) => vehiculo.status === "AVAILABLE");
+      filtered = filtered.filter(
+        (vehiculo) => vehiculo.status === "AVAILABLE"
+      );
     }
 
     // Filtro por tipo de vehículo
@@ -71,18 +81,18 @@ const Vehiculos = () => {
           vehiculo.id.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
+
     setFilteredVehiculos(filtered.slice(0, loadMoreCount)); // Aplicamos paginación
   };
 
   // Función para cargar más vehículos
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 6);
-    filterVehiculos(); // Aplicamos el filtro con el nuevo límite
   };
 
   // Despliega una alerta que te da a elegir dos opciones:
   // - Cargar un vehículo individualmente
-  // - Cargar multiples vehículos de una sola vez 
+  // - Cargar múltiples vehículos de una sola vez
   const handleAgregarVehiculo = () => {
     Swal.fire({
       title: "Agregar Vehículo",
@@ -204,7 +214,7 @@ const Vehiculos = () => {
               latitude: formatedVehicle.latitude,
               longitude: formatedVehicle.longitude,
             },
-          }
+          };
           const result = await createVehiculo(vehicle);
           if (result.resultado) {
             successCount++;
@@ -219,7 +229,9 @@ const Vehiculos = () => {
             }
                    <div class="progress-bar-container">
                      <div class="progress-bar" style="width: ${
-                       ((successCount + failedCount) / formatedVehicles.length) * 100
+                       ((successCount + failedCount) /
+                         formatedVehicles.length) *
+                       100
                      }%"></div>
                    </div>`,
           });
@@ -238,8 +250,42 @@ const Vehiculos = () => {
       fetchVehiculos(); // Actualizar la lista de vehículos
     } catch (error) {
       console.error("Error processing file:", error);
-      Swal.fire("Error", "Hubo un problema al procesar el archivo", "error");
+      Swal.fire(
+        "Error",
+        "Hubo un problema al procesar el archivo",
+        "error"
+      );
     }
+  };
+
+  // Función para escanear códigos QR
+  const handleScanQR = () => {
+    MySwal.fire({
+      title: "Escanear Código QR",
+      html: (
+        <div style={{ width: "100%", height: "400px" }}>
+          <QrScanner
+            onScan={(resultText: string) => {
+              if (resultText) {
+                MySwal.close();
+                router.push(resultText);
+              }
+            }}
+            onError={(error: unknown) => {
+              console.error(`Error al escanear: ${error}`);
+            }}
+          />
+        </div>
+      ),
+      showCancelButton: true,
+      showConfirmButton: false,
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "bg-gray-900 text-white",
+        title: "text-white",
+        cancelButton: "bg-red-500 text-white",
+      },
+    });
   };
 
   return (
@@ -269,6 +315,16 @@ const Vehiculos = () => {
               <span className="hidden sm:inline">Exportar a Excel</span>{" "}
               {/* Texto se oculta en pantallas pequeñas */}
             </button>
+
+            {/* Botón para escanear QR */}
+            <button
+              onClick={handleScanQR}
+              className="flex items-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+            >
+              <FiCamera className="h-5 w-5 mr-2" /> {/* Icono */}
+              <span className="hidden sm:inline">Escanear QR</span>{" "}
+              {/* Texto se oculta en pantallas pequeñas */}
+            </button>
           </div>
         </div>
 
@@ -290,16 +346,17 @@ const Vehiculos = () => {
             </label>
           </div>
 
-          {/* Filtro por Carga Soportada de vehículo */}
+          {/* Filtro por tipo de vehículo */}
           <select
             className="bg-gray-800 text-white py-2 px-4 rounded"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
-            <option value="">Todas las cargas</option>
-            <option value="Camión">Menos de 1 Tonelada</option>
-            <option value="Auto">De 1 a 2 Toneladas</option>
-            <option value="Barco">Mas de 2 toneladas</option>
+            <option value="">Todos los tipos</option>
+            <option value="TRUCK">Camión</option>
+            <option value="CAR">Auto</option>
+            <option value="MOTORCYCLE">Moto</option>
+            <option value="VAN">Utilitario</option>
           </select>
 
           {/* Filtro por tipo de combustible */}
@@ -309,8 +366,10 @@ const Vehiculos = () => {
             onChange={(e) => setFuelFilter(e.target.value)}
           >
             <option value="">Todos los combustibles</option>
-            <option value="Gasoil">Gasoil</option>
-            <option value="Eléctrico">Eléctrico</option>
+            <option value="NAPHTHA">Nafta</option>
+            <option value="DIESEL">Diesel</option>
+            <option value="GAS">Gas</option>
+            <option value="ELECTRIC">Eléctrico</option>
           </select>
         </div>
 
