@@ -1,14 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useProducto } from "@/app/context/ProductoContext";
 import Link from "next/link";
+import QRCode from "react-qr-code"; // Importamos el componente QRCode
 
 const ProductPage = () => {
   const { id } = useParams();
-  const { producto, proveedores, fetchProducto, fetchProveedores } = useProducto();
+  const { producto, productos, proveedores, fetchProducto, fetchProveedores } = useProducto();
   const [nombreProveedor, setNombreProveedor] = useState('');
+  const router = useRouter();
+
+  const productoData = productos.find((producto) => producto.id === id);
 
   useEffect(() => {
     const loadProducto = async () => {
@@ -26,7 +30,7 @@ const ProductPage = () => {
     }
   }, [producto, proveedores]);
 
-  if (!producto) {
+  if (!producto || !productoData) {
     return (
       <div className="min-h-screen bg-gray-900 p-8 text-center">
         <h1 className="text-3xl font-bold mb-6 text-blue-400">
@@ -35,6 +39,9 @@ const ProductPage = () => {
       </div>
     );
   }
+
+  // Usamos una ruta relativa en el QR para evitar problemas con diferentes dominios
+  const qrValue = `/productos/${productoData.id}`;
 
   return (
     <div className="min-h-screen bg-gray-900 p-8 text-center">
@@ -85,16 +92,28 @@ const ProductPage = () => {
                     {producto.description}
                   </p>
                 </div>
+                {/* Código QR */}
+                <div className="mt-6 flex flex-col items-center">
+                  <h3 className="text-lg font-medium mb-4 text-blue-200">
+                    Código QR
+                  </h3>
+                  <QRCode
+                    value={qrValue}
+                    size={128}
+                    bgColor="#1a202c"
+                    fgColor="#ffffff"
+                  />
+                </div>
               </div>
             </div>
           </div>
           <div className="px-6 py-4 bg-gray-900 flex justify-center space-x-4">
-            <Link
-              href="/productos"
-              className="bg-blue-600 px-4 py-2 rounded shadow-md hover:bg-blue-700 text-white"
+            <button
+              onClick={() => router.push("/productos")}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Volver
-            </Link>
+            </button>
           </div>
         </div>
       </div>

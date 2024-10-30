@@ -6,18 +6,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 //import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-/*
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  stock: number;
-  qr: string | null;
-  activo: boolean;
-  hot: boolean;
-}
-*/
+import QRCode from "react-qr-code"; // Importamos el componente QRCode
 
 interface Producto {
   id: string;
@@ -65,50 +54,12 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
     };
   }, []);
 
- /* const getUnidadMedida = (category: string) => {
-    const lowerCategory = category.toLowerCase();
-    if (lowerCategory  === 'aceite' || lowerCategory === 'lubricantes' || lowerCategory === 'líquido de frenos') {
-      return 'litros';
-    }
-    return 'unidades'; 
-  };*/
-
   return (
     <div
       className="bg-gray-800 shadow-md rounded-lg p-6 overflow-x-auto relative"
       ref={tableRef}
     >
       <table className="min-w-full divide-y divide-gray-600 table-auto">
-        {/*
-        <thead className="bg-gray-800">
-          <tr className="rounded-lg">
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              ID
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Producto
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              QR
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Precio
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Stock
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Acciones
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Estado
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Hot
-            </th>
-          </tr>
-        </thead>
-        */}
         <thead className="bg-gray-800">
           <tr className="rounded-lg">
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
@@ -132,91 +83,50 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
             <th className="px-6 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
               Acciones
             </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+              QR
+            </th>
           </tr>
         </thead>
         <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
-          {products.map((product) => (
-            <tr key={product.id} className={""}>
-              <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{product.brand}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{product.category}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-center">{product.quantity}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-center">
-                {measurementUnits[product.measurement] || product.measurement}
-              </td>
-        
-              <td className="px-6 py-4 whitespace-nowrap text-center">{product.price}</td>
-              <td className="px-6 py-4 whitespace-nowrap flex space-x-2 justify-end">
-                <IconButton
-                  aria-label="Ver producto"
-                  color="primary"
-                  title="Ver producto"
-                  onClick={() => handleView(product.id)}
-                >
-                  <VisibilityIcon />
-                </IconButton>
-                <IconButton
-                  aria-label="Descargar QR"
-                  color="success"
-                  title="Descargar QR"
-                >
-                  <DownloadIcon />
-                </IconButton>
-              </td>
-            </tr>
-          ))}
+          {products.map((product) => {
+            // Usamos una ruta relativa en el QR para evitar problemas con diferentes dominios
+            const qrValue = `/productos/${product.id}`;
+            return (
+
+              <tr key={product.id} className={""}>
+                <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{product.brand}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{product.category}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{product.quantity}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  {measurementUnits[product.measurement] || product.measurement}
+                </td>
+
+                <td className="px-6 py-4 whitespace-nowrap text-center">{product.price}</td>
+                <td className="px-6 py-4 whitespace-nowrap flex space-x-2 justify-end">
+                  <IconButton
+                    aria-label="Ver producto"
+                    color="primary"
+                    title="Ver producto"
+                    onClick={() => handleView(product.id)}
+                  >
+                    <VisibilityIcon />
+                  </IconButton>
+                  <IconButton
+                    aria-label="Descargar QR"
+                    color="success"
+                    title="Descargar QR"
+                  >
+                    <DownloadIcon />
+                  </IconButton>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-center"> <QRCode value={qrValue} size={64} bgColor="#1a202c" fgColor="#ffffff" /></td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
-      {/*
-        <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
-          {products.map((product) => (
-            <tr key={product.id} className={!product.activo ? 'opacity-50' : ''}>
-              <td className="px-6 py-4 whitespace-nowrap">{product.id}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {product.qr ? (
-                  <Image src={product.qr} alt="QR Code" width={48} height={48} />
-                ) : (
-                  'Sin QR'
-                )}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">${product.price}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{product.stock}</td>
-              <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
-                <IconButton aria-label="Ver producto" color="primary" title="Ver producto">
-                  <VisibilityIcon />
-                </IconButton>
-                <IconButton aria-label="Editar producto" color="warning" title="Editar producto">
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  aria-label={product.activo ? 'Desactivar producto' : 'Activar producto'}
-                  color={product.activo ? 'error' : 'primary'}
-                  title={product.activo ? 'Desactivar producto' : 'Activar producto'}
-                >
-                  {product.activo ? <DeleteIcon /> : <FaCheck />}
-                </IconButton>
-                <IconButton aria-label="Descargar QR" color="success" title="Descargar QR">
-                  <DownloadIcon />
-                </IconButton>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {product.activo ? (
-                  <span className="inline-block px-3 py-1 text-sm font-semibold text-green-500 border border-green-500 rounded-full">
-                    Activo
-                  </span>
-                ) : (
-                  <span className="inline-block px-3 py-1 text-sm font-semibold text-red-500 border border-red-500 rounded-full">
-                    Inactivo
-                  </span>
-                )}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">{product.hot && <FaFire className="text-red-500" />}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      */}
       {/* Flecha con bounce solo en responsive */}
       {showScrollIcon && (
         <div className="absolute bottom-0 right-0 p-2 text-gray-500 md:hidden">
