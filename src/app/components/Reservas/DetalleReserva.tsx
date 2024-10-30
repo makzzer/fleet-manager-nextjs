@@ -76,7 +76,9 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
                 ? "bg-green-600"
                 : reserva.status === "CANCELED"
                 ? "bg-red-600"
-                : "bg-yellow-600"
+                : reserva.status === "ACTIVATED"
+                ? "bg-blue-600 text-white"
+                : "bg-yellow-500 text-white"
             }`}
           >
             {reserva.status}
