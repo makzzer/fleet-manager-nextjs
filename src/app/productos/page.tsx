@@ -1,11 +1,10 @@
 "use client";
 import React, { useEffect } from "react";
 import ProductTable from "../components/Stock/ProductTable";
-import { FaDownload, FaPlusCircle, FaQrcode } from "react-icons/fa";
+import { FaDownload, FaPlusCircle, FaQrcode, FaCamera } from "react-icons/fa";
 import Link from "next/link";
 import { useState } from "react";
 import FiltrosProducto from "../components/Stock/FiltrosProducto";
-import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useProducto } from "../context/ProductoContext";
 // import SearchBar from "../components/SearchBar/SearchBar";
@@ -14,6 +13,11 @@ import { useProducto } from "../context/ProductoContext";
 // import SearchIcon from '@mui/icons-material/Search';
 
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
+import QrScanner from "../components/QR/QrScanner"; // Importamos el componente del escáner
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal); // Creamos una instancia de SweetAlert con ReactContent
 
 //Lista de categorias de repuestos en productos
 const categorias = ['Aceite', 'Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas',
@@ -157,20 +161,33 @@ const Stock = () => {
     setSelectedCategory(selectedCategory);
   };
 
-  const handleScanQRClick = () => {
-    Swal.fire({
-      title: "Permitir uso de la cámara",
-      text: "Para utilizar esta funcionalidad se le solicitarán permisos para utilizar la cámara del dispositivo",
-      icon: "warning",
+   // Función para escanear códigos QR
+   const handleScanQRClick = () => {
+    MySwal.fire({
+      title: "Escanear Código QR",
+      html: (
+        <div style={{ width: "100%", height: "400px" }}>
+          <QrScanner
+            onScan={(resultText: string) => {
+              if (resultText) {
+                MySwal.close();
+                router.push(resultText);
+              }
+            }}
+            onError={(error: unknown) => {
+              console.error(`Error al escanear: ${error}`);
+            }}
+          />
+        </div>
+      ),
       showCancelButton: true,
-      confirmButtonColor: "#3B82F6",
-      cancelButtonColor: "#EF4444",
-      confirmButtonText: "Confirmar",
-      cancelButtonText: "Rechazar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        router.push("/scannearQR");
-      }
+      showConfirmButton: false,
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "bg-gray-900 text-white",
+        title: "text-white",
+        cancelButton: "bg-red-500 text-white",
+      },
     });
   };
 
@@ -295,13 +312,15 @@ const Stock = () => {
             >
               <FaPlusCircle className="mr-2" /> Agregar Producto
             </button>
-            <Link
-              href="#ScanPage"
+            {/* Botón para escanear QR */}
+            <button
               onClick={handleScanQRClick}
-              className="w-full bg-red-800 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
+              className="flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
             >
-              <FaQrcode className="mr-2" /> Scanear QR
-            </Link>
+              <FaCamera className="h-5 w-5 mr-2" /> {/* Icono */}
+              <span className="hidden sm:inline">Escanear QR</span>{" "}
+              {/* Texto se oculta en pantallas pequeñas */}
+            </button>
             <button
               onClick={exportProductoToExcel}
               className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
