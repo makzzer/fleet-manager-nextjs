@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import KanbanBoard from "../components/KanbanBoard/KanbanBoard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { useControl } from "../context/ControlContext";
@@ -8,6 +8,8 @@ import { useVehiculo } from "../context/VehiculoContext";
 import { useUser } from "../context/UserContext";
 import Swal from "sweetalert2";
 import TaskList from "../components/TaskList";
+import { InputAdornment, MenuItem, TextField } from "@mui/material";
+import { FaRegCalendarAlt, FaTools, FaUserCircle } from "react-icons/fa";
 
 interface Coordinates {
   latitude: number;
@@ -77,6 +79,13 @@ const Controles = () => {
   const [loading, setLoading] = useState(true);
   const { vehiculos } = useVehiculo();
   const { users } = useUser();
+  const [filters, setFilters] = useState({
+    type: "ALL",
+    date: "ALL",
+    operator: "ALL",
+  });
+
+  const operators = users.filter(user => user.roles.includes("OPERATOR"));
 
   useEffect(() => {
     const loadControls = async () => {
@@ -98,6 +107,31 @@ const Controles = () => {
       setLoading(false); // Detenemos el estado de carga cuando los datos estén listos.
     }
   }, [controls]);
+
+  const filteredTasks = useMemo(() => {
+    return controlTaskCards.filter(task => {
+      const typeMatch = filters.type === "ALL" || task.content.type === filters.type;
+      const operatorMatch = filters.operator === "ALL" || task.content.operator?.id === filters.operator;
+      
+      let dateMatch = true;
+      const taskDate = new Date(task.content.date_created);
+      const today = new Date();
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      switch (filters.date) {
+        case "TODAY":
+          dateMatch = taskDate.toDateString() === today.toDateString();
+          break;
+        case "THIS_WEEK":
+          dateMatch = taskDate >= weekAgo && taskDate <= today;
+          break;
+        default:
+          dateMatch = true;
+      }
+
+      return typeMatch && operatorMatch && dateMatch;
+    });
+  }, [controlTaskCards, filters]);
 
   const handleSetStatus = async (control_id: string, new_status: string) => {
     await setControlStatus(control_id, new_status);
@@ -295,6 +329,11 @@ const Controles = () => {
     }
   }
 
+  const handleFilterChange = (filterType: string, value: string) => {
+    setFilters(prev => ({ ...prev, [filterType]: value }));
+  };
+
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -323,9 +362,81 @@ const Controles = () => {
           />
         </div>
         <div className="md:hidden grid grid-cols-1 gap-6 mt-6">
+        <button onClick={() => handleCreatePredictiveControl()} className="bg-blue-500 rounded-md py-2 hover:bg-blue-600 w-full h-full">Crear control</button>
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <TextField
+            select
+            label="Filtrar por tipo"
+            value={filters.type}
+            onChange={(e) => handleFilterChange('type', e.target.value)}
+            className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+            InputProps={{
+              style: { color: "#fff" },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaTools className="text-gray-300" />
+                </InputAdornment>
+              ),
+            }}
+            InputLabelProps={{
+              style: { color: "#b0b0b0" },
+            }}
+          >
+            <MenuItem value="ALL"><em>Todos los tipos</em></MenuItem>
+            <MenuItem value="CORRECTIVE"><em>Correctivo</em></MenuItem>
+            <MenuItem value="PREVENTIVE"><em>Preventivo</em></MenuItem>
+            <MenuItem value="PREDICTIVE"><em>Predictivo</em></MenuItem>
+          </TextField>
+          <TextField
+            select
+            label="Filtrar por fecha"
+            value={filters.date}
+            onChange={(e) => handleFilterChange('date', e.target.value)}
+            className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+            InputProps={{
+              style: { color: "#fff" },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaRegCalendarAlt className="text-gray-300" />
+                </InputAdornment>
+              ),
+            }}
+            InputLabelProps={{
+              style: { color: "#b0b0b0" },
+            }}
+          >
+            <MenuItem value="ALL"><em>Todas las fechas</em></MenuItem>
+            <MenuItem value="TODAY"><em>Hoy</em></MenuItem>
+            <MenuItem value="THIS_WEEK"><em>Esta semana</em></MenuItem>
+          </TextField>
+          <TextField
+            select
+            label="Filtrar por operador"
+            value={filters.operator}
+            onChange={(e) => handleFilterChange('operator', e.target.value)}
+            className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+            InputProps={{
+              style: { color: "#fff" },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaUserCircle className="text-gray-300" />
+                </InputAdornment>
+              ),
+            }}
+            InputLabelProps={{
+              style: { color: "#b0b0b0" },
+            }}
+          >
+            <MenuItem value="ALL"><em>Todos los operadores</em></MenuItem>
+            {operators.map((operator) => (
+              <MenuItem key={operator.id} value={operator.id}>
+                <em>{operator.full_name}</em>
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
           <TaskList
-            tasks={controlTaskCards}
-            addControlTask={handleCreatePredictiveControl}
+            tasks={filteredTasks}
             setStatusTask={handleSetStatus}
             assignOperator={handleAssignOperator}
           />

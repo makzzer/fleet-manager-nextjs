@@ -48,12 +48,11 @@ interface Task {
 
 interface TaskListProps {
   tasks: Task[];
-  addControlTask: () => void;
   setStatusTask: (control_id: string, new_status: string) => void;
   assignOperator: (control_id: string, operator_id: string) => Promise<void>;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask, setStatusTask, assignOperator }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, setStatusTask, assignOperator }) => {
   const [internalListTasks, setInternalListTasks] = useState(tasks);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
@@ -76,7 +75,6 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, addControlTask, setStatusTas
 
   return (
     <div className="flex flex-col gap-4">
-      <button onClick={addControlTask} className="bg-blue-500 rounded-md py-2 hover:bg-blue-600 w-full h-full">Crear control</button>
       <div className="flex gap-2 text-xs">
         <button
           className={`px-4 py-1 rounded-full ${
