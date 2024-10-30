@@ -42,14 +42,8 @@ const Stock = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(""); // Estado para el filtro seleccionado
-  const [isSearchEnabled, setIsSearchEnabled] = useState(false); // Estado para habilitar o deshabilitar la barra de búsqueda
+  const [isSearchEnabled, setIsSearchEnabled] = useState(true); // (true): para que las barras sean siempre visibles
 
-   // Mapeo de unidades de medida
-  /* const measurementMap = {
-    Liter: "Litros",
-    Unit: "Unidades",
-    Kilogram: "Kilogramos",
-  };*/
 
   useEffect(() => {
     const loadProductos = async () => {
@@ -103,7 +97,7 @@ const Stock = () => {
     }
 
     // luego el filtro por nombre o marca.
-    if (searchTerm && selectedFilter) {
+    if (searchTerm) {
       const normalizedSearchTerm = removeAccents(searchTerm.toLowerCase());
 
       filtered = filtered.filter((producto) => {
@@ -112,11 +106,12 @@ const Stock = () => {
         } else if (selectedFilter === "brand") {
           return removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm);
         }
-        return false;
+        return (removeAccents(producto.name.toLowerCase()).includes(normalizedSearchTerm) ||
+                removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm));
       });
     }
     setFilteredProductos(filtered.slice(0, loadMoreCount));
-  }, [productos, searchTerm, selectedCategory, selectedFilter, loadMoreCount]);
+  }, [productos, searchTerm, selectedCategory, selectedFilter, loadMoreCount]);  
 
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 5); // Cargar 6 proveedores más
@@ -126,22 +121,10 @@ const Stock = () => {
     return <div>Cargando...</div>;
   }
 
-  // // el query va a ser lo que voy escribiendo en el input de la bar
-  // const handleSearch = (query: string) => {
-  //   const filtered = productos.filter(
-  //     (producto) =>
-  //       producto.name.toLowerCase().includes(query.toLowerCase()) ||
-  //       producto.brand.toLowerCase().includes(query.toLowerCase()) ||
-  //       producto.category.toLowerCase().includes(query.toLowerCase()) ||
-  //       producto.id.toLowerCase().includes(query.toLowerCase())
-  //   );
-  //   setFilteredProductos(filtered);
-  // };
-
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value;
     setSelectedFilter(selected);
-    setIsSearchEnabled(!!selected); // habilitar las barras de búsqueda si se selecciona un filtro de nombre o marca.
+    setIsSearchEnabled(true); // habilitar las barras de búsqueda si se selecciona un filtro de nombre o marca.
 
     // actualizar productos filtrados cuando seleccionas la categoría
     if (selected === "category" && selectedCategory) {
@@ -328,19 +311,6 @@ const Stock = () => {
               <FaDownload className="mr-2" /> Descargar XML
             </button>
           </div>
-        </div>
-
-        {/* Combobox para seleccionar el filtro */}
-        <div className="mb-4">
-          <select
-            value={selectedFilter}
-            onChange={handleFilterChange}
-            className="bg-gray-800 text-white p-2 rounded"
-          >
-            <option value="">Selecciona un filtro</option>
-            <option value="name">Nombre</option>
-            <option value="brand">Marca</option>
-          </select>
         </div>
 
         {/* Barra de búsqueda habilitada cuando se selecciona un filtro */}
