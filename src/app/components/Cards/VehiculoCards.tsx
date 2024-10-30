@@ -45,6 +45,19 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
     ],
   };
 
+   // Función para generar el rango de años
+   const generarOpcionesAños = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 30;
+    const opcionesAños = [];
+
+    for (let year = currentYear; year >= startYear; year--) {
+      opcionesAños.push(`<option value="${year}">${year}</option>`);
+    }
+
+    return opcionesAños.join('');
+  };
+
   const typeIcons = (vehiculo: Vehiculo) => {
     return vehiculo.type === "Auto" ? (
       <FaCar
@@ -113,7 +126,90 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   };
 
   const handleEdit = () => {
-    // Aquí va tu código existente para editar el vehículo
+    if (vehiculo.status === "AVAILABLE") {
+      const opcionesMarcas = camiones.marcas.map(marca => `<option value="${marca.marca}">${marca.marca}</option>`).join('');
+      const opcionesAños = generarOpcionesAños(); // Generar las opciones de años
+
+      Swal.fire({
+        title: "Editar vehículo",
+        html: `
+          <div class="flex flex-col space-y-4">
+            <div class="flex flex-col">
+              <label for="edit-vehicle-brand" class="text-left text-gray-700 font-medium">Marca</label>
+              <select id="edit-vehicle-brand" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="" disabled>Seleccione una marca</option>
+                ${opcionesMarcas}
+              </select>
+            </div>
+            <div class="flex flex-col">
+              <label for="edit-vehicle-model" class="text-left text-gray-700 font-medium">Modelo</label>
+              <select id="edit-vehicle-model" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
+                <option value="" disabled>Seleccione una marca primero</option>
+              </select>
+            </div>
+            <div class="flex flex-col">
+              <label for="edit-vehicle-year" class="text-left text-gray-700 font-medium">Año</label>
+              <select id="edit-vehicle-year" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                ${opcionesAños} <!-- Opciones de años -->
+              </select>
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Guardar",
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+          const brand = (document.getElementById("edit-vehicle-brand") as HTMLInputElement).value;
+          const model = (document.getElementById("edit-vehicle-model") as HTMLInputElement).value;
+          const year = parseInt((document.getElementById("edit-vehicle-year") as HTMLInputElement).value);
+
+          if (!model || !brand || year < 1900 || year > new Date().getFullYear()) {
+            Swal.showValidationMessage("Por favor, complete todos los campos correctamente.");
+            return false;
+          }
+
+          return { model, brand, year };
+        },
+        didOpen: () => {
+          const brandSelect = document.getElementById('edit-vehicle-brand') as HTMLSelectElement;
+          const modelSelect = document.getElementById('edit-vehicle-model') as HTMLSelectElement;
+
+          brandSelect.value = vehiculo.brand; // Establecer valor actual de la marca
+          const opcionesModelos = camiones.marcas.find(m => m.marca === vehiculo.brand)?.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
+          if (opcionesModelos) {
+            modelSelect.innerHTML = opcionesModelos;
+            modelSelect.disabled = false;
+            modelSelect.value = vehiculo.model; // Establecer el valor del modelo actual
+          }
+
+          brandSelect.addEventListener('change', function () {
+            const marcaSeleccionada = brandSelect.value;
+            const marca = camiones.marcas.find(m => m.marca === marcaSeleccionada);
+            if (marca) {
+              const opcionesModelos = marca.modelos.map(modelo => `<option value="${modelo}">${modelo}</option>`).join('');
+              modelSelect.innerHTML = opcionesModelos;
+              modelSelect.disabled = false;
+            } else {
+              modelSelect.disabled = true;
+              modelSelect.innerHTML = '<option value="" disabled>Seleccione una marca primero</option>';
+            }
+          });
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const { model, brand, year } = result.value;
+          const updatedVehiculo = { ...vehiculo, model, brand, year };
+
+          modifyVehiculo(updatedVehiculo);
+
+          Swal.fire({
+            title: "Actualizado!",
+            text: "El vehículo ha sido actualizado.",
+            icon: "success",
+          });
+        }
+      });
+    };
   };
 
   // Generar el valor del código QR
