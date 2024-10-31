@@ -16,6 +16,7 @@ import {
   FaRegCalendarAlt,
   FaUserCircle,
   FaRegEye,
+  FaTools,
 } from "react-icons/fa";
 import { TbArrowsExchange } from "react-icons/tb";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -23,6 +24,7 @@ import { useUser } from "@/app/context/UserContext";
 
 // Importamos dynamic y MapVehiculo
 import dynamic from "next/dynamic";
+import { InputAdornment, MenuItem, TextField } from "@mui/material";
 
 const MapVehiculo = dynamic(
   () => import("@/app/components/Maps/MapVehiculo"),
@@ -216,44 +218,40 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   disabled={!hasOperator}
                 >
                   <TbArrowsExchange
-                    className={`w-6 h-6 ${
-                      !hasOperator
-                        ? "text-gray-500"
-                        : "text-gray-300 hover:text-gray-100"
-                    }`}
+                    className={`w-6 h-6 ${!hasOperator
+                      ? "text-gray-500"
+                      : "text-gray-300 hover:text-gray-100"
+                      }`}
                   />
                 </button>
                 {showDropdown && (
                   <div className="absolute z-20 top-8 right-0 bg-gray-800 shadow-lg rounded-md p-2">
                     <button
                       onClick={() => handleStatusChange("TODO")}
-                      className={`block text-left w-full px-4 py-2 text-sm ${
-                        control.status === "TODO"
-                          ? "cursor-not-allowed text-gray-700"
-                          : "hover:bg-gray-700 text-white"
-                      }`}
+                      className={`block text-left w-full px-4 py-2 text-sm ${control.status === "TODO"
+                        ? "cursor-not-allowed text-gray-700"
+                        : "hover:bg-gray-700 text-white"
+                        }`}
                       disabled={control.status === "TODO"}
                     >
                       Pendientes
                     </button>
                     <button
                       onClick={() => handleStatusChange("DOING")}
-                      className={`block text-left w-full px-4 py-2 text-sm ${
-                        control.status === "DOING"
-                          ? "cursor-not-allowed text-gray-700"
-                          : "hover:bg-gray-700 text-white"
-                      }`}
+                      className={`block text-left w-full px-4 py-2 text-sm ${control.status === "DOING"
+                        ? "cursor-not-allowed text-gray-700"
+                        : "hover:bg-gray-700 text-white"
+                        }`}
                       disabled={control.status === "DOING"}
                     >
                       En proceso
                     </button>
                     <button
                       onClick={() => handleStatusChange("DONE")}
-                      className={`block text-left w-full px-4 py-2 text-sm ${
-                        control.status === "DONE"
-                          ? "cursor-not-allowed text-gray-700"
-                          : "hover:bg-gray-700 text-white"
-                      }`}
+                      className={`block text-left w-full px-4 py-2 text-sm ${control.status === "DONE"
+                        ? "cursor-not-allowed text-gray-700"
+                        : "hover:bg-gray-700 text-white"
+                        }`}
                       disabled={control.status === "DONE"}
                     >
                       Terminados
@@ -263,13 +261,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
               </div>
             </div>
             {/* Muestra el mapa si el tipo es CORRECTIVE */}
-            {control.type === "CORRECTIVE" && (
+            {/* {control.type === "CORRECTIVE" && (
               <div className="mt-4">
                 <MapVehiculo
                   coordinates={control.vehicle.coordinates}
                 />
               </div>
-            )}
+            )} */}
           </div>
           <div className="flex justify-between items-center border-t pt-3 border-gray-700">
             <div className="flex items-center gap-2 text-gray-300">
@@ -311,6 +309,12 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     <p className="text-base text-left">
                       {control.description}
                     </p>
+                  </div>
+
+                  <div className="flex flex-col gap-2 items-start">
+                    <h4 className="text-xl font-semibold">
+                      Productos para el caso
+                    </h4>
                   </div>
 
                   <div className="flex flex-col gap-2 items-start md:px-4 md:border-l-2 border-gray-700">
@@ -373,8 +377,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
                         {control.status === "TODO"
                           ? "Pendiente"
                           : control.status === "DOING"
-                          ? "En proceso"
-                          : "Hecho"}
+                            ? "En proceso"
+                            : "Hecho"}
                       </p>
                     </div>
                     <p className="text-left">
@@ -382,8 +386,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
                       {control.priority === "HIGH"
                         ? "Alta"
                         : control.priority === "MEDIUM"
-                        ? "Media"
-                        : "Baja"}
+                          ? "Media"
+                          : "Baja"}
                     </p>
                   </div>
                 </div>
@@ -562,8 +566,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
                       {control.status === "TODO"
                         ? "Pendiente"
                         : control.status === "DOING"
-                        ? "En proceso"
-                        : "Hecho"}
+                          ? "En proceso"
+                          : "Hecho"}
                     </p>
                   </div>
                   <p className="text-left">
@@ -571,11 +575,46 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     {control.priority === "HIGH"
                       ? "Alta"
                       : control.priority === "MEDIUM"
-                      ? "Media"
-                      : "Baja"}
+                        ? "Media"
+                        : "Baja"}
                   </p>
                 </div>
               </div>
+
+              {/** Se muestra este menu para seleccionar productos solo en los controles predictivos y correctivos de segunda y tercer columna */}
+              {(control.type === "CORRECTIVE" || control.type === "PREDICTIVE") &&
+                (control.status === "DOING" || control.status === "DONE")
+                && (
+                  <div className="flex flex-col gap-2 items-start">
+                    <h4 className="text-xl font-semibold">
+                      Productos para el caso:
+                    </h4>
+                    <div className="flex flex-col md:flex-row gap-6 mb-6 width: 400">
+                      <TextField
+                        select label="Seleccionar productos"
+                        // value=products.filter
+                        // onChange={(e) => handleFilterChange('date', e.target.value)}
+                        className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
+                        InputProps={{
+                          style: { color: "#fff" },
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <FaTools className="text-gray-300" />
+                            </InputAdornment>
+                          ),
+                        }}
+                        InputLabelProps={{
+                          style: { color: "#b0b0b0" },
+                        }}
+                        SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 }, }, },}}
+                      >
+                        <MenuItem>Rueda</MenuItem>
+                        <MenuItem>Motor</MenuItem>
+                        <MenuItem>Etc</MenuItem>
+                      </TextField>
+                    </div>
+                  </div>
+                )}
 
               {/* Muestra el mapa si el tipo es CORRECTIVE */}
               {control.type === "CORRECTIVE" && (
