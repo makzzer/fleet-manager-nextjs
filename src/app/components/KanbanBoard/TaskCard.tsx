@@ -17,6 +17,8 @@ import {
   FaUserCircle,
   FaRegEye,
   FaTools,
+  FaBox,
+  FaRegGrinAlt,
 } from "react-icons/fa";
 import { TbArrowsExchange } from "react-icons/tb";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -24,7 +26,7 @@ import { useUser } from "@/app/context/UserContext";
 
 // Importamos dynamic y MapVehiculo
 import dynamic from "next/dynamic";
-import { InputAdornment, MenuItem, TextField } from "@mui/material";
+import { Button, InputAdornment, MenuItem, TextField } from "@mui/material";
 
 const MapVehiculo = dynamic(
   () => import("@/app/components/Maps/MapVehiculo"),
@@ -585,33 +587,67 @@ const TaskCard: React.FC<TaskCardProps> = ({
               {(control.type === "CORRECTIVE" || control.type === "PREDICTIVE") &&
                 (control.status === "DOING" || control.status === "DONE")
                 && (
-                  <div className="flex flex-col gap-2 items-start">
+                  <div className="flex flex-col gap-2 items-start w-full">
                     <h4 className="text-xl font-semibold">
                       Productos para el caso:
+                      {control.status === "DONE" && (
+                        <>
+                        <p>!Lista de productos!</p>
+                        </>
+                      )}
                     </h4>
-                    <div className="flex flex-col md:flex-row gap-6 mb-6 width: 400">
-                      <TextField
-                        select label="Seleccionar productos"
-                        // value=products.filter
-                        // onChange={(e) => handleFilterChange('date', e.target.value)}
-                        className="bg-gray-800 text-white rounded-lg shadow-md border border-gray-600 transition-all duration-300 ease-in-out hover:shadow-lg focus:shadow-lg"
-                        InputProps={{
-                          style: { color: "#fff" },
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <FaTools className="text-gray-300" />
-                            </InputAdornment>
-                          ),
-                        }}
-                        InputLabelProps={{
-                          style: { color: "#b0b0b0" },
-                        }}
-                        SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 }, }, },}}
-                      >
-                        <MenuItem>Rueda</MenuItem>
-                        <MenuItem>Motor</MenuItem>
-                        <MenuItem>Etc</MenuItem>
-                      </TextField>
+                    <div className="flex flex-col md:flex-row gap-6 mb-6 w-full">
+                      {/* Solo se muestra la lista para agregar productos en los controles en proceso */}
+                      {control.status === "DOING" && (
+                        <>
+                          <TextField
+                            select
+                            label="Seleccionar productos"
+                            // value={newProduct}
+                            // onChange={handleProductSelect}
+                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <FaBox className="text-gray-300" />
+                                </InputAdornment>
+                              ),
+                            }}
+                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                            SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
+                          >
+                            <MenuItem value="Rueda">Rueda</MenuItem>
+                            <MenuItem value="Motor">Motor</MenuItem>
+                            <MenuItem value="Etc">Etc</MenuItem>
+                            
+                          </TextField>
+
+                          <TextField
+                            label="Cantidad"
+                            // value={quantity}
+                            // onChange={handleQuantityChange}
+                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <FaRegGrinAlt className="text-gray-300" />
+                                </InputAdornment>
+                              ),
+                            }}
+                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                            SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
+                          />
+
+                          <Button
+                            // onClick={handleAddProduct}
+                            variant="contained"
+                            color="primary"
+                            className="mt-2"
+                          >
+                            Agregar a la lista
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
