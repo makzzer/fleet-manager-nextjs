@@ -10,6 +10,8 @@ import { useState } from "react";
 
 import { Providers } from "../app/providers";
 
+import { usePathname } from "next/navigation";
+
 {/*
 export const metadata: Metadata = {
   title: "Fleet Manager",
@@ -25,6 +27,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     setIsSidebarOpen(isOpen);
   };
 
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/home'
 
   return (
     <html lang="en">
@@ -40,7 +44,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <Navbar2 />
 
 
-
+            {!isLandingPage
+            ? (
+            <>
             <div className="fixed z-50 md:mt-20">
               <Sidebar onToggleSidebar={handleSidebarToggle} />
             </div>
@@ -58,7 +64,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </div>
 
             </div>
+            </>
+            )
+          : (
+            <div>
+                <main className="flex-grow  transition-all duration-500 mt-10 container mx-auto p-4">
+                  {children}
+                </main>
 
+              </div>
+          )}
             <Footer />
           </div>
 
