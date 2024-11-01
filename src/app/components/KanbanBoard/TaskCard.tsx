@@ -35,6 +35,13 @@ const MapVehiculo = dynamic(
   }
 );
 
+//Lista de categorias de repuestos en productos
+const categorias = ['Aceite', 'Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas',
+  'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Líquido de frenos', 'Lubricantes', 'Luces',
+  'Motores', 'Motor', 'Neumáticos ', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores',
+  'Suspensión', 'Transmisión',
+];
+
 interface Coordinates {
   latitude: number;
   longitude: number;
@@ -616,10 +623,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
                             InputLabelProps={{ style: { color: "#e2e2e2" } }}
                             SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
                           >
-                            <MenuItem value="Rueda">Rueda</MenuItem>
-                            <MenuItem value="Motor">Motor</MenuItem>
-                            <MenuItem value="Etc">Etc</MenuItem>
-                            
+                            {categorias.map((categoria, index) => (
+                              <MenuItem key={index} value={categoria}>
+                                {categoria}
+                              </MenuItem>
+                            ))}
                           </TextField>
 
                           <TextField
