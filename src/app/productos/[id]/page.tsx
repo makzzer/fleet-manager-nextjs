@@ -93,7 +93,7 @@ const ProductPage = () => {
                   </p>
                 </div>
                 {/* Código QR */}
-                <div className="mt-6 flex flex-col items-center">
+                <div className="mt-6 flex flex-col items-center rounded md:col-span-2">
                   <h3 className="text-lg font-medium mb-4 text-blue-200">
                     Código QR
                   </h3>
