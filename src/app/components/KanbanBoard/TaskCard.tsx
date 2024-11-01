@@ -584,7 +584,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
               </div>
 
               {/** Se muestra este menu para seleccionar productos solo en los controles predictivos y correctivos de segunda y tercer columna */}
-              {(control.type === "CORRECTIVE" || control.type === "PREDICTIVE") &&
+              {(control.type === "CORRECTIVE" || control.type === "PREVENTIVE") &&
                 (control.status === "DOING" || control.status === "DONE")
                 && (
                   <div className="flex flex-col gap-2 items-start w-full">
