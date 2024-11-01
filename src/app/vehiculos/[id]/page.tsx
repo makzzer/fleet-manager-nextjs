@@ -30,7 +30,7 @@ const VehiculoDinamicoPage = () => {
   }
 
   // El QR ahora apunta a la página pivot
-  const qrValue = `/vehiculos/pivot/${vehiculoData.id}`;
+  const qrValue = `/pivot_v/${vehiculoData.id}`;
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -113,7 +113,7 @@ const VehiculoDinamicoPage = () => {
               vehículo.
             </p>
             <button
-              onClick={() => router.push(`/vehiculos/pivot/${vehiculoData.id}`)}
+              onClick={() => router.push(`/pivot_v/${vehiculoData.id}`)}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out"
             >
               Ir a la página de acciones

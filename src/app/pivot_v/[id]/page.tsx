@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useVehiculo } from "../../../context/VehiculoContext";
+import { useVehiculo } from "@/app/context/VehiculoContext";
 
 const VehiculoPivotPage = () => {
   const { id } = useParams();
