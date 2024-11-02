@@ -12,7 +12,7 @@ import React, {
 import axios from "axios";
 
 // URL de la API para reservas
-const apiReservasBackend = `https://fleet-manager-gzui.onrender.com/api/reserves`;
+const apiReservasBackend = `https://fleet-manager-vrxj.onrender.com/api/reserves`;
 
 // Interfaz para el formato de la reserva
 export interface Reserva {

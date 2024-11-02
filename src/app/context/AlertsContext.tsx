@@ -38,7 +38,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
   // URL para el endpoint de las alertas (ajusta la URL según sea necesario)
-  const apiAlertsBackend = `https://fleet-manager-gzui.onrender.com/api/alerts`;
+  const apiAlertsBackend = `https://fleet-manager-vrxj.onrender.com/api/alerts`;
 
   // Función para obtener las alertas
   const fetchAlerts = useCallback(async () => {

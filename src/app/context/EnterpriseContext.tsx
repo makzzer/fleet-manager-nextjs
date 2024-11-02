@@ -10,7 +10,7 @@ import {
 
 
 // API para autenticación de usuarios
-const apiEmpresas = "https://fleet-manager-gzui.onrender.com/api/enterprises";
+const apiEmpresas = "https://fleet-manager-vrxj.onrender.com/api/enterprises";
 
 type Module = "ALERTS" |
       "ANALYTICS" |

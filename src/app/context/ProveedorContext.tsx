@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useCa
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 
-const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
+const apiProveedoresBackend = `https://fleet-manager-vrxj.onrender.com/api/providers`;
 
 interface Proveedor {
   id: string;

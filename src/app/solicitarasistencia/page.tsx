@@ -23,7 +23,7 @@ const SolicitarAsistencia = () => {
 
     const createAlert = async (vehicle_id: string) => {
         try {
-            const response = await fetch('https://fleet-manager-gzui.onrender.com/api/alerts', {
+            const response = await fetch('https://fleet-manager-vrxj.onrender.com/api/alerts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
