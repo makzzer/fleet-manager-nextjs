@@ -21,12 +21,13 @@ import {
   FaRegGrinAlt,
 } from "react-icons/fa";
 import { TbArrowsExchange } from "react-icons/tb";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useUser } from "@/app/context/UserContext";
 
 // Importamos dynamic y MapVehiculo
 import dynamic from "next/dynamic";
 import { Button, InputAdornment, MenuItem, TextField } from "@mui/material";
+import { useProducto } from "@/app/context/ProductoContext";
 
 const MapVehiculo = dynamic(
   () => import("@/app/components/Maps/MapVehiculo"),
@@ -113,6 +114,15 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const [showModal, setShowModal] = useState(false);
   const hasOperator = control.operator;
   const { users } = useUser();
+
+  const { productos, fetchProductos } = useProducto();
+  const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(1);
+  const [selectedProductsList, setSelectedProductsList] = useState<any[]>([]);
+
   const usuarios = users;
   const operadores = usuarios
     .filter((usuario) => usuario.roles.includes("OPERATOR"))
@@ -120,6 +130,16 @@ const TaskCard: React.FC<TaskCardProps> = ({
       id: usuario.id,
       full_name: usuario.full_name,
     }));
+
+  // Carga de productos
+  useEffect(() => {
+    const loadProductos = async () => {
+      setLoading(true);
+      await fetchProductos();
+      setLoading(false);
+    };
+    loadProductos();
+  }, [fetchProductos]);
 
   const priorityLogo = (priority: string) => {
     switch (priority) {
@@ -198,6 +218,43 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  // Elegir categoria
+  const handleCategoryChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const category = event.target.value as string;
+    setSelectedCategory(category);
+
+    // Filtrar productos por la categoría seleccionada
+    const filtered = productos.filter(producto => producto.category === category);
+    setFilteredProducts(filtered);
+  };
+
+  // Seleccionar un producto
+  const handleProductSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const select = event.target.value as string;
+    setSelectedProductId(select);
+  };
+
+  // Cambiar la cantidad
+  const handleQuantityChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const quantity = event.target.value as number;
+    setQuantity(quantity);
+  };
+
+  const handleAddProductToList = () => {
+    if (selectedProductId && quantity > 0) {
+      const productDetails = filteredProducts.find(
+        (producto) => producto.id === selectedProductId
+      );
+      setSelectedProductsList([
+        ...selectedProductsList,
+        { ...productDetails, quantity },
+      ]);
+      // Resetear valores después de agregar
+      //setSelectedProductsList('');
+      //setQuantity(1);
+    }
   };
 
   if (isMobile) {
@@ -401,6 +458,115 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   </div>
                 </div>
 
+                {/** Se muestra este menu para seleccionar productos solo en los controles predictivos y correctivos de segunda y tercer columna */}
+              {(control.type === "CORRECTIVE" || control.type === "PREVENTIVE") &&
+                (control.status === "DOING" || control.status === "DONE")
+                && (
+                  <div className="flex flex-col gap-2 items-start w-full">
+                    <h4 className="text-xl font-semibold">
+                      Productos para el caso:
+                      {control.status === "DONE" && (
+                        <ul>
+                        {selectedProductsList.map((item, index) => (
+                          <li key={index}>
+                            {item.name} - Cantidad: {item.quantity}
+                          </li>
+                        ))}
+                      </ul>
+                      )}
+                    </h4>
+                    <div className="flex flex-col md:flex-row gap-6 mb-6 w-full">
+                      {/* Solo se muestra la lista para agregar productos en los controles en proceso */}
+                      {control.status === "DOING" && (
+                        <>
+                          {/* Seleccionar categoría */}
+                          <TextField
+                            select
+                            label="Seleccionar categoría"
+                            value={selectedCategory || "" }
+                            onChange={handleCategoryChange}
+                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <FaBox className="text-gray-300" />
+                                </InputAdornment>
+                              ),
+                            }}
+                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                            SelectProps={{
+                              MenuProps: {
+                                PaperProps: {
+                                  style: { maxHeight: 200, width: 400 }
+                                }
+                              }
+                            }}
+                          >
+                            {categorias.map((categoria, index) => (
+                              <MenuItem key={index} value={categoria}>
+                                {categoria}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+
+                          {/* Seleccionar producto filtrado */}
+                          <TextField
+                            select
+                            label="Seleccionar producto"
+                            value={selectedProductId || ""}
+                            onChange={handleProductSelect}
+                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                            disabled={!filteredProducts.length} // Deshabilitar si no hay productos filtrados
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <FaBox className="text-gray-300" />
+                                </InputAdornment>
+                              ),
+                            }}
+                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                            SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
+                          >
+                            {filteredProducts.map((producto) => (
+                              <MenuItem key={producto.id} value={producto.id}>
+                                {producto.name} - {producto.brand}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+
+                          {/* Cantidad del producto */}
+                          <TextField
+                            label="Cantidad"
+                            type="number"
+                            value={quantity}
+                            onChange={handleQuantityChange}
+                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                          />
+
+                          {/* Botón para agregar a la lista */}
+                          <Button onClick={handleAddProductToList} variant="contained" color="primary" className="mt-2">
+                            Agregar a la lista
+                          </Button>
+
+                          {/* Lista de productos seleccionados */}
+                          <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
+                            {selectedProductsList.map((item, index) => (
+                              <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
+                                <div>
+                                  <span className="font-semibold">
+                                    {item.name} - {item.quantity}
+                                  </span>
+                                  <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Muestra el mapa si el tipo es CORRECTIVE */}
                 {control.type === "CORRECTIVE" && (
                   <div className="mt-4">
@@ -598,21 +764,57 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     <h4 className="text-xl font-semibold">
                       Productos para el caso:
                       {control.status === "DONE" && (
-                        <>
-                        <p>!Lista de productos!</p>
-                        </>
+                        <ul>
+                        {selectedProductsList.map((item, index) => (
+                          <li key={index}>
+                            {item.name} - Cantidad: {item.quantity}
+                          </li>
+                        ))}
+                      </ul>
                       )}
                     </h4>
                     <div className="flex flex-col md:flex-row gap-6 mb-6 w-full">
                       {/* Solo se muestra la lista para agregar productos en los controles en proceso */}
                       {control.status === "DOING" && (
                         <>
+                          {/* Seleccionar categoría */}
                           <TextField
                             select
-                            label="Seleccionar productos"
-                            // value={newProduct}
-                            // onChange={handleProductSelect}
+                            label="Seleccionar categoría"
+                            value={selectedCategory || "" }
+                            onChange={handleCategoryChange}
                             className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <FaBox className="text-gray-300" />
+                                </InputAdornment>
+                              ),
+                            }}
+                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                            SelectProps={{
+                              MenuProps: {
+                                PaperProps: {
+                                  style: { maxHeight: 200, width: 400 }
+                                }
+                              }
+                            }}
+                          >
+                            {categorias.map((categoria, index) => (
+                              <MenuItem key={index} value={categoria}>
+                                {categoria}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+
+                          {/* Seleccionar producto filtrado */}
+                          <TextField
+                            select
+                            label="Seleccionar producto"
+                            value={selectedProductId || ""}
+                            onChange={handleProductSelect}
+                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                            disabled={!filteredProducts.length} // Deshabilitar si no hay productos filtrados
                             InputProps={{
                               startAdornment: (
                                 <InputAdornment position="start">
@@ -623,37 +825,40 @@ const TaskCard: React.FC<TaskCardProps> = ({
                             InputLabelProps={{ style: { color: "#e2e2e2" } }}
                             SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
                           >
-                            {categorias.map((categoria, index) => (
-                              <MenuItem key={index} value={categoria}>
-                                {categoria}
+                            {filteredProducts.map((producto) => (
+                              <MenuItem key={producto.id} value={producto.id}>
+                                {producto.name} - {producto.brand}
                               </MenuItem>
                             ))}
                           </TextField>
 
+                          {/* Cantidad del producto */}
                           <TextField
                             label="Cantidad"
-                            // value={quantity}
-                            // onChange={handleQuantityChange}
+                            type="number"
+                            value={quantity}
+                            onChange={handleQuantityChange}
                             className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <FaRegGrinAlt className="text-gray-300" />
-                                </InputAdornment>
-                              ),
-                            }}
-                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
-                            SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
                           />
 
-                          <Button
-                            // onClick={handleAddProduct}
-                            variant="contained"
-                            color="primary"
-                            className="mt-2"
-                          >
+                          {/* Botón para agregar a la lista */}
+                          <Button onClick={handleAddProductToList} variant="contained" color="primary" className="mt-2">
                             Agregar a la lista
                           </Button>
+
+                          {/* Lista de productos seleccionados */}
+                          <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
+                            {selectedProductsList.map((item, index) => (
+                              <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
+                                <div>
+                                  <span className="font-semibold">
+                                    {item.name} - {item.quantity}
+                                  </span>
+                                  <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
                         </>
                       )}
                     </div>
