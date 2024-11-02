@@ -11,7 +11,7 @@ import React, {
 import axios from "axios";
 import * as XLSX from 'xlsx';
 
-const apiVehiculosBackend = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
+const apiVehiculosBackend = `https://fleet-manager-vrxj.onrender.com/api/vehicles`;
 
 interface Coordinates {
   latitude: number;

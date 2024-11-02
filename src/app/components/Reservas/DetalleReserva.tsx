@@ -35,7 +35,7 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
     try {
       setLoading(true);
       const response = await axios.put(
-        `https://fleet-manager-gzui.onrender.com/api/reserves/${reservaId}/status/COMPLETED`
+        `https://fleet-manager-vrxj.onrender.com/api/reserves/${reservaId}/status/COMPLETED`
       );
 
       if (response.status === 200) {

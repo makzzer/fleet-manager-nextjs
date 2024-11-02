@@ -10,9 +10,9 @@ import React, {
 import axios from "axios";
 import * as XLSX from 'xlsx';
 
-const apiOrdenesDeCompraBackend = `https://fleet-manager-gzui.onrender.com/api/orders`;
-const apiProveedoresBackend = `https://fleet-manager-gzui.onrender.com/api/providers`;
-const apiProductosBackend = `https://fleet-manager-gzui.onrender.com/api/products`;
+const apiOrdenesDeCompraBackend = `https://fleet-manager-vrxj.onrender.com/api/orders`;
+const apiProveedoresBackend = `https://fleet-manager-vrxj.onrender.com/api/providers`;
+const apiProductosBackend = `https://fleet-manager-vrxj.onrender.com/api/products`;
 
 export interface Proveedor {
   id: string;
@@ -32,6 +32,7 @@ interface Producto {
   quantity: number;
   measurement: string;
   price: number;
+  preference_provider_id: string;
 }
 
 interface Item {

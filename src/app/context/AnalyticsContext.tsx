@@ -67,7 +67,7 @@ const AnalyticsContext = createContext<AnalyticsContextProps | undefined>(
   undefined
 );
 
-const apiAnaliticasBackend = `https://fleet-manager-gzui.onrender.com/api/analytics`
+const apiAnaliticasBackend = `https://fleet-manager-vrxj.onrender.com/api/analytics`
 
 export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
   const [analytics, setAnalytics] = useState<AnalyticsData[] | null>(null);
