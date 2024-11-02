@@ -43,6 +43,7 @@ export interface Reserva {
         longitude: number;
       }>;
     }>;
+    fuel_consumption: number;
   };
   date_created: string;
   date_updated: string;
