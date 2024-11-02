@@ -43,12 +43,12 @@ export interface Reserva {
         longitude: number;
       }>;
     }>;
-    fuel_consumption: number;
   };
   date_created: string;
   date_updated: string;
   date_reserve: string; // Agregamos este campo
   date_finish_reserve: string; // Agregamos este campo
+  fuel_consumption: number;   //Agrego este campo 
 }
 
 // Interfaz para los métodos del contexto
