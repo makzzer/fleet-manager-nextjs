@@ -32,6 +32,7 @@ interface Producto {
   quantity: number;
   measurement: string;
   price: number;
+  preference_provider_id: string;
 }
 
 interface Item {
@@ -63,7 +64,7 @@ interface OrdenDeCompraContextProps {
   fetchOrdenesDeCompra: () => void;
   fetchProductos: () => void;
   fetchProveedores: () => void;
-  createOrdenDeCompra: (provider_id: string) => Promise<void>;
+  createOrdenDeCompra: (provider_id: string, product_id: string) => Promise<void>;
   actualizarEstadoOrdenDeCompra: (id: string, estado: string) => Promise<void>;
   agregarProductosOrdenDeCompra: (orden_id: string, product_id: string, quantity: number, amount: number) => void,
   exportOrdenesDeCompraToExcel: () => void;

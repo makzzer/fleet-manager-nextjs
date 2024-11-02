@@ -39,6 +39,7 @@ const OrdenesDeCompra = () => {
   const [visibleOrdenes, setVisibleOrdenes] = useState(10); // Estado para controlar cuántas órdenes mostramos
   const [showScrollIcon, setShowScrollIcon] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
+  
 
   // Control de scroll
   const handleScroll = () => {
@@ -223,9 +224,8 @@ const OrdenesDeCompra = () => {
       confirmButtonText: "Agregar",
       showCancelButton: true,
       preConfirm: () => {
-        const providerIdElement = document.getElementById(
-          "providerid"
-        ) as HTMLSelectElement;
+        const providerIdElement = document.getElementById("providerid") as HTMLSelectElement;
+        const productIdElement = document.getElementById("productid") as HTMLSelectElement;
         
         // const productIdElement = document.getElementById(
         //   "productid"
@@ -238,6 +238,7 @@ const OrdenesDeCompra = () => {
         // ) as HTMLInputElement
 
         const providerId = providerIdElement?.value;
+        const productId = productIdElement?.value;
         // const productId = productIdElement?.value;
         // const quantity = Number(quantityElement?.value);
         // const amount = Number(amountElement?.value);
@@ -249,14 +250,14 @@ const OrdenesDeCompra = () => {
         //   return null;
         // }
 
-        if(!providerId){
+        if(!providerId || !productId){
           Swal.showValidationMessage(
             "Por favor, completa todos los campos correctamente."
           );
           return null;
         }
 
-        return { providerId }
+        return { providerId, productId }
 
         // return { providerId, productId, quantity, amount };
       },
@@ -270,7 +271,7 @@ const OrdenesDeCompra = () => {
         //   amount: result.value.amount,
         // };
 
-        createOrdenDeCompra(result.value.providerId);
+        createOrdenDeCompra(result.value.providerId, result.value.productId);
 
         Swal.fire({
           title: "Orden agregada con éxito",
@@ -281,6 +282,9 @@ const OrdenesDeCompra = () => {
   };
 
   const handleAddProduct = (orden: OrdenDeCompra) => {
+    // Filtra los productos por providerId
+    const filteredProducts = productos.filter(producto => producto.preference_provider_id === orden.provider.id);
+
     const productosOptions = productos
       .map(
         (producto) =>

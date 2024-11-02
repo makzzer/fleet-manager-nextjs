@@ -21,7 +21,8 @@ const AddVehiculoForm = () => {
     e.preventDefault();
     // Llamada a la API para agregar un vehículo
     try {
-      const response = await fetch("https://fleet-manager-gzui.onrender.com/api/vehicles", {
+      const newLocal = `https://fleet-manager-gzui.onrender.com/api/vehicles`;
+      const response = await fetch(newLocal, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
