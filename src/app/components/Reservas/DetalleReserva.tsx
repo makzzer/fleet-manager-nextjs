@@ -157,6 +157,9 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
           <p className="mb-2">
             <strong>Destino:</strong> {reserva.trip.destination.address}
           </p>
+          <p className="mb-2">
+            <strong>Consumo de combustible estimado:</strong> {reserva.fuel_consumption}
+          </p>
         </div>
 
         {/* Ruta del Viaje */}
