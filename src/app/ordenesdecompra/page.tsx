@@ -225,53 +225,21 @@ const OrdenesDeCompra = () => {
       showCancelButton: true,
       preConfirm: () => {
         const providerIdElement = document.getElementById("providerid") as HTMLSelectElement;
-        const productIdElement = document.getElementById("productid") as HTMLSelectElement;
-        
-        // const productIdElement = document.getElementById(
-        //   "productid"
-        // ) as HTMLSelectElement;
-        // const quantityElement = document.getElementById(
-        //   "quantity"
-        // ) as HTMLInputElement;
-        // const amountElement = document.getElementById(
-        //   "amount"
-        // ) as HTMLInputElement
-
         const providerId = providerIdElement?.value;
-        const productId = productIdElement?.value;
-        // const productId = productIdElement?.value;
-        // const quantity = Number(quantityElement?.value);
-        // const amount = Number(amountElement?.value);
 
-        // if (!providerId || !productId || quantity <= 0 || amount <= 0) {
-        //   Swal.showValidationMessage(
-        //     "Por favor, completa todos los campos correctamente."
-        //   );
-        //   return null;
-        // }
-
-        if(!providerId || !productId){
+        if(!providerId){
           Swal.showValidationMessage(
             "Por favor, completa todos los campos correctamente."
           );
           return null;
         }
 
-        return { providerId, productId }
-
-        // return { providerId, productId, quantity, amount };
+        return { providerId }
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         
-        // const order: CreacionOrdenDeCompra = {
-        //   provider_id: result.value.providerId,
-        //   product_id: result.value.productId,
-        //   quantity: result.value.quantity,
-        //   amount: result.value.amount,
-        // };
-
-        createOrdenDeCompra(result.value.providerId, result.value.productId);
+        createOrdenDeCompra(result.value.providerId);
 
         Swal.fire({
           title: "Orden agregada con éxito",
@@ -285,7 +253,7 @@ const OrdenesDeCompra = () => {
     // Filtra los productos por providerId
     const filteredProducts = productos.filter(producto => producto.preference_provider_id === orden.provider.id);
 
-    const productosOptions = productos
+    const productosOptions = filteredProducts
       .map(
         (producto) =>
           `<option value="${producto.id}">${producto.name} - ${producto.brand}</option>`
