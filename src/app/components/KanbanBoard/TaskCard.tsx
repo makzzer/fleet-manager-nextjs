@@ -23,6 +23,7 @@ import {
 import { TbArrowsExchange } from "react-icons/tb";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useUser } from "@/app/context/UserContext";
+import Swal from "sweetalert2";
 
 // Importamos dynamic y MapVehiculo
 import dynamic from "next/dynamic";
@@ -122,6 +123,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedProductsList, setSelectedProductsList] = useState<any[]>([]);
+  const [isListConfirmed, setIsListConfirmed] = useState(false);
 
   const usuarios = users;
   const operadores = usuarios
@@ -268,6 +270,32 @@ const TaskCard: React.FC<TaskCardProps> = ({
       setSelectedProductId('');
       setQuantity(1);
     }
+  };
+
+  const handleConfirmList = () => {
+    if (selectedProductsList.length > 0) {
+      Swal.fire({
+        title: "¿Confirmar lista?",
+        text: "¿Estás seguro de confirmar esta lista de productos?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Lista confirmada, puedes hacer que se quede fija en la TaskCard
+          setIsListConfirmed(true);
+          Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
+        }
+      });
+    }
+  };
+
+  const handleRemoveProduct = (productId: any) => {
+    const updatedList = selectedProductsList.filter(
+      (item) => item.id !== productId
+    );
+    setSelectedProductsList(updatedList);
   };
 
   if (isMobile) {
@@ -780,9 +808,15 @@ const TaskCard: React.FC<TaskCardProps> = ({
                         <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
                           <span className="font-semibold">{item.name} - {item.brand}</span>
                           <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
+                          <button onClick={() => handleRemoveProduct(item.id)} className="text-red-500">
+                            <FiX />
+                          </button>
                         </li>
                       ))}
                     </ul>
+                    <Button onClick={handleConfirmList} variant="contained" color="primary" className="mt-2">
+                      Confirmar lista
+                    </Button>
 
                     {/* Formulario de selección visible solo cuando el estado es DOING */}
                     {control.status === "DOING" && (
@@ -812,7 +846,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                         <TextField select label="Seleccionar producto" value={selectedProductId} onChange={handleProductSelect}
                           className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
                           disabled={!filteredProducts.length}
-                          InputProps={{ 
+                          InputProps={{
                             style: { color: "#ffffff" },
                             startAdornment: (
                               <InputAdornment position="start">
@@ -830,13 +864,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
                           ))}
                         </TextField>
 
-                        <TextField label="Cantidad" type="number" value={quantity} onChange={handleQuantityChange} InputProps={{ style: { color: "#ffffff" }, } } InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                        <TextField label="Cantidad" type="number" value={quantity} onChange={handleQuantityChange} InputProps={{ style: { color: "#ffffff" }, }} InputLabelProps={{ style: { color: "#e2e2e2" } }}
                           className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
                         />
 
                         <Button onClick={handleAddProductToList} variant="contained" color="primary" className="mt-2">
                           Agregar a la lista
                         </Button>
+
                       </>
                     )}
                   </div>
