@@ -7,12 +7,25 @@ import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 import React from "react";
 import { IoAnalytics } from "react-icons/io5";
+import QrScanner from "./QR/QrScanner";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content"; // Importamos el wrapper de SweetAlert2
+import { useRouter } from "next/navigation";
+import { IoMdQrScanner } from "react-icons/io";
+
 
 interface SidebarProps {
   onToggleSidebar: (isOpen: boolean) => void;
 }
 
 const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
+
+  //todo par QR
+  const router = useRouter();
+  const MySwal = withReactContent(Swal); // Creamos una instancia de SweetAlert con ReactContent
+
+
+
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -50,6 +63,38 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onToggleSidebar]);
+
+
+
+  // Función para escanear códigos QR
+  const handleScanQR = () => {
+    MySwal.fire({
+      title: "Escanear Código QR",
+      html: (
+        <div style={{ width: "100%", height: "400px" }}>
+          <QrScanner
+            onScan={(resultText: string) => {
+              if (resultText) {
+                MySwal.close();
+                router.push(resultText);
+              }
+            }}
+            onError={(error: unknown) => {
+              console.error(`Error al escanear: ${error}`);
+            }}
+          />
+        </div>
+      ),
+      showCancelButton: true,
+      showConfirmButton: false,
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "bg-gray-900 text-white",
+        title: "text-white",
+        cancelButton: "bg-red-500 text-white",
+      },
+    });
+  };
 
 
   return (
@@ -97,24 +142,24 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
               </Link>
 
               {hasModuleAccess("ANALYTICS") && (
-              <Link href="/centrodemonitoreo" onClick={handleLinkClick}>
-                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-                  <MdMonitor  />
-                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                    Monitoreo
-                  </span>
-                </div>
-              </Link>)}
+                <Link href="/centrodemonitoreo" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <MdMonitor />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Monitoreo
+                    </span>
+                  </div>
+                </Link>)}
 
               {hasModuleAccess("RESERVES") && (
-              <Link href="/reservas" onClick={handleLinkClick}>
-                <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
-                  <FaCalendarAlt />
-                  <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                    Reservas
-                  </span>
-                </div>
-              </Link>)}
+                <Link href="/reservas" onClick={handleLinkClick}>
+                  <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
+                    <FaCalendarAlt />
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      Reservas
+                    </span>
+                  </div>
+                </Link>)}
 
 
 
@@ -128,7 +173,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                   </div>
                 </Link>)}
 
-                {hasModuleAccess("CONTROLS") && (
+              {hasModuleAccess("CONTROLS") && (
                 <Link href="/controles" onClick={handleLinkClick}>
                   <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                     <FaTools />
@@ -171,7 +216,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                 </Link>
               )}
 
-                {hasModuleAccess("ANALYTICS") && (
+              {hasModuleAccess("ANALYTICS") && (
                 <Link href="/analiticas" onClick={handleLinkClick}>
                   <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                     <IoAnalytics />
@@ -201,7 +246,22 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                     </span>
                   </div>
                 </Link>)}
-                
+
+
+              {/** LECTOR DE QR HABILITADO PARA TODOS LOS USUARIOS */}
+              {/* Botón "ScanQR" */}
+              <div
+                onClick={handleScanQR}
+                className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg cursor-pointer"
+              >
+                <IoMdQrScanner />
+                <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                  ScanQR
+                </span>
+              </div>
+
+
+
             </nav>
           </div>
         </div>
