@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useVehiculo, Vehiculo } from "../context/VehiculoContext";
 import { useAuth } from "../context/AuthContext";
 import { useReserva } from "../context/ReservesContext";
@@ -27,11 +27,12 @@ const OPTIONS: EmblaOptionsType = {
   skipSnaps: false,
 };
 
-const ReservaViaje = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const vehicleIdFromQuery = searchParams.get("vehiculoId");
+interface ReservaViajeProps {
+  vehicleIdFromQuery: string | null;
+}
 
+const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
+  const router = useRouter();
   const { vehiculos, fetchVehiculos } = useVehiculo();
   const { reservas, fetchReservas } = useReserva();
   const { authenticatedUser } = useAuth();
@@ -40,10 +41,7 @@ const ReservaViaje = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [pickedCoordinates, setPickedCoordinates] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [pickedCoordinates, setPickedCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [vehiculosDisponibles, setVehiculosDisponibles] = useState<Vehiculo[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -57,24 +55,19 @@ const ReservaViaje = () => {
     loadData();
   }, [fetchVehiculos, fetchReservas]);
 
-  // Función para verificar si un vehículo está disponible en el rango de fechas seleccionado
   const isVehicleAvailable = (vehicleId: string) => {
-    // Filtramos las reservas del vehículo
     const reservasVehiculo = reservas.filter(
       (reserva) => reserva.vehicle_id === vehicleId
     );
 
-    // Si no hay reservas para el vehículo, está disponible
     if (reservasVehiculo.length === 0) {
       return true;
     }
 
-    // Verificamos si alguna reserva del vehículo se superpone con las fechas seleccionadas
     return !reservasVehiculo.some((reserva) => {
       const reservaStart = new Date(reserva.date_reserve);
       const reservaEnd = new Date(reserva.date_finish_reserve);
 
-      // Si las reservas existentes se superponen con el rango seleccionado, el vehículo no está disponible
       return (
         startDate &&
         endDate &&
@@ -85,10 +78,8 @@ const ReservaViaje = () => {
     });
   };
 
-  // Efecto para actualizar la lista de vehículos disponibles cuando las fechas o el término de búsqueda cambian
   useEffect(() => {
     if (vehiculos.length > 0 && reservas.length >= 0 && startDate && endDate) {
-      // Si tenemos vehicleIdFromQuery, solo nos interesa ese vehículo
       if (vehicleIdFromQuery) {
         const vehiculo = vehiculos.find((v) => v.id === vehicleIdFromQuery);
 
@@ -97,13 +88,11 @@ const ReservaViaje = () => {
             setVehiculosDisponibles([vehiculo]);
             setSelectedVehicle(vehiculo.id);
           } else {
-            // Si el vehículo no está disponible, mostramos un mensaje
             Swal.fire(
               "Vehículo no disponible",
               "El vehículo seleccionado no está disponible para las fechas seleccionadas. Por favor, selecciona otro vehículo o cambia las fechas.",
               "warning"
             );
-            // Mostrar otros vehículos disponibles
             const disponibles = vehiculos.filter(
               (v) => v.id !== vehiculo.id && isVehicleAvailable(v.id)
             );
@@ -111,7 +100,6 @@ const ReservaViaje = () => {
             setSelectedVehicle(null);
           }
         } else {
-          // Si el vehículo no existe, mostramos un mensaje
           Swal.fire(
             "Vehículo no encontrado",
             "El vehículo especificado no existe.",
@@ -121,12 +109,10 @@ const ReservaViaje = () => {
           setSelectedVehicle(null);
         }
       } else {
-        // Si no hay vehicleIdFromQuery, mostramos los vehículos disponibles normalmente
         const disponibles = vehiculos.filter((vehiculo) =>
           isVehicleAvailable(vehiculo.id)
         );
 
-        // Aplicar el filtro de búsqueda
         const filtrados = disponibles.filter((vehiculo) => {
           const search = searchTerm.toLowerCase();
           return (
@@ -139,7 +125,6 @@ const ReservaViaje = () => {
         setVehiculosDisponibles(filtrados);
       }
     } else {
-      // Si no hay fechas seleccionadas, reiniciamos la lista
       setVehiculosDisponibles([]);
       setSelectedVehicle(null);
     }
@@ -152,12 +137,10 @@ const ReservaViaje = () => {
     vehicleIdFromQuery,
   ]);
 
-  // Función para manejar la selección del vehículo
   const handleSelectVehicle = (vehicleId: string) => {
     setSelectedVehicle(vehicleId);
   };
 
-  // Función para crear la reserva usando Axios
   const handleCreateReserva = async () => {
     if (!selectedVehicle) {
       alert("Por favor, selecciona un vehículo.");
@@ -225,18 +208,15 @@ const ReservaViaje = () => {
   return (
     <ProtectedRoute requiredModule="RESERVES">
       <div className="bg-gray-900 text-white min-h-screen rounded-xl flex flex-col p-4">
-        {/* Encabezado */}
         <div className="flex-shrink-0 mb-4">
           <h1 className="text-4xl font-bold text-blue-400">Reservar Viaje</h1>
         </div>
 
-        {/* Selector de Fechas */}
         <div className="flex-shrink-0 mb-6 relative z-30">
           <h2 className="text-2xl font-semibold mb-2">
             Seleccionar Fechas del Viaje
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Fecha y hora de inicio */}
             <div>
               <label className="block text-sm font-medium mb-2">
                 Fecha y hora de inicio
@@ -245,7 +225,7 @@ const ReservaViaje = () => {
                 selected={startDate}
                 onChange={(date: Date | null) => {
                   setStartDate(date);
-                  setSelectedVehicle(null); // Reiniciamos la selección de vehículo
+                  setSelectedVehicle(null);
                 }}
                 dateFormat="dd/MM/yyyy HH:mm"
                 showTimeSelect
@@ -260,7 +240,6 @@ const ReservaViaje = () => {
               />
             </div>
 
-            {/* Fecha y hora de fin */}
             <div>
               <label className="block text-sm font-medium mb-2">
                 Fecha y hora de fin
@@ -269,7 +248,7 @@ const ReservaViaje = () => {
                 selected={endDate}
                 onChange={(date: Date | null) => {
                   setEndDate(date);
-                  setSelectedVehicle(null); // Reiniciamos la selección de vehículo
+                  setSelectedVehicle(null);
                 }}
                 dateFormat="dd/MM/yyyy HH:mm"
                 showTimeSelect
@@ -296,7 +275,6 @@ const ReservaViaje = () => {
           </div>
         </div>
 
-        {/* Barra de búsqueda (solo si no hay vehicleIdFromQuery) */}
         {!vehicleIdFromQuery && (
           <div className="flex-shrink-0 mb-4">
             <label className="block text-sm font-medium mb-2">
@@ -312,7 +290,6 @@ const ReservaViaje = () => {
           </div>
         )}
 
-        {/* Seleccionar Vehículo */}
         <div className="flex-shrink-0 mb-4">
           <h2 className="text-2xl font-semibold mb-5">Seleccionar Vehículo</h2>
           {isLoading ? (
@@ -341,7 +318,6 @@ const ReservaViaje = () => {
           )}
         </div>
 
-        {/* Mapa para seleccionar coordenadas */}
         <div className="flex-grow z-20 mb-4">
           <h2 className="text-2xl font-semibold mb-2">
             Seleccionar Destino en el Mapa
@@ -349,7 +325,6 @@ const ReservaViaje = () => {
           <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} />
         </div>
 
-        {/* Botones */}
         <div className="flex-shrink-0 mt-4">
           <button
             className="w-full bg-green-600 mb-4 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
