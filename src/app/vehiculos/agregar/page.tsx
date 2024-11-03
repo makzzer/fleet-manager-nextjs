@@ -275,8 +275,8 @@ const AddVehicle = () => {
           has_trailer: vehicleData.has_trailer,
           status: vehicleData.status ? "AVAILABLE" : "UNAVAILABLE",
           coordinates: {
-            latitude: 0,
-            longitude: 0,
+            latitude: -34.5347879,
+            longitude: -58.7133719,
           },
         };
 
