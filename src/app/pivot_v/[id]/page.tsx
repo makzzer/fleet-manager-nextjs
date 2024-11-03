@@ -30,11 +30,11 @@ const VehiculoPivotPage = () => {
       <div className="flex flex-col md:flex-row gap-6">
         <button
           onClick={() =>
-            router.push(`/controles/iniciar?vehiculoId=${vehiculoData.id}`)
+            router.push(`/solicitarasistencia?vehiculoId=${vehiculoData.id}`)
           }
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+          className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
         >
-          Iniciar Control
+          Solicitar Asistencia
         </button>
 
         <button
