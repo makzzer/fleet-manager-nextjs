@@ -250,10 +250,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
         (item) => item.id === selectedProductId
       );
 
-      if (existingProductIndex !== -1) {
+      if (existingProductIndex >= 0) {
         // Si el producto ya está, actualizamos la cantidad
         const updatedList = [...selectedProductsList];
-        updatedList[existingProductIndex].quantity += quantity;
+        updatedList[existingProductIndex].quantity += Number(quantity);
         setSelectedProductsList(updatedList);
       } else {
         // Agregamos un nuevo producto a la lista
@@ -262,7 +262,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         );
         setSelectedProductsList([
           ...selectedProductsList,
-          { ...productDetails, quantity },
+          { ...productDetails, quantity: Number(quantity) },
         ]);
       }
 
@@ -271,6 +271,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       setQuantity(1);
     }
   };
+  
 
   const handleConfirmList = () => {
     if (selectedProductsList.length > 0) {
@@ -283,7 +284,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          // Lista confirmada, puedes hacer que se quede fija en la TaskCard
+          control.status = "DONE";
           setIsListConfirmed(true);
           Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
         }
@@ -799,7 +800,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
               {/** Se muestra este menu para seleccionar productos solo en los controles predictivos y correctivos de segunda y tercer columna */}
               {(control.type === "CORRECTIVE" || control.type === "PREVENTIVE") &&
-                control.status === "DOING" && (
+                (control.status === "DONE" || control.status === "DOING") && (
                   <div className="flex flex-col gap-2 items-start w-full">
                     <h4 className="text-xl font-semibold">Productos para el caso:</h4>
                     {/* Lista de productos seleccionados solo visible cuando el estado es DONE */}
@@ -814,13 +815,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
                         </li>
                       ))}
                     </ul>
-                    <Button onClick={handleConfirmList} variant="contained" color="primary" className="mt-2">
-                      Confirmar lista
-                    </Button>
 
                     {/* Formulario de selección visible solo cuando el estado es DOING */}
                     {control.status === "DOING" && (
                       <>
+                        <Button onClick={handleConfirmList} variant="contained" color="primary" className="mt-2">
+                          Confirmar lista
+                        </Button>
                         <TextField select label="Seleccionar categoría" value={selectedCategory} onChange={handleCategoryChange}
                           className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
                           InputProps={{
