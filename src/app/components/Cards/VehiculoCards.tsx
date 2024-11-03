@@ -1,3 +1,5 @@
+// VehiculoCard.tsx
+
 import React from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
@@ -45,8 +47,8 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
     ],
   };
 
-   // Función para generar el rango de años
-   const generarOpcionesAños = () => {
+  // Función para generar el rango de años
+  const generarOpcionesAños = () => {
     const currentYear = new Date().getFullYear();
     const startYear = currentYear - 30;
     const opcionesAños = [];
@@ -212,8 +214,8 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
     };
   };
 
-  // Generar el valor del código QR
-  const qrValue = `${window.location.origin}/vehiculos/${vehiculo.id}`;
+  // Generar el valor del código QR apuntando a la página pivot
+  const qrValue = `${window.location.origin}/pivot_v/${vehiculo.id}`;
 
   return (
     <div className="p-6 rounded-lg shadow-lg text-white transition duration-300 ease-in-out bg-gray-800 hover:bg-gray-900 h-full flex flex-col justify-between">
