@@ -1,3 +1,5 @@
+// Sidebar.tsx
+
 'use client';
 import { useState, useEffect, useRef } from "react";
 import { FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy, FaCalendarAlt, FaTools } from "react-icons/fa";
@@ -10,7 +12,7 @@ import { IoAnalytics } from "react-icons/io5";
 import QrScanner from "./QR/QrScanner";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content"; // Importamos el wrapper de SweetAlert2
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { IoMdQrScanner } from "react-icons/io";
 
 
@@ -20,11 +22,10 @@ interface SidebarProps {
 
 const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
 
-  //todo par QR
+  // Para QR
   const router = useRouter();
+  const pathname = usePathname(); // Obtenemos la ruta actual
   const MySwal = withReactContent(Swal); // Creamos una instancia de SweetAlert con ReactContent
-
-
 
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -64,7 +65,19 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
     };
   }, [onToggleSidebar]);
 
+  // Nueva funcionalidad: Colapsar la barra al navegar en móvil
+  const isFirstRender = useRef(true);
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (window.innerWidth < 1024) {
+      setIsOpen(false);
+      onToggleSidebar(false);
+    }
+  }, [pathname]);
 
   // Función para escanear códigos QR
   const handleScanQR = () => {
@@ -98,8 +111,6 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
 
 
   return (
-
-
     <>
       {authenticatedUser && (
         <div ref={sidebarRef} className="flex h-screen border-e-2 border-gray-800 ">
@@ -248,7 +259,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                 </Link>)}
 
 
-              {/** LECTOR DE QR HABILITADO PARA TODOS LOS USUARIOS */}
+              {/* LECTOR DE QR HABILITADO PARA TODOS LOS USUARIOS */}
               {/* Botón "ScanQR" */}
               <div
                 onClick={handleScanQR}
@@ -268,10 +279,6 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
       )}
     </>
   );
-
-
 };
-
-
 
 export default Sidebar;
