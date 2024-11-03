@@ -23,6 +23,7 @@ import {
 import { TbArrowsExchange } from "react-icons/tb";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useUser } from "@/app/context/UserContext";
+import Swal from "sweetalert2";
 
 // Importamos dynamic y MapVehiculo
 import dynamic from "next/dynamic";
@@ -122,6 +123,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedProductsList, setSelectedProductsList] = useState<any[]>([]);
+  const [isListConfirmed, setIsListConfirmed] = useState(false);
 
   const usuarios = users;
   const operadores = usuarios
@@ -244,17 +246,57 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
   const handleAddProductToList = () => {
     if (selectedProductId && quantity > 0) {
-      const productDetails = filteredProducts.find(
-        (producto) => producto.id === selectedProductId
+      const existingProductIndex = selectedProductsList.findIndex(
+        (item) => item.id === selectedProductId
       );
-      setSelectedProductsList([
-        ...selectedProductsList,
-        { ...productDetails, quantity },
-      ]);
-      // Resetear valores después de agregar
-      //setSelectedProductsList('');
-      //setQuantity(1);
+
+      if (existingProductIndex >= 0) {
+        // Si el producto ya está, actualizamos la cantidad
+        const updatedList = [...selectedProductsList];
+        updatedList[existingProductIndex].quantity += Number(quantity);
+        setSelectedProductsList(updatedList);
+      } else {
+        // Agregamos un nuevo producto a la lista
+        const productDetails = filteredProducts.find(
+          (producto) => producto.id === selectedProductId
+        );
+        setSelectedProductsList([
+          ...selectedProductsList,
+          { ...productDetails, quantity: Number(quantity) },
+        ]);
+      }
+
+      // Reseteo de selección
+      setSelectedProductId('');
+      setQuantity(1);
     }
+  };
+  
+
+  const handleConfirmList = () => {
+    if (selectedProductsList.length > 0) {
+      Swal.fire({
+        title: "¿Confirmar lista?",
+        text: "¿Estás seguro de confirmar esta lista de productos?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          control.status = "DONE";
+          setIsListConfirmed(true);
+          Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
+        }
+      });
+    }
+  };
+
+  const handleRemoveProduct = (productId: any) => {
+    const updatedList = selectedProductsList.filter(
+      (item) => item.id !== productId
+    );
+    setSelectedProductsList(updatedList);
   };
 
   if (isMobile) {
@@ -459,113 +501,113 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 </div>
 
                 {/** Se muestra este menu para seleccionar productos solo en los controles predictivos y correctivos de segunda y tercer columna */}
-              {(control.type === "CORRECTIVE" || control.type === "PREVENTIVE") &&
-                (control.status === "DOING" || control.status === "DONE")
-                && (
-                  <div className="flex flex-col gap-2 items-start w-full">
-                    <h4 className="text-xl font-semibold">
-                      Productos para el caso:
-                      {control.status === "DONE" && (
-                        <ul>
-                        {selectedProductsList.map((item, index) => (
-                          <li key={index}>
-                            {item.name} - Cantidad: {item.quantity}
-                          </li>
-                        ))}
-                      </ul>
-                      )}
-                    </h4>
-                    <div className="flex flex-col md:flex-row gap-6 mb-6 w-full">
-                      {/* Solo se muestra la lista para agregar productos en los controles en proceso */}
-                      {control.status === "DOING" && (
-                        <>
-                          {/* Seleccionar categoría */}
-                          <TextField
-                            select
-                            label="Seleccionar categoría"
-                            value={selectedCategory || "" }
-                            onChange={handleCategoryChange}
-                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <FaBox className="text-gray-300" />
-                                </InputAdornment>
-                              ),
-                            }}
-                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
-                            SelectProps={{
-                              MenuProps: {
-                                PaperProps: {
-                                  style: { maxHeight: 200, width: 400 }
-                                }
-                              }
-                            }}
-                          >
-                            {categorias.map((categoria, index) => (
-                              <MenuItem key={index} value={categoria}>
-                                {categoria}
-                              </MenuItem>
-                            ))}
-                          </TextField>
-
-                          {/* Seleccionar producto filtrado */}
-                          <TextField
-                            select
-                            label="Seleccionar producto"
-                            value={selectedProductId || ""}
-                            onChange={handleProductSelect}
-                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
-                            disabled={!filteredProducts.length} // Deshabilitar si no hay productos filtrados
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <FaBox className="text-gray-300" />
-                                </InputAdornment>
-                              ),
-                            }}
-                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
-                            SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
-                          >
-                            {filteredProducts.map((producto) => (
-                              <MenuItem key={producto.id} value={producto.id}>
-                                {producto.name} - {producto.brand}
-                              </MenuItem>
-                            ))}
-                          </TextField>
-
-                          {/* Cantidad del producto */}
-                          <TextField
-                            label="Cantidad"
-                            type="number"
-                            value={quantity}
-                            onChange={handleQuantityChange}
-                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
-                          />
-
-                          {/* Botón para agregar a la lista */}
-                          <Button onClick={handleAddProductToList} variant="contained" color="primary" className="mt-2">
-                            Agregar a la lista
-                          </Button>
-
-                          {/* Lista de productos seleccionados */}
-                          <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
+                {(control.type === "CORRECTIVE" || control.type === "PREVENTIVE") &&
+                  (control.status === "DOING" || control.status === "DONE")
+                  && (
+                    <div className="flex flex-col gap-2 items-start w-full">
+                      <h4 className="text-xl font-semibold">
+                        Productos para el caso:
+                        {control.status === "DONE" && (
+                          <ul>
                             {selectedProductsList.map((item, index) => (
-                              <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
-                                <div>
-                                  <span className="font-semibold">
-                                    {item.name} - {item.quantity}
-                                  </span>
-                                  <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
-                                </div>
+                              <li key={index}>
+                                {item.name} - Cantidad: {item.quantity}
                               </li>
                             ))}
                           </ul>
-                        </>
-                      )}
+                        )}
+                      </h4>
+                      <div className="flex flex-col md:flex-row gap-6 mb-6 w-full">
+                        {/* Solo se muestra la lista para agregar productos en los controles en proceso */}
+                        {control.status === "DOING" && (
+                          <>
+                            {/* Seleccionar categoría */}
+                            <TextField
+                              select
+                              label="Seleccionar categoría"
+                              value={selectedCategory || ""}
+                              onChange={handleCategoryChange}
+                              className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <FaBox className="text-gray-300" />
+                                  </InputAdornment>
+                                ),
+                              }}
+                              InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                              SelectProps={{
+                                MenuProps: {
+                                  PaperProps: {
+                                    style: { maxHeight: 200, width: 400 }
+                                  }
+                                }
+                              }}
+                            >
+                              {categorias.map((categoria, index) => (
+                                <MenuItem key={index} value={categoria}>
+                                  {categoria}
+                                </MenuItem>
+                              ))}
+                            </TextField>
+
+                            {/* Seleccionar producto filtrado */}
+                            <TextField
+                              select
+                              label="Seleccionar producto"
+                              value={selectedProductId || ""}
+                              onChange={handleProductSelect}
+                              className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                              disabled={!filteredProducts.length} // Deshabilitar si no hay productos filtrados
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <FaBox className="text-gray-300" />
+                                  </InputAdornment>
+                                ),
+                              }}
+                              InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                              SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
+                            >
+                              {filteredProducts.map((producto) => (
+                                <MenuItem key={producto.id} value={producto.id}>
+                                  {producto.name} - {producto.brand}
+                                </MenuItem>
+                              ))}
+                            </TextField>
+
+                            {/* Cantidad del producto */}
+                            <TextField
+                              label="Cantidad"
+                              type="number"
+                              value={quantity}
+                              onChange={handleQuantityChange}
+                              className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                            />
+
+                            {/* Botón para agregar a la lista */}
+                            <Button onClick={handleAddProductToList} variant="contained" color="primary" className="mt-2">
+                              Agregar a la lista
+                            </Button>
+
+                            {/* Lista de productos seleccionados */}
+                            <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
+                              {selectedProductsList.map((item, index) => (
+                                <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
+                                  <div>
+                                    <span className="font-semibold">
+                                      {item.name} - {item.quantity}
+                                    </span>
+                                    <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Muestra el mapa si el tipo es CORRECTIVE */}
                 {control.type === "CORRECTIVE" && (
@@ -627,13 +669,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <p>{control.vehicle.id}</p>
           </div>
           {/* Muestra el mapa si el tipo es CORRECTIVE */}
-          {control.type === "CORRECTIVE" && (
+          {/* {control.type === "CORRECTIVE" && (
             <div className="mt-4">
               <MapVehiculo
                 coordinates={control.vehicle.coordinates}
               />
             </div>
-          )}
+          )} */}
         </div>
         <div className="flex justify-between items-center border-t pt-3 border-gray-700">
           <div className="flex items-center gap-2 text-gray-300">
@@ -758,132 +800,91 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
               {/** Se muestra este menu para seleccionar productos solo en los controles predictivos y correctivos de segunda y tercer columna */}
               {(control.type === "CORRECTIVE" || control.type === "PREVENTIVE") &&
-                (control.status === "DOING" || control.status === "DONE")
-                && (
+                (control.status === "DONE" || control.status === "DOING") && (
                   <div className="flex flex-col gap-2 items-start w-full">
-                    <h4 className="text-xl font-semibold">
-                      Productos para el caso:
-                      {control.status === "DONE" && (
-                        <ul>
-                        {selectedProductsList.map((item, index) => (
-                          <li key={index}>
-                            {item.name} - Cantidad: {item.quantity}
-                          </li>
-                        ))}
-                      </ul>
-                      )}
-                    </h4>
-                    <div className="flex flex-col md:flex-row gap-6 mb-6 w-full">
-                      {/* Solo se muestra la lista para agregar productos en los controles en proceso */}
-                      {control.status === "DOING" && (
-                        <>
-                          {/* Seleccionar categoría */}
-                          <TextField
-                            select
-                            label="Seleccionar categoría"
-                            value={selectedCategory || "" }
-                            onChange={handleCategoryChange}
-                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <FaBox className="text-gray-300" />
-                                </InputAdornment>
-                              ),
-                            }}
-                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
-                            SelectProps={{
-                              MenuProps: {
-                                PaperProps: {
-                                  style: { maxHeight: 200, width: 400 }
-                                }
-                              }
-                            }}
-                          >
-                            {categorias.map((categoria, index) => (
-                              <MenuItem key={index} value={categoria}>
-                                {categoria}
-                              </MenuItem>
-                            ))}
-                          </TextField>
+                    <h4 className="text-xl font-semibold">Productos para el caso:</h4>
+                    {/* Lista de productos seleccionados solo visible cuando el estado es DONE */}
+                    <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
+                      {selectedProductsList.map((item, index) => (
+                        <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
+                          <span className="font-semibold">{item.name} - {item.brand}</span>
+                          <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
+                          <button onClick={() => handleRemoveProduct(item.id)} className="text-red-500">
+                            <FiX />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
 
-                          {/* Seleccionar producto filtrado */}
-                          <TextField
-                            select
-                            label="Seleccionar producto"
-                            value={selectedProductId || ""}
-                            onChange={handleProductSelect}
-                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
-                            disabled={!filteredProducts.length} // Deshabilitar si no hay productos filtrados
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <FaBox className="text-gray-300" />
-                                </InputAdornment>
-                              ),
-                            }}
-                            InputLabelProps={{ style: { color: "#e2e2e2" } }}
-                            SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
-                          >
-                            {filteredProducts.map((producto) => (
-                              <MenuItem key={producto.id} value={producto.id}>
-                                {producto.name} - {producto.brand}
-                              </MenuItem>
-                            ))}
-                          </TextField>
+                    {/* Formulario de selección visible solo cuando el estado es DOING */}
+                    {control.status === "DOING" && (
+                      <>
+                        <Button onClick={handleConfirmList} variant="contained" color="primary" className="mt-2">
+                          Confirmar lista
+                        </Button>
+                        <TextField select label="Seleccionar categoría" value={selectedCategory} onChange={handleCategoryChange}
+                          className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                          InputProps={{
+                            style: { color: "#ffffff" },
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <FaBox className="text-gray-300" />
+                              </InputAdornment>
+                            ),
+                          }}
+                          InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                          SelectProps={{
+                            MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } },
+                          }}
+                        >
+                          {categorias.map((categoria, index) => (
+                            <MenuItem key={index} value={categoria}>
+                              {categoria}
+                            </MenuItem>
+                          ))}
+                        </TextField>
 
-                          {/* Cantidad del producto */}
-                          <TextField
-                            label="Cantidad"
-                            type="number"
-                            value={quantity}
-                            onChange={handleQuantityChange}
-                            className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
-                          />
+                        <TextField select label="Seleccionar producto" value={selectedProductId} onChange={handleProductSelect}
+                          className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                          disabled={!filteredProducts.length}
+                          InputProps={{
+                            style: { color: "#ffffff" },
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <FaBox className="text-gray-300" />
+                              </InputAdornment>
+                            ),
+                          }}
+                          InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                          SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
+                        >
+                          {filteredProducts.map((producto) => (
+                            <MenuItem key={producto.id} value={producto.id}>
+                              {producto.name} - {producto.brand}
+                            </MenuItem>
+                          ))}
+                        </TextField>
 
-                          {/* Botón para agregar a la lista */}
-                          <Button onClick={handleAddProductToList} variant="contained" color="primary" className="mt-2">
-                            Agregar a la lista
-                          </Button>
+                        <TextField label="Cantidad" type="number" value={quantity} onChange={handleQuantityChange} InputProps={{ style: { color: "#ffffff" }, }} InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                          className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
+                        />
 
-                          {/* Lista de productos seleccionados */}
-                          <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
-                            {selectedProductsList.map((item, index) => (
-                              <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
-                                <div>
-                                  <span className="font-semibold">
-                                    {item.name} - {item.quantity}
-                                  </span>
-                                  <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
-                        </>
-                      )}
-                    </div>
+                        <Button onClick={handleAddProductToList} variant="contained" color="primary" className="mt-2">
+                          Agregar a la lista
+                        </Button>
+
+                      </>
+                    )}
                   </div>
                 )}
-
-              {/* Muestra el mapa si el tipo es CORRECTIVE */}
-              {control.type === "CORRECTIVE" && (
+              {control.type === "CORRECTIVE" &&
                 <div className="mt-4">
-                  <h4 className="text-xl font-semibold">
-                    Ubicación
-                  </h4>
+                  <h4 className="text-xl font-semibold">Ubicación</h4>
                   <div className="h-64 rounded-lg shadow-lg flex items-center justify-center">
-                    <MapVehiculo
-                      coordinates={control.vehicle.coordinates}
-                    />
+                    <MapVehiculo coordinates={control.vehicle.coordinates} />
                   </div>
-                </div>
-              )}
-
-              {/* Botón de cerrar en el contenido */}
-              <button
-                className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                onClick={closeModal}
-              >
+                </div>}
+              <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={closeModal}>
                 Cerrar
               </button>
             </div>
