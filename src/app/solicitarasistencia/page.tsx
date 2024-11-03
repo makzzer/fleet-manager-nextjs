@@ -1,54 +1,67 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { useControl } from '../context/ControlContext';
-import { useAuth } from '../context/AuthContext';
-import { useReserva } from '../context/ReservesContext';
-import Swal from 'sweetalert2';
-import { useRouter } from "next/navigation";
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { useControl } from "../context/ControlContext";
+import { useAuth } from "../context/AuthContext";
+import { useReserva } from "../context/ReservesContext";
+import Swal from "sweetalert2";
+import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
+import { Suspense } from "react";
 
 const SolicitarAsistencia = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { authenticatedUser } = useAuth();
     const { createCorrectiveControl } = useControl();
     const { reservas, fetchReservas } = useReserva();
 
     const [selectedReserva, setSelectedReserva] = useState<string | null>(null);
-    const [subject, setSubject] = useState('');
-    const [description, setDescription] = useState('');
+    const [subject, setSubject] = useState("");
+    const [description, setDescription] = useState("");
+
+    const vehicleIdFromQuery = searchParams.get("vehiculoId");
 
     useEffect(() => {
-        fetchReservas();
-    }, [fetchReservas]);
+        const loadReservas = async () => {
+            await fetchReservas();
+
+            // Si hay un vehicleId en la URL, preseleccionar la reserva correspondiente
+            if (vehicleIdFromQuery) {
+                const reserva = reservas.find(
+                    (reserva) => reserva.vehicle_id === vehicleIdFromQuery
+                );
+                if (reserva) {
+                    setSelectedReserva(reserva.vehicle_id);
+                }
+            }
+        };
+        loadReservas();
+    }, [fetchReservas, reservas, vehicleIdFromQuery]);
 
     const createAlert = async (vehicle_id: string) => {
         try {
-            const response = await fetch('https://fleet-manager-vrxj.onrender.com/api/alerts', {
-                method: 'POST',
+            const response = await fetch("https://fleet-manager-vrxj.onrender.com/api/alerts", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    strategy: 'CONTROL',
+                    strategy: "CONTROL",
                     vehicle_id: vehicle_id,
                 }),
             });
 
             if (!response.ok) {
-                throw new Error('Error al crear la alerta');
+                throw new Error("Error al crear la alerta");
             }
         } catch (error) {
-            console.error('Error al crear la alerta:', error);
+            console.error("Error al crear la alerta:", error);
         }
     };
 
-
-
-
-    // Función para enviar una notificación al bot de Telegram
     const sendTelegramAlert = async (vehicle_id: string) => {
-        const telegramBotToken = '7948811886:AAF4pJZPFcFEcPLw7TxJ6G-f75xusJjqXO4'; // Token del bot de Telegram
-        const chatId = '732794338'; // chat ID de Telegram puse el mio para probar @makzzer
+        const telegramBotToken = "your-telegram-bot-token";
+        const chatId = "your-chat-id";
 
         const message = `Se ha creado una nueva alerta para el vehículo con ID: ${vehicle_id}. Revisar con urgencia.`;
 
@@ -58,7 +71,7 @@ const SolicitarAsistencia = () => {
                 text: message,
             });
         } catch (error) {
-            console.error('Error al enviar notificación a Telegram:', error);
+            console.error("Error al enviar notificación a Telegram:", error);
         }
     };
 
@@ -66,39 +79,35 @@ const SolicitarAsistencia = () => {
         e.preventDefault();
 
         if (!selectedReserva || !subject || !description) {
-            Swal.fire('Error', 'Por favor, completa todos los campos.', 'error');
+            Swal.fire("Error", "Por favor, completa todos los campos.", "error");
             return;
         }
 
         const correctiveControl = {
-            type: 'CORRECTIVE',
+            type: "CORRECTIVE",
             subject: subject,
             description: description,
             vehicle_id: selectedReserva,
-            priority: 'HIGH',
-            operator_id: 'bb21c935-c3ad-489d-a81d-446465d3e318', // Por ahora el operador fijo
+            priority: "HIGH",
+            operator_id: "bb21c935-c3ad-489d-a81d-446465d3e318", // Por ahora el operador fijo
         };
 
         try {
-            // Crear el control correctivo
             await createCorrectiveControl(correctiveControl);
-
-            // Crear la alerta
             await createAlert(selectedReserva);
-
-            // Enviar notificación al bot de Telegram
             await sendTelegramAlert(selectedReserva);
 
-            Swal.fire('Éxito', 'El control correctivo ha sido solicitado correctamente y se ha creado una alerta.', 'success');
+            Swal.fire("Éxito", "El control correctivo ha sido solicitado correctamente y se ha creado una alerta.", "success");
             setSelectedReserva(null);
-            setSubject('');
-            setDescription('');
+            setSubject("");
+            setDescription("");
         } catch (error) {
-            Swal.fire('Error', 'Ocurrió un error al solicitar la asistencia.', 'error');
+            Swal.fire("Error", "Ocurrió un error al solicitar la asistencia.", "error");
         }
     };
 
     return (
+        <Suspense fallback={<div>Cargando...</div>}>
         <div className="flex items-center justify-center rounded-lg bg-gray-900 text-white p-6 h-auto min-h-[70vh]">
             <div className="bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg">
                 <h2 className="text-2xl font-semibold mb-6 text-blue-400">Solicitar Asistencia</h2>
@@ -109,7 +118,7 @@ const SolicitarAsistencia = () => {
                         </label>
                         <select
                             id="reserva"
-                            value={selectedReserva || ''}
+                            value={selectedReserva || ""}
                             onChange={(e) => setSelectedReserva(e.target.value)}
                             className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                         >
@@ -154,7 +163,7 @@ const SolicitarAsistencia = () => {
                         />
                     </div>
 
-                    <div className=''>
+                    <div className="">
                         <button
                             type="submit"
                             className="w-full mb-4 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
@@ -174,6 +183,7 @@ const SolicitarAsistencia = () => {
                 </div>
             </div>
         </div>
+        </Suspense>
     );
 };
 
