@@ -1,3 +1,5 @@
+// /app/vehiculos/pivot/[id]/page.tsx
+
 "use client";
 
 import React from "react";
@@ -37,7 +39,7 @@ const VehiculoPivotPage = () => {
 
         <button
           onClick={() =>
-            router.push(`/reservas/iniciar?vehiculoId=${vehiculoData.id}`)
+            router.push(`/reservar?vehiculoId=${vehiculoData.id}`)
           }
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
         >
