@@ -12,6 +12,7 @@ const MisReservas = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [filtroEstado, setFiltroEstado] = useState<string>("Todos");
+  const [filtroPatente, setFiltroPatente] = useState<string>("");
 
   const opcionesEstado = ["Todos", "CREATED", "ACTIVATED", "COMPLETED", "CANCELED"];
 
@@ -20,10 +21,10 @@ const MisReservas = () => {
       <div className="bg-gray-900 text-white p-6 min-h-screen">
         <h1 className="text-4xl font-bold mb-6">Reservas</h1>
 
-        {/* Selector de Rango de Fechas y Estado */}
+        {/* Selector de Rango de Fechas, Estado y Patente */}
         <div className="flex flex-col md:flex-row items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
           {/* Fecha de inicio */}
-          <div className="w-full md:w-1/3">
+          <div className="w-full md:w-1/4">
             <label className="block text-sm font-medium mb-2">
               Fecha de inicio
             </label>
@@ -37,7 +38,7 @@ const MisReservas = () => {
             />
           </div>
           {/* Fecha de fin */}
-          <div className="w-full md:w-1/3">
+          <div className="w-full md:w-1/4">
             <label className="block text-sm font-medium mb-2">
               Fecha de fin
             </label>
@@ -52,7 +53,7 @@ const MisReservas = () => {
             />
           </div>
           {/* Filtro por estado */}
-          <div className="w-full md:w-1/3">
+          <div className="w-full md:w-1/4">
             <label className="block text-sm font-medium mb-2">
               Filtrar por estado
             </label>
@@ -68,6 +69,19 @@ const MisReservas = () => {
               ))}
             </select>
           </div>
+          {/* Filtro por patente */}
+          <div className="w-full md:w-1/4">
+            <label className="block text-sm font-medium mb-2">
+              Filtrar por patente
+            </label>
+            <input
+              type="text"
+              placeholder="Ingresa la patente"
+              value={filtroPatente}
+              onChange={(e) => setFiltroPatente(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
         </div>
 
         {/* Listado de Reservas */}
@@ -75,6 +89,7 @@ const MisReservas = () => {
           startDate={startDate}
           endDate={endDate}
           filtroEstado={filtroEstado}
+          filtroPatente={filtroPatente}
         />
 
         {/* Botón de Volver */}

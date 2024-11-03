@@ -6,21 +6,32 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useVehiculo } from "@/app/context/VehiculoContext";
 import { useRouter } from "next/navigation";
 
+// Asegúrate de tener el tipo Vehiculo importado correctamente
+import { Vehiculo } from "@/app/context/VehiculoContext";
+
 interface ListadoReservasProps {
   startDate: Date | null;
   endDate: Date | null;
   filtroEstado: string;
+  filtroPatente: string;
+}
+
+interface ReservaConVehiculo extends Reserva {
+  vehiculoReserva?: Vehiculo | undefined;
 }
 
 const ListadoReservas: React.FC<ListadoReservasProps> = ({
   startDate,
   endDate,
   filtroEstado,
+  filtroPatente,
 }) => {
   const { reservas, fetchReservas } = useReserva();
   const { vehiculos, fetchVehiculos } = useVehiculo();
   const { authenticatedUser } = useAuth();
-  const [reservasFiltradas, setReservasFiltradas] = useState<Reserva[]>([]);
+  const [reservasFiltradas, setReservasFiltradas] = useState<
+    ReservaConVehiculo[]
+  >([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,37 +44,85 @@ const ListadoReservas: React.FC<ListadoReservasProps> = ({
       (reserva) => reserva.user_id === authenticatedUser?.id
     );
 
+    // Filtrar por rango de fechas
     let reservasFiltradasPorFecha = reservasUsuario;
 
-    if (startDate && endDate) {
+    if (startDate || endDate) {
       reservasFiltradasPorFecha = reservasFiltradasPorFecha.filter((reserva) => {
-        const fechaReserva = new Date(reserva.date_created);
-        const inicio = new Date(startDate);
-        inicio.setHours(0, 0, 0, 0);
-        const fin = new Date(endDate);
-        fin.setHours(23, 59, 59, 999);
-        return fechaReserva >= inicio && fechaReserva <= fin;
+        const fechaReserva = new Date(reserva.date_reserve);
+        fechaReserva.setHours(0, 0, 0, 0);
+        let cumpleInicio = true;
+        let cumpleFin = true;
+
+        if (startDate) {
+          const inicio = new Date(startDate);
+          inicio.setHours(0, 0, 0, 0);
+          cumpleInicio = fechaReserva >= inicio;
+        }
+
+        if (endDate) {
+          const fin = new Date(endDate);
+          fin.setHours(23, 59, 59, 999);
+          cumpleFin = fechaReserva <= fin;
+        }
+
+        return cumpleInicio && cumpleFin;
       });
     }
 
-    let reservasFiltradasPorEstado = reservasFiltradasPorFecha;
+    // Mapear para incluir datos del vehículo
+    const reservasConVehiculo = reservasFiltradasPorFecha.map((reserva) => {
+      const vehiculoReserva = vehiculos.find(
+        (vehiculo) => vehiculo.id === reserva.vehicle_id
+      );
+      return {
+        ...reserva,
+        vehiculoReserva,
+      };
+    });
+
+    // Filtrar por patente
+    let reservasFiltradasPorPatente = reservasConVehiculo;
+    if (filtroPatente) {
+      const filtroPatenteLower = filtroPatente.toLowerCase();
+      reservasFiltradasPorPatente = reservasConVehiculo.filter((reserva) => {
+        const patente = reserva.vehiculoReserva?.id?.toLowerCase() || "";
+        return patente.includes(filtroPatenteLower);
+      });
+    }
+
+    // Filtrar por estado
+    let reservasFiltradasPorEstado = reservasFiltradasPorPatente;
     if (filtroEstado !== "Todos") {
-      reservasFiltradasPorEstado = reservasFiltradasPorFecha.filter(
+      reservasFiltradasPorEstado = reservasFiltradasPorPatente.filter(
         (reserva) => reserva.status === filtroEstado
       );
     }
 
+    // Ordenar de más nuevas a más antiguas según la fecha de inicio de la reserva
+    reservasFiltradasPorEstado.sort((a, b) => {
+      const dateA = new Date(a.date_reserve);
+      const dateB = new Date(b.date_reserve);
+      return dateB.getTime() - dateA.getTime();
+    });
+
     setReservasFiltradas(reservasFiltradasPorEstado);
-  }, [reservas, authenticatedUser, startDate, endDate, filtroEstado]);
+  }, [
+    reservas,
+    authenticatedUser,
+    startDate,
+    endDate,
+    filtroEstado,
+    filtroPatente,
+    vehiculos,
+  ]);
 
   return (
     <div>
       {reservasFiltradas.length > 0 ? (
         <ul className="space-y-4">
           {reservasFiltradas.map((reserva) => {
-            const vehiculoReserva = vehiculos.find(
-              (vehiculo) => vehiculo.id === reserva.vehicle_id
-            );
+            const { vehiculoReserva } = reserva;
 
             return (
               <li
@@ -133,7 +192,7 @@ const ListadoReservas: React.FC<ListadoReservasProps> = ({
         </ul>
       ) : (
         <p className="text-gray-400">
-          {startDate || endDate || filtroEstado !== "Todos"
+          {startDate || endDate || filtroEstado !== "Todos" || filtroPatente
             ? "No tienes reservas que coincidan con los filtros aplicados."
             : "No tienes reservas registradas."}
         </p>
