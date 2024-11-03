@@ -123,7 +123,7 @@ const VehiculoDinamicoPage = () => {
       </div>
 
       {/* Ubicación del Vehículo */}
-      <div className="mt-10">
+      <div className="mt-10 relative z-0">
         <h3 className="text-lg font-medium mb-4 text-blue-200">Ubicación</h3>
         <div className="bg-gray-800 h-64 rounded-lg shadow-lg flex items-center justify-center">
           <MapVehiculo coordinates={vehiculoData.coordinates} />
