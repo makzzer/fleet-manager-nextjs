@@ -15,6 +15,7 @@ import dynamic from "next/dynamic";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { isSameDay, setHours, setMinutes } from "date-fns";
 import "tailwindcss/tailwind.css";
+import { Suspense } from "react";
 
 const MapPickCoordinates = dynamic(
   () => import("../components/Maps/MapPickCoordinates"),
@@ -194,112 +195,114 @@ const ReservaViaje = () => {
 
   return (
     <ProtectedRoute requiredModule="RESERVES">
-      <div className="bg-gray-900 text-white min-h-screen rounded-xl flex flex-col p-4">
-        <div className="flex-shrink-0 mb-4">
-          <h1 className="text-4xl font-bold text-blue-400">Reservar Viaje</h1>
-        </div>
-
-        <div className="flex-shrink-0 mb-6 relative z-30">
-          <h2 className="text-2xl font-semibold mb-2">Seleccionar Fechas del Viaje</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Fecha y hora de inicio</label>
-              <DatePicker
-                selected={startDate}
-                onChange={(date: Date | null) => {
-                  setStartDate(date);
-                  setSelectedVehicle(null);
-                }}
-                dateFormat="dd/MM/yyyy HH:mm"
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                placeholderText="Selecciona fecha y hora de inicio"
-                className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                locale={es}
-                minDate={new Date()}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Fecha y hora de fin</label>
-              <DatePicker
-                selected={endDate}
-                onChange={(date: Date | null) => {
-                  setEndDate(date);
-                  setSelectedVehicle(null);
-                }}
-                dateFormat="dd/MM/yyyy HH:mm"
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                placeholderText="Selecciona fecha y hora de fin"
-                className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                locale={es}
-                minDate={startDate || new Date()}
-              />
-            </div>
-          </div>
-        </div>
-
-        {!vehicleIdFromQuery && (
+      <Suspense fallback={<div>Cargando...</div>}>
+        <div className="bg-gray-900 text-white min-h-screen rounded-xl flex flex-col p-4">
           <div className="flex-shrink-0 mb-4">
-            <label className="block text-sm font-medium mb-2">Buscar vehículo por patente, marca o modelo</label>
-            <input
-              type="text"
-              placeholder="Buscar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <h1 className="text-4xl font-bold text-blue-400">Reservar Viaje</h1>
           </div>
-        )}
 
-        <div className="flex-shrink-0 mb-4">
-          <h2 className="text-2xl font-semibold mb-5">Seleccionar Vehículo</h2>
-          {isLoading ? (
-            <p className="text-gray-400">Cargando vehículos...</p>
-          ) : (
-            <>
-              {startDate && endDate ? (
-                vehiculosDisponibles.length > 0 ? (
-                  <Carousel
-                    vehicles={vehiculosDisponibles}
-                    options={OPTIONS}
-                    onSelectVehicle={handleSelectVehicle}
-                    selectedVehicleId={selectedVehicle}
-                  />
-                ) : (
-                  <p className="text-gray-400">No hay vehículos disponibles en el rango de fechas seleccionado.</p>
-                )
-              ) : (
-                <p className="text-gray-400">Por favor, selecciona las fechas de inicio y fin para ver los vehículos disponibles.</p>
-              )}
-            </>
+          <div className="flex-shrink-0 mb-6 relative z-30">
+            <h2 className="text-2xl font-semibold mb-2">Seleccionar Fechas del Viaje</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Fecha y hora de inicio</label>
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date: Date | null) => {
+                    setStartDate(date);
+                    setSelectedVehicle(null);
+                  }}
+                  dateFormat="dd/MM/yyyy HH:mm"
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  placeholderText="Selecciona fecha y hora de inicio"
+                  className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  locale={es}
+                  minDate={new Date()}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Fecha y hora de fin</label>
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date: Date | null) => {
+                    setEndDate(date);
+                    setSelectedVehicle(null);
+                  }}
+                  dateFormat="dd/MM/yyyy HH:mm"
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  placeholderText="Selecciona fecha y hora de fin"
+                  className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  locale={es}
+                  minDate={startDate || new Date()}
+                />
+              </div>
+            </div>
+          </div>
+
+          {!vehicleIdFromQuery && (
+            <div className="flex-shrink-0 mb-4">
+              <label className="block text-sm font-medium mb-2">Buscar vehículo por patente, marca o modelo</label>
+              <input
+                type="text"
+                placeholder="Buscar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           )}
-        </div>
 
-        <div className="flex-grow z-20 mb-4">
-          <h2 className="text-2xl font-semibold mb-2">Seleccionar Destino en el Mapa</h2>
-          <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} />
-        </div>
+          <div className="flex-shrink-0 mb-4">
+            <h2 className="text-2xl font-semibold mb-5">Seleccionar Vehículo</h2>
+            {isLoading ? (
+              <p className="text-gray-400">Cargando vehículos...</p>
+            ) : (
+              <>
+                {startDate && endDate ? (
+                  vehiculosDisponibles.length > 0 ? (
+                    <Carousel
+                      vehicles={vehiculosDisponibles}
+                      options={OPTIONS}
+                      onSelectVehicle={handleSelectVehicle}
+                      selectedVehicleId={selectedVehicle}
+                    />
+                  ) : (
+                    <p className="text-gray-400">No hay vehículos disponibles en el rango de fechas seleccionado.</p>
+                  )
+                ) : (
+                  <p className="text-gray-400">Por favor, selecciona las fechas de inicio y fin para ver los vehículos disponibles.</p>
+                )}
+              </>
+            )}
+          </div>
 
-        <div className="flex-shrink-0 mt-4">
-          <button
-            className="w-full bg-green-600 mb-4 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
-            onClick={handleCreateReserva}
-          >
-            Reservar
-          </button>
+          <div className="flex-grow z-20 mb-4">
+            <h2 className="text-2xl font-semibold mb-2">Seleccionar Destino en el Mapa</h2>
+            <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} />
+          </div>
 
-          <button
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all duration-300 transform"
-            onClick={() => router.push("/reservas")}
-          >
-            Volver
-          </button>
+          <div className="flex-shrink-0 mt-4">
+            <button
+              className="w-full bg-green-600 mb-4 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
+              onClick={handleCreateReserva}
+            >
+              Reservar
+            </button>
+
+            <button
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all duration-300 transform"
+              onClick={() => router.push("/reservas")}
+            >
+              Volver
+            </button>
+          </div>
         </div>
-      </div>
+      </Suspense>
     </ProtectedRoute>
   );
 };
