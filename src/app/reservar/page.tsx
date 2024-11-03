@@ -1,6 +1,9 @@
+// /app/reservar/page.tsx
+
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useVehiculo, Vehiculo } from "../context/VehiculoContext";
 import { useAuth } from "../context/AuthContext";
 import { useReserva } from "../context/ReservesContext";
@@ -14,7 +17,7 @@ import { es } from "date-fns/locale";
 import dynamic from "next/dynamic";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { isSameDay, setHours, setMinutes } from "date-fns";
-import "tailwindcss/tailwind.css"; // Asegúrate de tener Tailwind CSS configurado
+import "tailwindcss/tailwind.css";
 
 const MapPickCoordinates = dynamic(
   () => import("../components/Maps/MapPickCoordinates"),
@@ -27,12 +30,11 @@ const OPTIONS: EmblaOptionsType = {
   skipSnaps: false,
 };
 
-interface ReservaViajeProps {
-  vehicleIdFromQuery: string | null;
-}
-
-const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
+const ReservaViaje = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const vehicleIdFromQuery = searchParams.get("vehiculoId") || null;
+
   const { vehiculos, fetchVehiculos } = useVehiculo();
   const { reservas, fetchReservas } = useReserva();
   const { authenticatedUser } = useAuth();
@@ -41,7 +43,10 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [pickedCoordinates, setPickedCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [pickedCoordinates, setPickedCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [vehiculosDisponibles, setVehiculosDisponibles] = useState<Vehiculo[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
