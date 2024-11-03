@@ -640,13 +640,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <p>{control.vehicle.id}</p>
           </div>
           {/* Muestra el mapa si el tipo es CORRECTIVE */}
-          {control.type === "CORRECTIVE" && (
+          {/* {control.type === "CORRECTIVE" && (
             <div className="mt-4">
               <MapVehiculo
                 coordinates={control.vehicle.coordinates}
               />
             </div>
-          )}
+          )} */}
         </div>
         <div className="flex justify-between items-center border-t pt-3 border-gray-700">
           <div className="flex items-center gap-2 text-gray-300">
@@ -778,7 +778,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
                       {selectedProductsList.map((item, index) => (
                         <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
-                          <span className="font-semibold">{item.name} - {item.quantity}</span>
+                          <span className="font-semibold">{item.name} - {item.brand}</span>
                           <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
                         </li>
                       ))}
@@ -787,13 +787,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     {/* Formulario de selección visible solo cuando el estado es DOING */}
                     {control.status === "DOING" && (
                       <>
-                        <TextField
-                          select
-                          label="Seleccionar categoría"
-                          value={selectedCategory}
-                          onChange={handleCategoryChange}
+                        <TextField select label="Seleccionar categoría" value={selectedCategory} onChange={handleCategoryChange}
                           className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
                           InputProps={{
+                            style: { color: "#ffffff" },
                             startAdornment: (
                               <InputAdornment position="start">
                                 <FaBox className="text-gray-300" />
@@ -802,11 +799,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                           }}
                           InputLabelProps={{ style: { color: "#e2e2e2" } }}
                           SelectProps={{
-                            MenuProps: {
-                              PaperProps: {
-                                style: { maxHeight: 200, width: 400 }
-                              }
-                            }
+                            MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } },
                           }}
                         >
                           {categorias.map((categoria, index) => (
@@ -816,14 +809,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
                           ))}
                         </TextField>
 
-                        <TextField
-                          select
-                          label="Seleccionar producto"
-                          value={selectedProductId}
-                          onChange={handleProductSelect}
+                        <TextField select label="Seleccionar producto" value={selectedProductId} onChange={handleProductSelect}
                           className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
                           disabled={!filteredProducts.length}
-                          InputProps={{
+                          InputProps={{ 
+                            style: { color: "#ffffff" },
                             startAdornment: (
                               <InputAdornment position="start">
                                 <FaBox className="text-gray-300" />
@@ -831,13 +821,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                             ),
                           }}
                           InputLabelProps={{ style: { color: "#e2e2e2" } }}
-                          SelectProps={{
-                            MenuProps: {
-                              PaperProps: {
-                                style: { maxHeight: 200, width: 400 }
-                              }
-                            }
-                          }}
+                          SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200, width: 400 } } } }}
                         >
                           {filteredProducts.map((producto) => (
                             <MenuItem key={producto.id} value={producto.id}>
@@ -846,28 +830,27 @@ const TaskCard: React.FC<TaskCardProps> = ({
                           ))}
                         </TextField>
 
-                        <TextField
-                          label="Cantidad"
-                          type="number"
-                          value={quantity}
-                          onChange={handleQuantityChange}
+                        <TextField label="Cantidad" type="number" value={quantity} onChange={handleQuantityChange} InputProps={{ style: { color: "#ffffff" }, } } InputLabelProps={{ style: { color: "#e2e2e2" } }}
                           className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
                         />
 
-                        <Button
-                          onClick={handleAddProductToList}
-                          variant="contained"
-                          color="primary"
-                          className="mt-2"
-                        >
+                        <Button onClick={handleAddProductToList} variant="contained" color="primary" className="mt-2">
                           Agregar a la lista
                         </Button>
                       </>
                     )}
                   </div>
                 )}
-              {control.type === "CORRECTIVE" && <div className="mt-4"><h4 className="text-xl font-semibold">Ubicación</h4><div className="h-64 rounded-lg shadow-lg flex items-center justify-center"><MapVehiculo coordinates={control.vehicle.coordinates} /></div></div>}
-              <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={closeModal}>Cerrar</button>
+              {control.type === "CORRECTIVE" &&
+                <div className="mt-4">
+                  <h4 className="text-xl font-semibold">Ubicación</h4>
+                  <div className="h-64 rounded-lg shadow-lg flex items-center justify-center">
+                    <MapVehiculo coordinates={control.vehicle.coordinates} />
+                  </div>
+                </div>}
+              <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={closeModal}>
+                Cerrar
+              </button>
             </div>
           </div>
         </div>
