@@ -1,7 +1,4 @@
-// /app/reservar/page.tsx
-
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useVehiculo, Vehiculo } from "../context/VehiculoContext";
@@ -33,20 +30,17 @@ const OPTIONS: EmblaOptionsType = {
 const ReservaViaje = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const vehicleIdFromQuery = searchParams.get("vehiculoId") || null;
+  const vehicleIdFromQuery = searchParams.get("vehiculoId");
 
   const { vehiculos, fetchVehiculos } = useVehiculo();
   const { reservas, fetchReservas } = useReserva();
   const { authenticatedUser } = useAuth();
 
-  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(vehicleIdFromQuery);
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [pickedCoordinates, setPickedCoordinates] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [pickedCoordinates, setPickedCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [vehiculosDisponibles, setVehiculosDisponibles] = useState<Vehiculo[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -65,9 +59,7 @@ const ReservaViaje = () => {
       (reserva) => reserva.vehicle_id === vehicleId
     );
 
-    if (reservasVehiculo.length === 0) {
-      return true;
-    }
+    if (reservasVehiculo.length === 0) return true;
 
     return !reservasVehiculo.some((reserva) => {
       const reservaStart = new Date(reserva.date_reserve);
@@ -95,7 +87,7 @@ const ReservaViaje = () => {
           } else {
             Swal.fire(
               "Vehículo no disponible",
-              "El vehículo seleccionado no está disponible para las fechas seleccionadas. Por favor, selecciona otro vehículo o cambia las fechas.",
+              `El vehículo ${vehiculo.brand} ${vehiculo.model} no está disponible para las fechas seleccionadas. Por favor, selecciona otro vehículo o cambia las fechas.`,
               "warning"
             );
             const disponibles = vehiculos.filter(
@@ -183,8 +175,6 @@ const ReservaViaje = () => {
       date_finish_reserve: endDate.toISOString(),
     };
 
-    console.log("Datos de la solicitud:", JSON.stringify(requestData, null, 2));
-
     try {
       const response = await axios.post(
         "https://fleet-manager-vrxj.onrender.com/api/reserves",
@@ -192,18 +182,10 @@ const ReservaViaje = () => {
       );
 
       if (response.status === 201) {
-        Swal.fire(
-          "Reserva creada",
-          "Tu reserva se ha creado exitosamente.",
-          "success"
-        );
+        Swal.fire("Reserva creada", "Tu reserva se ha creado exitosamente.", "success");
         router.push("/reservas");
       } else {
-        Swal.fire(
-          "Error",
-          "No se pudo crear la reserva. Inténtalo nuevamente.",
-          "error"
-        );
+        Swal.fire("Error", "No se pudo crear la reserva. Inténtalo nuevamente.", "error");
       }
     } catch (error) {
       Swal.fire("Error", "Ocurrió un error al crear la reserva.", "error");
@@ -218,14 +200,10 @@ const ReservaViaje = () => {
         </div>
 
         <div className="flex-shrink-0 mb-6 relative z-30">
-          <h2 className="text-2xl font-semibold mb-2">
-            Seleccionar Fechas del Viaje
-          </h2>
+          <h2 className="text-2xl font-semibold mb-2">Seleccionar Fechas del Viaje</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Fecha y hora de inicio
-              </label>
+              <label className="block text-sm font-medium mb-2">Fecha y hora de inicio</label>
               <DatePicker
                 selected={startDate}
                 onChange={(date: Date | null) => {
@@ -239,16 +217,12 @@ const ReservaViaje = () => {
                 placeholderText="Selecciona fecha y hora de inicio"
                 className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 locale={es}
-                popperClassName="react-datepicker-popper"
                 minDate={new Date()}
-                calendarClassName="responsive-calendar"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Fecha y hora de fin
-              </label>
+              <label className="block text-sm font-medium mb-2">Fecha y hora de fin</label>
               <DatePicker
                 selected={endDate}
                 onChange={(date: Date | null) => {
@@ -262,19 +236,7 @@ const ReservaViaje = () => {
                 placeholderText="Selecciona fecha y hora de fin"
                 className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 locale={es}
-                popperClassName="react-datepicker-popper"
                 minDate={startDate || new Date()}
-                minTime={
-                  startDate && endDate && isSameDay(startDate, endDate)
-                    ? startDate
-                    : setHours(setMinutes(new Date(), 0), 0)
-                }
-                maxTime={
-                  startDate && endDate && isSameDay(startDate, endDate)
-                    ? setHours(setMinutes(new Date(startDate), 59), 23)
-                    : setHours(setMinutes(new Date(), 59), 23)
-                }
-                calendarClassName="responsive-calendar"
               />
             </div>
           </div>
@@ -282,9 +244,7 @@ const ReservaViaje = () => {
 
         {!vehicleIdFromQuery && (
           <div className="flex-shrink-0 mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Buscar vehículo por patente, marca o modelo
-            </label>
+            <label className="block text-sm font-medium mb-2">Buscar vehículo por patente, marca o modelo</label>
             <input
               type="text"
               placeholder="Buscar..."
@@ -310,23 +270,17 @@ const ReservaViaje = () => {
                     selectedVehicleId={selectedVehicle}
                   />
                 ) : (
-                  <p className="text-gray-400">
-                    No hay vehículos disponibles en el rango de fechas seleccionado.
-                  </p>
+                  <p className="text-gray-400">No hay vehículos disponibles en el rango de fechas seleccionado.</p>
                 )
               ) : (
-                <p className="text-gray-400">
-                  Por favor, selecciona las fechas de inicio y fin para ver los vehículos disponibles.
-                </p>
+                <p className="text-gray-400">Por favor, selecciona las fechas de inicio y fin para ver los vehículos disponibles.</p>
               )}
             </>
           )}
         </div>
 
         <div className="flex-grow z-20 mb-4">
-          <h2 className="text-2xl font-semibold mb-2">
-            Seleccionar Destino en el Mapa
-          </h2>
+          <h2 className="text-2xl font-semibold mb-2">Seleccionar Destino en el Mapa</h2>
           <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} />
         </div>
 
