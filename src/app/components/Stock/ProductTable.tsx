@@ -40,6 +40,12 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
 
   const handleView = (id: string) => {
     router.push(`/productos/${id}`);
+    // router.push(`productos/intermediario`);
+  };
+
+  const handleInter = (id: string) => {
+    // router.push(`/productos/intermediario/?id=${id}`);
+    router.push(`/inter_p/${id}`);
   };
 
   useEffect(() => {
@@ -91,7 +97,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
         <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
           {products.map((product) => {
             // Usamos una ruta relativa en el QR para evitar problemas con diferentes dominios
-            const qrValue = `/productos/${product.id}`;
+            // const qrValue = `/productos/${product.id}/page`;
+            const qrValue = `${window.location.origin}/inter_p/${product.id}`;
             return (
 
               <tr key={product.id} className={""}>
@@ -109,7 +116,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
                     aria-label="Ver producto"
                     color="primary"
                     title="Ver producto"
-                    onClick={() => handleView(product.id)}
+                    onClick={() => handleInter(product.id)}
+                    // onClick={() => handleInter(product.id)}
                   >
                     <VisibilityIcon />
                   </IconButton>
