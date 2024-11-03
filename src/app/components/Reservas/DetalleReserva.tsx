@@ -101,7 +101,7 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
 
         {/* Detalles del Vehículo */}
         {vehiculo && (
-          <div className="mb-6 bg-gray-700 p-6 rounded-lg shadow-md mb-6">
+          <div className="mb-6 bg-gray-700 p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-semibold text-white mb-4">Detalles del Vehículo</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -124,7 +124,7 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
         )}
 
         {/* Detalles de la Reserva */}
-        <div className="mb-6 bg-gray-700 p-6 rounded-lg shadow-md mb-6">
+        <div className="bg-gray-700 p-6 rounded-lg shadow-md mb-6">
           <h2 className="text-2xl font-semibold text-white mb-4">Detalles de la Reserva</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -165,8 +165,10 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
         {/* Ruta del Viaje */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold mb-4">Ruta del Viaje</h2>
-          <div className="w-full h-64 rounded-lg overflow-hidden">
-            <LeafletMap routes={reserva.trip.routes} />
+          <div className="w-full h-64 rounded-lg overflow-hidden relative z-0">
+            {typeof window !== "undefined" && (
+              <LeafletMap routes={reserva.trip.routes} />
+            )}
           </div>
         </div>
 
