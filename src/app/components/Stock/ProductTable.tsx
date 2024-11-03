@@ -40,11 +40,9 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
 
   const handleView = (id: string) => {
     router.push(`/productos/${id}`);
-    // router.push(`productos/intermediario`);
   };
 
   const handleInter = (id: string) => {
-    // router.push(`/productos/intermediario/?id=${id}`);
     router.push(`/inter_p/${id}`);
   };
 
@@ -117,7 +115,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
                     color="primary"
                     title="Ver producto"
                     onClick={() => handleInter(product.id)}
-                    // onClick={() => handleInter(product.id)}
+                    // onClick={() => handleView(product.id)}
                   >
                     <VisibilityIcon />
                   </IconButton>

@@ -42,7 +42,7 @@ const ProductoInterPage = () => {
         </Link>
         
         <Link
-          href={`/productos/${productoData.id}`}
+          href={`FormAddProductoOC/${productoData.id}`}
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounder-lg flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105"
         >
           Agregar Producto a OC
@@ -51,10 +51,10 @@ const ProductoInterPage = () => {
         {/* Botón de Volver */}
         <div className="flex justify-center mt-10">
           <Link
-            href={`/productos/${productoData.id}`}
+            href={`/productos`}
             className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center"
           >
-            Volver al Detalle del Vehículo
+            Volver a productos
           </Link>
         </div>
       </div>
