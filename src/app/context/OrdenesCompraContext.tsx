@@ -12,7 +12,6 @@ import * as XLSX from 'xlsx';
 
 const apiOrdenesDeCompraBackend = `https://fleet-manager-vrxj.onrender.com/api/orders`;
 const apiProveedoresBackend = `https://fleet-manager-vrxj.onrender.com/api/providers`;
-const apiProductosBackend = `https://fleet-manager-vrxj.onrender.com/api/products`;
 
 export interface Proveedor {
   id: string;
@@ -60,9 +59,8 @@ export interface CreacionOrdenDeCompra {
 interface OrdenDeCompraContextProps {
   ordenesDeCompra: OrdenDeCompra[];
   proveedores: Proveedor[];
-  productos: Producto[];
   fetchOrdenesDeCompra: () => void;
-  fetchProductos: () => void;
+  fetchProductos: (providerId: string) => Promise<Producto[]>;
   fetchProveedores: () => void;
   createOrdenDeCompra: (provider_id: string) => Promise<void>;
   actualizarEstadoOrdenDeCompra: (id: string, estado: string) => Promise<void>;
@@ -88,7 +86,6 @@ export const useOrdenesDeCompra = () => {
 export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => {
   const [ordenesDeCompra, setOrdenesDeCompra] = useState<OrdenDeCompra[]>([]);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
-  const [productos, setProductos] = useState<Producto[]>([]);
 
   const fetchOrdenesDeCompra = useCallback(async () => {
     try {
@@ -108,10 +105,10 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
     }
   }, []);
 
-  const fetchProductos = useCallback(async () => {
+  const fetchProductos = useCallback(async (providerId: string) => {
     try {
-      const response = await axios.get(apiProductosBackend);
-      setProductos(response.data);
+      const response = await axios.get(`${apiProveedoresBackend}/${providerId}/products`);
+      return response.data;
     } catch (error) {
       console.error("Error al obtener los productos:", error);
     }
@@ -174,7 +171,6 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
       value={{
         ordenesDeCompra,
         proveedores,
-        productos,
         fetchOrdenesDeCompra,
         fetchProductos,
         fetchProveedores,

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useVehiculo, Vehiculo } from "../context/VehiculoContext";
 import { useAuth } from "../context/AuthContext";
 import { useReserva } from "../context/ReservesContext";
@@ -29,9 +29,13 @@ const OPTIONS: EmblaOptionsType = {
 
 const ReservaViaje = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const vehicleIdFromQuery = searchParams.get("vehiculoId");
+
   const { vehiculos, fetchVehiculos } = useVehiculo();
   const { reservas, fetchReservas } = useReserva();
   const { authenticatedUser } = useAuth();
+
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -84,40 +88,69 @@ const ReservaViaje = () => {
   // Efecto para actualizar la lista de vehículos disponibles cuando las fechas o el término de búsqueda cambian
   useEffect(() => {
     if (vehiculos.length > 0 && reservas.length >= 0 && startDate && endDate) {
-      const disponibles = vehiculos.filter(
-        (vehiculo) => isVehicleAvailable(vehiculo.id)
-      );
+      // Si tenemos vehicleIdFromQuery, solo nos interesa ese vehículo
+      if (vehicleIdFromQuery) {
+        const vehiculo = vehiculos.find((v) => v.id === vehicleIdFromQuery);
 
-      // Aplicar el filtro de búsqueda
-      const filtrados = disponibles.filter((vehiculo) => {
-        const search = searchTerm.toLowerCase();
-        return (
-          vehiculo.id.toLowerCase().includes(search) ||
-          vehiculo.brand.toLowerCase().includes(search) ||
-          vehiculo.model.toLowerCase().includes(search)
-          // Añadir más campos si es necesario
+        if (vehiculo) {
+          if (isVehicleAvailable(vehiculo.id)) {
+            setVehiculosDisponibles([vehiculo]);
+            setSelectedVehicle(vehiculo.id);
+          } else {
+            // Si el vehículo no está disponible, mostramos un mensaje
+            Swal.fire(
+              "Vehículo no disponible",
+              "El vehículo seleccionado no está disponible para las fechas seleccionadas. Por favor, selecciona otro vehículo o cambia las fechas.",
+              "warning"
+            );
+            // Mostrar otros vehículos disponibles
+            const disponibles = vehiculos.filter(
+              (v) => v.id !== vehiculo.id && isVehicleAvailable(v.id)
+            );
+            setVehiculosDisponibles(disponibles);
+            setSelectedVehicle(null);
+          }
+        } else {
+          // Si el vehículo no existe, mostramos un mensaje
+          Swal.fire(
+            "Vehículo no encontrado",
+            "El vehículo especificado no existe.",
+            "error"
+          );
+          setVehiculosDisponibles([]);
+          setSelectedVehicle(null);
+        }
+      } else {
+        // Si no hay vehicleIdFromQuery, mostramos los vehículos disponibles normalmente
+        const disponibles = vehiculos.filter((vehiculo) =>
+          isVehicleAvailable(vehiculo.id)
         );
-      });
 
-      setVehiculosDisponibles(filtrados);
+        // Aplicar el filtro de búsqueda
+        const filtrados = disponibles.filter((vehiculo) => {
+          const search = searchTerm.toLowerCase();
+          return (
+            vehiculo.id.toLowerCase().includes(search) ||
+            vehiculo.brand.toLowerCase().includes(search) ||
+            vehiculo.model.toLowerCase().includes(search)
+          );
+        });
+
+        setVehiculosDisponibles(filtrados);
+      }
     } else {
-      // Si no hay fechas seleccionadas, mostramos todos los vehículos disponibles
-      const disponibles = vehiculos;
-
-      // Aplicar el filtro de búsqueda
-      const filtrados = disponibles.filter((vehiculo) => {
-        const search = searchTerm.toLowerCase();
-        return (
-          vehiculo.id.toLowerCase().includes(search) ||
-          vehiculo.brand.toLowerCase().includes(search) ||
-          vehiculo.model.toLowerCase().includes(search)
-          // Añadir más campos si es necesario
-        );
-      });
-
-      setVehiculosDisponibles(filtrados);
+      // Si no hay fechas seleccionadas, reiniciamos la lista
+      setVehiculosDisponibles([]);
+      setSelectedVehicle(null);
     }
-  }, [vehiculos, reservas, startDate, endDate, searchTerm]);
+  }, [
+    vehiculos,
+    reservas,
+    startDate,
+    endDate,
+    searchTerm,
+    vehicleIdFromQuery,
+  ]);
 
   // Función para manejar la selección del vehículo
   const handleSelectVehicle = (vehicleId: string) => {
@@ -263,19 +296,21 @@ const ReservaViaje = () => {
           </div>
         </div>
 
-        {/* Barra de búsqueda */}
-        <div className="flex-shrink-0 mb-4">
-          <label className="block text-sm font-medium mb-2">
-            Buscar vehículo por patente, marca o modelo
-          </label>
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        {/* Barra de búsqueda (solo si no hay vehicleIdFromQuery) */}
+        {!vehicleIdFromQuery && (
+          <div className="flex-shrink-0 mb-4">
+            <label className="block text-sm font-medium mb-2">
+              Buscar vehículo por patente, marca o modelo
+            </label>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        )}
 
         {/* Seleccionar Vehículo */}
         <div className="flex-shrink-0 mb-4">
@@ -294,14 +329,12 @@ const ReservaViaje = () => {
                   />
                 ) : (
                   <p className="text-gray-400">
-                    No hay vehículos disponibles en el rango de fechas
-                    seleccionado.
+                    No hay vehículos disponibles en el rango de fechas seleccionado.
                   </p>
                 )
               ) : (
                 <p className="text-gray-400">
-                  Por favor, selecciona las fechas de inicio y fin para ver los
-                  vehículos disponibles.
+                  Por favor, selecciona las fechas de inicio y fin para ver los vehículos disponibles.
                 </p>
               )}
             </>
