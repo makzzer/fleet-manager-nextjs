@@ -38,10 +38,12 @@ const SolicitarAsistenciaForm: React.FC<SolicitarAsistenciaFormProps> = ({ vehic
           'No tienes reservas',
           'No tienes reservas para este vehículo.',
           'warning'
-        );
+        ).then(() => {
+          router.push(`/pivot_v/${vehicleIdFromQuery}`);
+        });
       }
     }
-  }, [vehicleIdFromQuery, reservas, authenticatedUser]);
+  }, [vehicleIdFromQuery, reservas, authenticatedUser, router]);
 
   const createAlert = async (vehicle_id: string) => {
     try {

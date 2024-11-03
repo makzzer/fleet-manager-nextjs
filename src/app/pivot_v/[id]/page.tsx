@@ -2,13 +2,14 @@
 
 "use client";
 
+import Link from "next/link";
 import React from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useVehiculo } from "@/app/context/VehiculoContext";
+import { FiEye, FiClipboard, FiTool } from "react-icons/fi"; // Importar íconos de react-icons
 
 const VehiculoPivotPage = () => {
   const { id } = useParams();
-  const router = useRouter();
   const { vehiculos } = useVehiculo();
 
   const vehiculoData = vehiculos.find((vehiculo) => vehiculo.id === id);
@@ -28,41 +29,42 @@ const VehiculoPivotPage = () => {
       </h1>
 
       <div className="flex flex-col md:flex-row gap-6">
-        <button
-          onClick={() =>
-            router.push(`/solicitarasistencia?vehiculoId=${vehiculoData.id}`)
-          }
-          className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+        {/* Ver Detalles del Vehículo */}
+        <Link
+          href={`/vehiculos/${vehiculoData.id}`}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105"
         >
-          Solicitar Asistencia
-        </button>
+          <FiEye className="text-2xl mr-2" />
+          <span>Ver Detalles</span>
+        </Link>
 
-        <button
-          onClick={() =>
-            router.push(`/reservar?vehiculoId=${vehiculoData.id}`)
-          }
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+        {/* Reservar */}
+        <Link
+          href={`/reservar?vehiculoId=${vehiculoData.id}`}
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105"
         >
-          Iniciar Reserva
-        </button>
+          <FiClipboard className="text-2xl mr-2" />
+          <span>Reservar</span>
+        </Link>
 
-        {/* Nuevo botón "Ver Información" */}
-        <button
-          onClick={() => router.push(`/vehiculos/${vehiculoData.id}`)}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+        {/* Solicitar Asistencia */}
+        <Link
+          href={`/solicitarasistencia?vehiculoId=${vehiculoData.id}`}
+          className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105"
         >
-          Ver Información
-        </button>
+          <FiTool className="text-2xl mr-2" />
+          <span>Solicitar Asistencia</span>
+        </Link>
       </div>
 
       {/* Botón de Volver */}
       <div className="flex justify-center mt-10">
-        <button
-          onClick={() => router.push(`/vehiculos/${vehiculoData.id}`)}
-          className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+        <Link
+          href={`/vehiculos/${vehiculoData.id}`}
+          className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center"
         >
           Volver al Detalle del Vehículo
-        </button>
+        </Link>
       </div>
     </div>
   );
