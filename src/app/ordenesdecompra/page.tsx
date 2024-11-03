@@ -18,7 +18,6 @@ import { MdOutlineAddShoppingCart } from "react-icons/md";
 const OrdenesDeCompra = () => {
   const {
     ordenesDeCompra,
-    productos,
     proveedores,
     fetchOrdenesDeCompra,
     fetchProductos,
@@ -68,16 +67,6 @@ const OrdenesDeCompra = () => {
     };
     loadProveedores();
   }, [fetchProveedores]);
-
-  // Carga de productos
-  useEffect(() => {
-    const loadProductos = async () => {
-      setLoading(true);
-      await fetchProductos();
-      setLoading(false);
-    };
-    loadProductos();
-  }, [fetchProductos]);
 
   useEffect(() => {
     const table = tableRef.current;
@@ -249,11 +238,10 @@ const OrdenesDeCompra = () => {
     });
   };
 
-  const handleAddProduct = (orden: OrdenDeCompra) => {
-    // Filtra los productos por providerId
-    const filteredProducts = productos.filter(producto => producto.preference_provider_id === orden.provider.id);
+  const handleAddProduct = async (orden: OrdenDeCompra) => {
+    const productos = await fetchProductos(orden.provider.id);
 
-    const productosOptions = filteredProducts
+    const productosOptions = productos
       .map(
         (producto) =>
           `<option value="${producto.id}">${producto.name} - ${producto.brand}</option>`
