@@ -317,15 +317,6 @@ const Vehiculos = () => {
               {/* Texto se oculta en pantallas pequeñas */}
             </button>
 
-            {/* Botón para escanear QR */}
-            <button
-              onClick={handleScanQR}
-              className="flex items-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
-            >
-              <FiCamera className="h-5 w-5 mr-2" /> {/* Icono */}
-              <span className="hidden sm:inline">Escanear QR</span>{" "}
-              {/* Texto se oculta en pantallas pequeñas */}
-            </button>
           </div>
         </div>
 

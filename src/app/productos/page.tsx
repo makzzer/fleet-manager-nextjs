@@ -107,11 +107,11 @@ const Stock = () => {
           return removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm);
         }
         return (removeAccents(producto.name.toLowerCase()).includes(normalizedSearchTerm) ||
-                removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm));
+          removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm));
       });
     }
     setFilteredProductos(filtered.slice(0, loadMoreCount));
-  }, [productos, searchTerm, selectedCategory, selectedFilter, loadMoreCount]);  
+  }, [productos, searchTerm, selectedCategory, selectedFilter, loadMoreCount]);
 
   const handleLoadMore = () => {
     setLoadMoreCount(loadMoreCount + 5); // Cargar 6 proveedores más
@@ -144,8 +144,8 @@ const Stock = () => {
     setSelectedCategory(selectedCategory);
   };
 
-   // Función para escanear códigos QR
-   const handleScanQRClick = () => {
+  // Función para escanear códigos QR
+  const handleScanQRClick = () => {
     MySwal.fire({
       title: "Escanear Código QR",
       html: (
@@ -183,8 +183,8 @@ const Stock = () => {
       .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
 
     const proveedoresOptions = proveedores
-      .map( (proveedor) => `<option value="${proveedor.id}">${proveedor.name}</option>` ).join("");
-    
+      .map((proveedor) => `<option value="${proveedor.id}">${proveedor.name}</option>`).join("");
+
 
     Swal.fire({
       title: "Agregar Producto",
@@ -243,7 +243,7 @@ const Stock = () => {
         const quantity = quantityElement?.value;
         const measurement = measurementElement?.value;
         const price = priceElement?.value;
-        const preferenceProviderId= preferenceProviderIdElement?.value;
+        const preferenceProviderId = preferenceProviderIdElement?.value;
         const minStock = minStockElement?.value;
 
         if (!name || !brand || !description || !category || !quantity || !measurement || !price || !preferenceProviderId || !minStock) {
@@ -288,22 +288,14 @@ const Stock = () => {
             Gestión de Productos
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
               onClick={handleAgregarProducto}
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
             >
               <FaPlusCircle className="mr-2" /> Agregar Producto
             </button>
-            {/* Botón para escanear QR */}
-            <button
-              onClick={handleScanQRClick}
-              className="flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
-            >
-              <FaCamera className="h-5 w-5 mr-2" /> {/* Icono */}
-              <span className="hidden sm:inline">Escanear QR</span>{" "}
-              {/* Texto se oculta en pantallas pequeñas */}
-            </button>
+
             <button
               onClick={exportProductoToExcel}
               className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
@@ -320,7 +312,7 @@ const Stock = () => {
 
         {filteredProductos && filteredProductos.length > 0 ? (
           // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
-          <ProductTable products={filteredProductos} measurementUnits={unidadesDeMedida}/>
+          <ProductTable products={filteredProductos} measurementUnits={unidadesDeMedida} />
         ) : (
           <div className="flex flex-col items-center justify-center mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-lg font-semibold text-gray-800">
