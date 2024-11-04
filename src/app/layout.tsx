@@ -40,13 +40,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           {/* Contenido principal */}
 
 
-          <div className="flex-grow flex flex-col min-h-screen">
-            <Navbar2 />
 
 
             {!isLandingPage
             ? (
-            <>
+              <>
+              <div className="flex-grow flex flex-col min-h-screen">
+              <Navbar2 />
             <div className="fixed z-50 md:mt-20">
               <Sidebar onToggleSidebar={handleSidebarToggle} />
             </div>
@@ -64,18 +64,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </div>
 
             </div>
+            <Footer />
+          </div>
             </>
             )
           : (
-            <div>
-                <main className="flex-grow  transition-all duration-500 mt-10 container mx-auto p-4">
+            <div className="relative">
+                <main className="flex-grow  transition-all duration-500 antialiased">
                   {children}
                 </main>
 
               </div>
           )}
-            <Footer />
-          </div>
 
         </Providers>
       </body>

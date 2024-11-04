@@ -42,6 +42,43 @@
     margin-top: 0;
   }
 
+  @layer components {
+    .btn {
+      @apply px-4 py-2 rounded-lg font-medium inline-flex items-center justify-center tracking-tight;
+    }
+
+    .btn-primary {
+      @apply bg-black text-white;
+    }
+
+    .btn-text {
+      @apply text-black bg-transparent;
+    }
+
+    .logo-ticker-image {
+      @apply h-8 w-auto;
+    }
+
+    .tag {
+      @apply text-sm inline-flex border border-[#FFF]/10 px-3 py-1 rounded-lg tracking-tight;
+    }
+
+    .section-title {
+      @apply text-center text-3xl font-bold tracking-tighter bg-gradient-to-b from-white to-blue-800 text-transparent bg-clip-text;
+    }
+
+    .section-description {
+      @apply text-center text-[22px] leading-[30px] tracking-tight;
+    }
+
+    .section-heading {
+      @apply max-w-[540px] mx-auto;
+    }
+
+    .card {
+      @apply p-10 border rounded-3xl shadow-[0_7px_14px_#F1F1F120] max-w-xs w-full;
+    }
+  }
   
   @media (min-width: 768px) {
     .embla {
