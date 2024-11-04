@@ -29,6 +29,7 @@ import Swal from "sweetalert2";
 import dynamic from "next/dynamic";
 import { Button, InputAdornment, MenuItem, TextField } from "@mui/material";
 import { useProducto } from "@/app/context/ProductoContext";
+import { useControl } from "@/app/context/ControlContext";
 
 const MapVehiculo = dynamic(
   () => import("@/app/components/Maps/MapVehiculo"),
@@ -136,6 +137,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const [showModal, setShowModal] = useState(false);
   const hasOperator = control.operator;
   const { users } = useUser();
+  const { addProductList } = useControl();
 
   const { productos, fetchProductos } = useProducto();
   const [loading, setLoading] = useState(false);
@@ -299,26 +301,79 @@ const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   const handleConfirmList = async () => {
-  if (selectedProductsList.length > 0) {
-    Swal.fire({
-      title: "¿Confirmar lista?",
-      text: "¿Estás seguro de confirmar esta lista de productos?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Confirmar",
-      cancelButtonText: "Cancelar",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        setIsListConfirmed(true);
-        Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
-        // Add code to update the control status and save the changes
-        setControlStatus({ ...controlStatus, status: "DONE" });
-        // Call API to save the changes
-        // await saveChanges(control.id, controlStatus);
+    try {
+      if (selectedProductsList.length > 0) {
+        Swal.fire({
+          title: "¿Confirmar lista?",
+          text: "¿Estás seguro de confirmar esta lista de productos?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Confirmar",
+          cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            // Mostrar alerta con barra de progreso inicial
+            Swal.fire({
+              title: "Procesando productos...",
+              html: `<div>Procesados: 0 de ${selectedProductsList.length}</div>
+                     <div class="progress-bar-container" style="width: 100%; background-color: #e0e0e0; height: 10px;">
+                       <div class="progress-bar" style="width: 0%; background-color: #4caf50; height: 100%;"></div>
+                     </div>`,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              didOpen: () => Swal.showLoading()
+            });
+  
+            const newProductsList = selectedProductsList.filter((item) => item.isNew);
+            let successCount = 0;
+            let failedCount = 0;
+  
+            for (let i = 0; i < newProductsList.length; i++) {
+              const newProduct = newProductsList[i];
+              try {
+                const result = await addProductList(control.id, newProduct.product.id, newProduct.quantity);
+                if (result) {
+                  successCount++;
+                } else {
+                  failedCount++;
+                }
+  
+                // Calcular el progreso en porcentaje
+                const progressPercentage = Math.round(((successCount + failedCount) / newProductsList.length) * 100);
+  
+                // Actualizar la barra de progreso
+                Swal.update({
+                  html: `<div>Procesados: ${successCount + failedCount} de ${newProductsList.length}</div>
+                         <div class="progress-bar-container" style="width: 100%; background-color: #e0e0e0; height: 10px;">
+                           <div class="progress-bar" style="width: ${progressPercentage}%; background-color: #4caf50; height: 100%;"></div>
+                         </div>`
+                });
+              } catch (error) {
+                console.error("Error al enviar producto al backend", error);
+                failedCount++;
+              }
+            }
+  
+            // Mostrar alerta de finalización
+            await Swal.fire({
+              title: "Carga completada",
+              html: `Productos agregados exitosamente: ${successCount}<br>Fallidos: ${failedCount}`,
+              icon: "success",
+            });
+  
+            // Actualizar el estado del control a "DONE" y guardar los cambios
+            setIsListConfirmed(true);
+            setControlStatus({ ...controlStatus, status: "DONE" });
+            // await saveChanges(control.id, controlStatus); // Descomentar si tienes la función `saveChanges`
+          }
+        });
       }
-    });
-  }
-};
+    } catch (error) {
+      console.error("Error al confirmar la lista", error);
+      Swal.fire("Error", "Hubo un problema al procesar la lista de productos", "error");
+    }
+  };
+  
 
   // Función para actualizar el stock de productos en el backend
   // const updateProductStock = async (productoListaId: string, descontar: number) => {
@@ -875,7 +930,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 (control.status === "DONE" || control.status === "DOING") && (
                   <div className="flex flex-col gap-2 items-start w-full">
                     <h4 className="text-xl font-semibold">Productos para el caso:</h4>
-                    <h4 className="text-xl font-semibold">{}</h4>
+                    <h4 className="text-xl font-semibold">{ }</h4>
                     {/* Lista de productos seleccionados solo visible cuando el estado es DONE */}
                     <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
                       {selectedProductsList && (selectedProductsList.map((item, index) => (

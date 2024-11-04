@@ -96,7 +96,7 @@ interface POSTPredictiveControl {
 interface ControlContextProps {
   controls: Control[];
   fetchControls: () => void;
-  addProductList: (control_id: string, product_id: string, quantity: number) => void;
+  addProductList: (control_id: string, product_id: string, quantity: number) => Promise<{ resultado: boolean, mensaje?: string }>;
   createCorrectiveControl: (controlCorrectivo: POSTCorrectiveControl) => void;
   createPredictiveControl: (controlPredictivo: POSTPredictiveControl) => void;
   setControlStatus: (control_id: string, new_status: string) => void;
@@ -137,8 +137,13 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     try {
       await axios.put( `${apiControles}/${control_id}/products`, { product_id, quantity } );
       fetchControls();
+      return { resultado: true };
     } catch (error) {
-      console.error("Error changing control status:", error);
+      if(axios.isAxiosError(error)){
+        return { resultado: false, mensaje: error.response?.data.message};
+      }
+      console.error("Error creating vehiculo:", error);
+      return { resultado: false, mensaje: "Ha ocurrido un error al crear el vehiculo."}
     }
   }
 
