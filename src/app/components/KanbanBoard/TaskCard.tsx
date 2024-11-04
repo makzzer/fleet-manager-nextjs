@@ -288,7 +288,6 @@ const TaskCard: React.FC<TaskCardProps> = ({
         cancelButtonText: "Cancelar",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          // Cambia el estado del control a "DONE"
           control.status = "DONE";
           setIsListConfirmed(true);
   
