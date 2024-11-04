@@ -88,7 +88,7 @@ const Testimonials = () => {
         <div className="flex justify-center">
           <div className="tag">Testimonios</div>
         </div>
-        <h2 className="section-title">Que dicen nuestros usaurios</h2>
+        <h2 className="section-title">Que dicen nuestros usuarios</h2>
         <p className="section-description">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. At possimus
           porro non, suscipit facilis rem debitis iure consectetur quasi.
