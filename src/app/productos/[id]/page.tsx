@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useProducto } from "@/app/context/ProductoContext";
-import Link from "next/link";
 import QRCode from "react-qr-code"; // Importamos el componente QRCode
 
 const ProductPage = () => {
