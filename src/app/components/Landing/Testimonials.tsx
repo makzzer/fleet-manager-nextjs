@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import React from "react";
 import { FaUser } from "react-icons/fa";
 
 const testimonials = [
@@ -61,10 +63,23 @@ const firstColumn = testimonials.slice(0, 3);
 const secondColumn = testimonials.slice(3, 6);
 const thirdColumn = testimonials.slice(6, 9);
 
-const TestimonialsColumn = (props: { testimonials: typeof testimonials, customClass?: string }) => {
+const TestimonialsColumn = (props: { testimonials: typeof testimonials, customClass?: string, customDuration?: number }) => {
   return (
-    <div className={`flex flex-col gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,white_25%,white_75%,transparent)] ${props.customClass && props.customClass}`}>
-      {props.testimonials.map(({ text, imageSrc, name, username }, index) => (
+    <div className={`${props.customClass && props.customClass}`}>
+    <motion.div 
+    animate={{
+      translateY: "-50%",
+    }}
+    transition={{
+      duration: props.customDuration || 10,
+      repeat: Infinity,
+      ease: "linear",
+      repeatType: "loop",
+    }}
+    className={`flex flex-col gap-6 pb-6`}>
+      {[...new Array(2)].fill(0).map((_, index) => (
+        <React.Fragment key={index}>
+          {props.testimonials.map(({ text, imageSrc, name, username }, index) => (
         <div key={`${username}-${index}`} className="card border-gray-900">
           <div>{text}</div>
           <div className="flex items-center gap-2 mt-5">
@@ -76,6 +91,9 @@ const TestimonialsColumn = (props: { testimonials: typeof testimonials, customCl
           </div>
         </div>
       ))}
+        </React.Fragment>
+      ))}
+    </motion.div>
     </div>
   );
 };
@@ -95,10 +113,10 @@ const Testimonials = () => {
         </p>
         </div>
       </div>
-      <div className="flex justify-center gap-6">
-        <TestimonialsColumn testimonials={firstColumn}/>
-        <TestimonialsColumn testimonials={secondColumn} customClass="hidden md:flex"/>
-        <TestimonialsColumn testimonials={thirdColumn} customClass="hidden lg:flex"/>
+      <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,white_25%,white_75%,transparent)] max-h-[738px] overflow-hidden">
+        <TestimonialsColumn testimonials={firstColumn} customDuration={15} />
+        <TestimonialsColumn testimonials={secondColumn} customClass="hidden md:block" customDuration={20} />
+        <TestimonialsColumn testimonials={thirdColumn} customClass="hidden lg:block" customDuration={25} />
       </div>
     </section>
   );
