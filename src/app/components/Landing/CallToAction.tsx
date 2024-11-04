@@ -3,7 +3,7 @@ import { FaArrowRight } from "react-icons/fa";
 const CallToAction = () => {
   return (
     <section className="bg-gradient-to-b from-gray-800 to-gray-700 py-24">
-      <div className="container">
+      <div>
         <div className="section-heading">
         <h2 className="section-title">Inicia gratis hoy</h2>
         <p className="section-description mt-5">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Alias expedita labore, dolor non minus, est perspiciatis dignissimos.</p>

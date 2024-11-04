@@ -15,7 +15,7 @@ const Header = () => {
         </div>
       </div>
       <div className="py-5">
-        <div className="container">
+        <div>
           <div className="flex items-center justify-between">
             <h1>Fleetfly</h1>
             <IoMenu className="h-5 w-5 md:hidden"/>

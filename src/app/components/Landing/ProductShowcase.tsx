@@ -4,7 +4,7 @@ const ProductShowcase = () => {
 
   return (
     <section className='bg-gradient-to-b from-gray-800 to-gray-700 py-24'>
-      <div className="container">
+      <div>
         <div className='section-heading'>
         <div className='flex justify-center'>
           <div className='tag'>Incrementa tu productividad</div>

@@ -12,9 +12,9 @@ import { motion } from "framer-motion";
 const LogoTicker = () => {
   return (
     <div className="py-8 md:py-12 bg-gray-800">
-      <div className="container">
+      <div>
         <div className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black,transparent)]">
-          <motion.div className="flex gap-24 flex-none pr-24"
+          <motion.div className="flex gap-40 flex-none pr-40"
             animate={{
               translateX: "-50%",
             }}

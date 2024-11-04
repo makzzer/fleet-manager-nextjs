@@ -4,7 +4,7 @@ import Image from "next/image";
 const Hero = () => {
   return (
     <section className="pt-8 pb-20 md:pt-5 md:pb-10 bg-[radial-gradient(ellipse_200%_100%_at_bottom_left,#18488c,#1f2937_100%)] md:px-20">
-      <div className="container">
+      <div>
         <div className="md:flex items-center">
           <div className="md:w-[600px]">
             <div className="tag">

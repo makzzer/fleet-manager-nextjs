@@ -46,7 +46,7 @@ const pricingTiers = [
 const Pricing = () => {
   return (
     <section className="py-24">
-      <div className="container">
+      <div>
         <div className="section-heading">
         <h2 className="section-title">Pricing</h2>
         <p className="section-description mt-5">
