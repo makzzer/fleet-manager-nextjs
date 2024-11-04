@@ -124,6 +124,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedProductsList, setSelectedProductsList] = useState<any[]>([]);
   const [isListConfirmed, setIsListConfirmed] = useState(false);
+  const [controlStatus, setControlStatus] = useState({
+    status: "PENDING", // Estado inicial
+    productList: [], // Lista vacía de productos al inicio
+  });
+  
 
   const usuarios = users;
   const operadores = usuarios
@@ -271,9 +276,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
       setQuantity(1);
     }
   };
-  
 
-  const handleConfirmList = () => {
+  const handleConfirmList = async () => {
     if (selectedProductsList.length > 0) {
       Swal.fire({
         title: "¿Confirmar lista?",
@@ -282,15 +286,66 @@ const TaskCard: React.FC<TaskCardProps> = ({
         showCancelButton: true,
         confirmButtonText: "Confirmar",
         cancelButtonText: "Cancelar",
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
+          // Cambia el estado del control a "DONE"
           control.status = "DONE";
           setIsListConfirmed(true);
+  
+          // Actualiza el stock de cada producto en el backend
+          for (const productoLista of selectedProductsList) {
+            await updateProductStock(productoLista.id, productoLista.quantity);
+          }
+  
           Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
         }
       });
     }
   };
+  
+  // Función para actualizar el stock de productos en el backend
+  const updateProductStock = async (productoListaId: string, descontar: number) => {
+    try {
+      // Llamada para obtener el producto actual del backend
+      const response = await fetch(`https://fleet-manager-vrxj.onrender.com/api/products/${productoListaId}`);
+      const productData = await response.json();
+  
+      // Calcula el nuevo stock
+      const newStock = productData.quantity - descontar;
+  
+      // Actualiza el stock en el backend
+      await fetch(`https://fleet-manager-vrxj.onrender.com/api/products/${productoListaId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ quantity: newStock }),
+      });
+    } catch (error) {
+      console.error("Error al actualizar el stock del producto:", error);
+      Swal.fire("Error", "Hubo un problema al actualizar el stock del producto.", "error");
+    }
+  };
+  
+
+  // const handleConfirmList = () => {
+  //   if (selectedProductsList.length > 0) {
+  //     Swal.fire({
+  //       title: "¿Confirmar lista?",
+  //       text: "¿Estás seguro de confirmar esta lista de productos?",
+  //       icon: "question",
+  //       showCancelButton: true,
+  //       confirmButtonText: "Confirmar",
+  //       cancelButtonText: "Cancelar",
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         control.status = "DONE";
+  //         setIsListConfirmed(true);
+  //         Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
+  //       }
+  //     });
+  //   }
+  // };
 
   const handleRemoveProduct = (productId: any) => {
     const updatedList = selectedProductsList.filter(
