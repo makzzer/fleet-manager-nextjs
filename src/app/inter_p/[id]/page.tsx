@@ -3,19 +3,50 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useProducto } from "@/app/context/ProductoContext";
-import { FaToolbox, FaInfoCircle, FaShoppingCart, FaArrowLeft } from "react-icons/fa"; // Importar iconos de react-icons
+import { FaToolbox, FaInfoCircle, FaShoppingCart, FaArrowLeft } from "react-icons/fa";
+import axios from "axios";
+
+// Define la interfaz del proveedor
+interface Proveedor {
+  id: string;
+  name: string;
+  email: string;
+  cuit: string;
+  phone_number: string;
+  address: string;
+}
 
 const ProductoInterPage = () => {
   const { id } = useParams();
   const { productos } = useProducto();
+  const [proveedor, setProveedor] = useState<Proveedor | null>(null);
 
+  // Encuentra el producto por ID
   const productoData = productos.find((producto) => producto.id === id);
 
+  // Cargar proveedor usando el preference_provider_id
+  useEffect(() => {
+    const fetchProveedor = async () => {
+      if (productoData?.preference_provider_id) {
+        try {
+          const response = await axios.get<Proveedor>(
+            `https://fleet-manager-vrxj.onrender.com/api/providers/${productoData.preference_provider_id}`
+          );
+          setProveedor(response.data);
+        } catch (error) {
+          console.error("Error al obtener proveedor:", error);
+          setProveedor(null); // En caso de error, se establece en null
+        }
+      }
+    };
+
+    fetchProveedor();
+  }, [productoData?.preference_provider_id]);
+
   if (!productoData) {
-    // Puedes agregar un indicador de carga o mensaje mientras se obtiene el ID
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-800">
         <p className="text-white">Cargando...</p>
@@ -35,7 +66,20 @@ const ProductoInterPage = () => {
         </div>
         <p className="text-gray-300">Marca: {productoData.brand}</p>
         <p className="text-gray-300">Precio: ${productoData.price}</p>
-        {/* Agrega más detalles del producto si lo deseas */}
+    
+
+        {/* Detalles del Proveedor */}
+        {proveedor ? (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold text-gray-300">Proveedor:</h3>
+            <p className="text-gray-300">Nombre: {proveedor.name}</p>
+            <p className="text-gray-300">Email: {proveedor.email}</p>
+            <p className="text-gray-300">Teléfono: {proveedor.phone_number}</p>
+            <p className="text-gray-300">Dirección: {proveedor.address}</p>
+          </div>
+        ) : (
+          <p className="text-gray-300 mt-4">Cargando detalles del proveedor...</p>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">

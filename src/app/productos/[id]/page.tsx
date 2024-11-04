@@ -40,7 +40,7 @@ const ProductPage = () => {
   }
 
   // Usamos una ruta relativa en el QR para evitar problemas con diferentes dominios
-  const qrValue = `/productos/${productoData.id}`;
+  const qrValue = `${window.location.origin}/inter_p/${productoData.id}`;
 
   return (
     <div className="min-h-screen bg-gray-900 p-8 text-center">

@@ -1,23 +1,43 @@
-// /app/productos/FormAddProductoOC/[id]/page.tsx
-
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useProducto } from "@/app/context/ProductoContext";
 import { useOrdenesDeCompra } from "@/app/context/OrdenesCompraContext";
 import Swal from "sweetalert2";
 
-const FormAddProductoOCQR = () => {
+const FormAddProductoOC = () => {
   const { id } = useParams(); // ID del producto desde la URL
   const router = useRouter();
-  const { productos } = useProducto();
-  const { ordenesDeCompra, agregarProductosOrdenDeCompra } = useOrdenesDeCompra();
 
-  const producto = productos.find((p) => p.id === id);
+  const { productos, fetchProductos } = useProducto();
+  const {
+    ordenesDeCompra,
+    fetchOrdenesDeCompra,
+    agregarProductosOrdenDeCompra,
+  } = useOrdenesDeCompra();
 
+  const [producto, setProducto] = useState<any>(null);
   const [cantidad, setCantidad] = useState<number>(1);
   const [selectedOrdenId, setSelectedOrdenId] = useState<string>("");
+
+  useEffect(() => {
+    const cargarProductos = async () => {
+      await fetchProductos();
+    };
+    cargarProductos();
+  }, [fetchProductos]);
+
+  useEffect(() => {
+    const cargarOrdenes = async () => {
+      await fetchOrdenesDeCompra();
+    };
+    cargarOrdenes();
+  }, [fetchOrdenesDeCompra]);
+
+  useEffect(() => {
+    const productoEncontrado = productos.find((p: any) => p.id === id);
+    setProducto(productoEncontrado);
+  }, [productos, id]);
 
   if (!producto) {
     return (
@@ -27,8 +47,13 @@ const FormAddProductoOCQR = () => {
     );
   }
 
+  // Filtrar órdenes de compra por estado y por proveedor asociado al producto
   const ordenesOptions = ordenesDeCompra
-    .filter((orden) => orden.status === "CREATED" || orden.status === "APPROVED")
+    .filter(
+      (orden) =>
+        (orden.status === "CREATED" || orden.status === "APPROVED") &&
+        orden.provider.id === producto.preference_provider_id
+    )
     .map((orden) => (
       <option key={orden.id} value={orden.id}>
         {`Orden #${orden.id} - Proveedor: ${orden.provider.name}`}
@@ -44,8 +69,15 @@ const FormAddProductoOCQR = () => {
     }
 
     try {
-      // Aquí puedes agregar el monto si lo deseas
       const amount = producto.price * cantidad;
+
+      // Log para verificar los datos que se enviarán
+      console.log("Datos que se enviarán en el PUT:", {
+        orden_id: selectedOrdenId,
+        product_id: producto.id,
+        quantity: cantidad,
+        amount: amount,
+      });
 
       await agregarProductosOrdenDeCompra(selectedOrdenId, producto.id, cantidad, amount);
 
@@ -53,6 +85,7 @@ const FormAddProductoOCQR = () => {
         router.push(`/ordenesdecompra/${selectedOrdenId}`);
       });
     } catch (error) {
+      console.error("Error al agregar el producto a la orden de compra:", error);
       Swal.fire("Error", "Ocurrió un error al agregar el producto.", "error");
     }
   };
@@ -60,7 +93,9 @@ const FormAddProductoOCQR = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white p-4">
       <div className="bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-blue-400">Agregar Producto a Orden de Compra</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-blue-400">
+          Agregar Producto a Orden de Compra
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -76,7 +111,10 @@ const FormAddProductoOCQR = () => {
           </div>
 
           <div>
-            <label htmlFor="cantidad" className="block text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="cantidad"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
               Cantidad
             </label>
             <input
@@ -84,13 +122,16 @@ const FormAddProductoOCQR = () => {
               type="number"
               min="1"
               value={cantidad}
-              onChange={(e) => setCantidad(parseInt(e.target.value))}
+              onChange={(e) => setCantidad(parseInt(e.target.value) || 0)}
               className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none"
             />
           </div>
 
           <div>
-            <label htmlFor="orden" className="block text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="orden"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
               Seleccionar Orden de Compra
             </label>
             <select
@@ -102,7 +143,11 @@ const FormAddProductoOCQR = () => {
               <option value="" disabled>
                 Selecciona una orden de compra
               </option>
-              {ordenesOptions}
+              {ordenesOptions.length > 0 ? (
+                ordenesOptions
+              ) : (
+                <option disabled>No hay órdenes de compra abiertas para este proveedor</option>
+              )}
             </select>
           </div>
 
@@ -125,4 +170,4 @@ const FormAddProductoOCQR = () => {
   );
 };
 
-export default FormAddProductoOCQR;
+export default FormAddProductoOC;
