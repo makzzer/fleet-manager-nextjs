@@ -272,7 +272,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const handleAddProductToList = () => {
     if (selectedProductId && selectedProductQuantity > 0) {
       const existingProductIndex = selectedProductsList.findIndex(
-        (item) => item.id === selectedProductId
+        (item) => item.product.id === selectedProductId
       );
 
       if (existingProductIndex >= 0) {
@@ -282,12 +282,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
         setSelectedProductsList(updatedList);
       } else {
         // Agregamos un nuevo producto a la lista
-        const productDetails = filteredProducts.find(
-          (producto) => producto.id === selectedProductId
+        const productNew = filteredProducts.find(
+          (item) => item.id === selectedProductId
         );
+        console.log(productNew);
         setSelectedProductsList([
           ...selectedProductsList,
-          { ...productDetails, quantity: Number(selectedProductQuantity) },
+          { product: productNew, quantity: Number(selectedProductQuantity) },
         ]);
       }
 
@@ -298,24 +299,26 @@ const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   const handleConfirmList = async () => {
-    if (selectedProductsList.length > 0) {
-      Swal.fire({
-        title: "¿Confirmar lista?",
-        text: "¿Estás seguro de confirmar esta lista de productos?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Confirmar",
-        cancelButtonText: "Cancelar",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          // control.status = "DONE";
-          setIsListConfirmed(true);
-
-          Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
-        }
-      });
-    }
-  };
+  if (selectedProductsList.length > 0) {
+    Swal.fire({
+      title: "¿Confirmar lista?",
+      text: "¿Estás seguro de confirmar esta lista de productos?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Confirmar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setIsListConfirmed(true);
+        Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
+        // Add code to update the control status and save the changes
+        setControlStatus({ ...controlStatus, status: "DONE" });
+        // Call API to save the changes
+        // await saveChanges(control.id, controlStatus);
+      }
+    });
+  }
+};
 
   // Función para actualizar el stock de productos en el backend
   // const updateProductStock = async (productoListaId: string, descontar: number) => {
@@ -717,9 +720,6 @@ const TaskCard: React.FC<TaskCardProps> = ({
     );
   }
 
-  if (control.products)
-  console.log(control);
-
   return (
     <>
       <div
@@ -878,7 +878,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     <h4 className="text-xl font-semibold">{}</h4>
                     {/* Lista de productos seleccionados solo visible cuando el estado es DONE */}
                     <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
-                      {control.products && (control.products.map((item, index) => (
+                      {selectedProductsList && (selectedProductsList.map((item, index) => (
                         <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
                           <span className="font-semibold">{item.product.name} - {item.product.brand}</span>
                           <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>

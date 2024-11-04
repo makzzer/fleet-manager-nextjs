@@ -123,7 +123,6 @@ const Controles = () => {
         columnId: control.status,
         content: control,
       }));
-      console.log(tasks[0]);
       setControlTaskCards(tasks);
       setLoading(false); // Detenemos el estado de carga cuando los datos estén listos.
     }
