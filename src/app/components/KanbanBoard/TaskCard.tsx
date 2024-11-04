@@ -81,6 +81,27 @@ interface Control {
   date_updated: string;
   status: string;
   operator: Operador;
+  products: Item[];
+}
+
+// Esto es para la query.
+interface Item {
+  product: Product;
+  quantity: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  brand: string;
+  description: string;
+  category: string;
+  quantity: number;
+  measurement: string;
+  price: number;
+  preferenceProviderId: string;
+  minStock: number;
+  autoPurchase: string;
 }
 
 interface Task {
@@ -121,14 +142,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>("");
-  const [quantity, setQuantity] = useState<number>(1);
-  const [selectedProductsList, setSelectedProductsList] = useState<any[]>([]);
+  const [selectedProductQuantity, setQuantity] = useState<number>(1);
+  const [selectedProductsList, setSelectedProductsList] = useState<any[]>(control.products);
   const [isListConfirmed, setIsListConfirmed] = useState(false);
   const [controlStatus, setControlStatus] = useState({
     status: "PENDING", // Estado inicial
     productList: [], // Lista vacía de productos al inicio
   });
-  
 
   const usuarios = users;
   const operadores = usuarios
@@ -250,7 +270,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   const handleAddProductToList = () => {
-    if (selectedProductId && quantity > 0) {
+    if (selectedProductId && selectedProductQuantity > 0) {
       const existingProductIndex = selectedProductsList.findIndex(
         (item) => item.id === selectedProductId
       );
@@ -258,7 +278,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       if (existingProductIndex >= 0) {
         // Si el producto ya está, actualizamos la cantidad
         const updatedList = [...selectedProductsList];
-        updatedList[existingProductIndex].quantity += Number(quantity);
+        updatedList[existingProductIndex].quantity += Number(selectedProductQuantity);
         setSelectedProductsList(updatedList);
       } else {
         // Agregamos un nuevo producto a la lista
@@ -267,7 +287,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         );
         setSelectedProductsList([
           ...selectedProductsList,
-          { ...productDetails, quantity: Number(quantity) },
+          { ...productDetails, quantity: Number(selectedProductQuantity) },
         ]);
       }
 
@@ -288,44 +308,39 @@ const TaskCard: React.FC<TaskCardProps> = ({
         cancelButtonText: "Cancelar",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          control.status = "DONE";
+          // control.status = "DONE";
           setIsListConfirmed(true);
-  
-          // Actualiza el stock de cada producto en el backend
-          for (const productoLista of selectedProductsList) {
-            await updateProductStock(productoLista.id, productoLista.quantity);
-          }
-  
+
           Swal.fire("Lista confirmada", "La lista ha sido confirmada exitosamente", "success");
         }
       });
     }
   };
-  
+
   // Función para actualizar el stock de productos en el backend
-  const updateProductStock = async (productoListaId: string, descontar: number) => {
-    try {
-      // Llamada para obtener el producto actual del backend
-      const response = await fetch(`https://fleet-manager-vrxj.onrender.com/api/products/${productoListaId}`);
-      const productData = await response.json();
-  
-      // Calcula el nuevo stock
-      const newStock = productData.quantity - descontar;
-  
-      // Actualiza el stock en el backend
-      await fetch(`https://fleet-manager-vrxj.onrender.com/api/products/${productoListaId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ quantity: newStock }),
-      });
-    } catch (error) {
-      console.error("Error al actualizar el stock del producto:", error);
-      Swal.fire("Error", "Hubo un problema al actualizar el stock del producto.", "error");
-    }
-  };
-  
+  // const updateProductStock = async (productoListaId: string, descontar: number) => {
+  //   try {
+  //     // Llamada para obtener el producto actual del backend
+  //     const response = await fetch(`https://fleet-manager-vrxj.onrender.com/api/products/${productoListaId}`);
+  //     const productData = await response.json();
+
+  //     // Calcula el nuevo stock
+  //     const newStock = productData.quantity - descontar;
+
+  //     // Actualiza el stock en el backend
+  //     await fetch(`https://fleet-manager-vrxj.onrender.com/api/products/${productoListaId}`, {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ quantity: newStock }),
+  //     });
+  //   } catch (error) {
+  //     console.error("Error al actualizar el stock del producto:", error);
+  //     Swal.fire("Error", "Hubo un problema al actualizar el stock del producto.", "error");
+  //   }
+  // };
+
 
   // const handleConfirmList = () => {
   //   if (selectedProductsList.length > 0) {
@@ -563,9 +578,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
                         Productos para el caso:
                         {control.status === "DONE" && (
                           <ul>
-                            {selectedProductsList.map((item, index) => (
+                            {control.products && control.products.map((item, index) => (
                               <li key={index}>
-                                {item.name} - Cantidad: {item.quantity}
+                                {item.product.name} - Cantidad: {item.product.quantity}
                               </li>
                             ))}
                           </ul>
@@ -634,7 +649,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                             <TextField
                               label="Cantidad"
                               type="number"
-                              value={quantity}
+                              value={selectedProductQuantity}
                               onChange={handleQuantityChange}
                               className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
                             />
@@ -701,6 +716,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
       ></div>
     );
   }
+
+  if (control.products)
+  console.log(control);
 
   return (
     <>
@@ -857,17 +875,18 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 (control.status === "DONE" || control.status === "DOING") && (
                   <div className="flex flex-col gap-2 items-start w-full">
                     <h4 className="text-xl font-semibold">Productos para el caso:</h4>
+                    <h4 className="text-xl font-semibold">{}</h4>
                     {/* Lista de productos seleccionados solo visible cuando el estado es DONE */}
                     <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
-                      {selectedProductsList.map((item, index) => (
+                      {control.products && (control.products.map((item, index) => (
                         <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
-                          <span className="font-semibold">{item.name} - {item.brand}</span>
+                          <span className="font-semibold">{item.product.name} - {item.product.brand}</span>
                           <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
-                          <button onClick={() => handleRemoveProduct(item.id)} className="text-red-500">
+                          <button onClick={() => handleRemoveProduct(item.product.id)} className="text-red-500">
                             <FiX />
                           </button>
                         </li>
-                      ))}
+                      )))}
                     </ul>
 
                     {/* Formulario de selección visible solo cuando el estado es DOING */}
@@ -919,7 +938,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                           ))}
                         </TextField>
 
-                        <TextField label="Cantidad" type="number" value={quantity} onChange={handleQuantityChange} InputProps={{ style: { color: "#ffffff" }, }} InputLabelProps={{ style: { color: "#e2e2e2" } }}
+                        <TextField label="Cantidad" type="number" value={selectedProductQuantity} onChange={handleQuantityChange} InputProps={{ style: { color: "#ffffff" }, }} InputLabelProps={{ style: { color: "#e2e2e2" } }}
                           className="bg-gray-800 text-white rounded-lg border border-gray-600 w-full mt-2"
                         />
 

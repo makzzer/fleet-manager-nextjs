@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import { controllers } from "chart.js";
 import {
   createContext,
   useContext,
@@ -51,6 +52,27 @@ interface Control {
   date_updated: string;
   status: string;
   operator: Operador;
+  products: Item[];
+}
+
+// Esto es para la query.
+interface Item {
+  product: Product;
+  quantity: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  brand: string;
+  description: string;
+  category: string;
+  quantity: number;
+  measurement: string;
+  price: number;
+  preferenceProviderId: string;
+  minStock: number;
+  autoPurchase: string;
 }
 
 interface POSTCorrectiveControl {
@@ -74,6 +96,7 @@ interface POSTPredictiveControl {
 interface ControlContextProps {
   controls: Control[];
   fetchControls: () => void;
+  addProductList: (control_id: string, product_id: string, quantity: number) => void;
   createCorrectiveControl: (controlCorrectivo: POSTCorrectiveControl) => void;
   createPredictiveControl: (controlPredictivo: POSTPredictiveControl) => void;
   setControlStatus: (control_id: string, new_status: string) => void;
@@ -105,6 +128,19 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error al obtener los controles:", error);
     }
   };
+
+  const addProductList = async (
+    control_id:  string,
+    product_id: string,
+    quantity: number,
+  ) => {
+    try {
+      await axios.put( `${apiControles}/${control_id}/products`, { product_id, quantity } );
+      fetchControls();
+    } catch (error) {
+      console.error("Error changing control status:", error);
+    }
+  }
 
   const createCorrectiveControl = async (
     controlCorrectivo: POSTCorrectiveControl
@@ -182,6 +218,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
       value={{
         controls,
         fetchControls,
+        addProductList,
         createCorrectiveControl,
         createPredictiveControl,
         setControlStatus,

@@ -39,7 +39,29 @@ interface Control {
   date_updated: string;
   status: string;
   operator: Operador;
+  products: Item[];
 }
+
+// Esto es para la query.
+interface Item {
+  product: Product;
+  quantity: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  brand: string;
+  description: string;
+  category: string;
+  quantity: number;
+  measurement: string;
+  price: number;
+  preferenceProviderId: string;
+  minStock: number;
+  autoPurchase: string;
+}
+
 interface Column {
   id: string | number;
   title: string;
