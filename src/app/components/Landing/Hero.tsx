@@ -3,15 +3,15 @@ import Image from "next/image";
 
 const Hero = () => {
   return (
-    <section className="pt-8 pb-20 md:pt-5 md:pb-10 bg-[radial-gradient(ellipse_200%_100%_at_bottom_left,#18488c,#1f2937_100%)] md:px-20">
+    <section className="pt-8 pb-20 md:pt-5 md:pb-10 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 md:px-20">
       <div>
         <div className="md:flex items-center">
           <div className="md:w-[600px]">
             <div className="tag">
               IA incoming
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-gradient-to-b from-white to-[#18488c] text-transparent bg-clip-text mt-6">
-              Impulsa tu flota
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white mt-6">
+              Impulsa tu <span className="text-blue-400">flota</span>
             </h1>
             <p className="text-xl text-gray-300 tracking-tight mt-6">
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Pariatur

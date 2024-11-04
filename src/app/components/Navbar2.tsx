@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 
-const Navbar = () => {
+const Navbar = ({ isLanding }: { isLanding?: boolean }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState<number>(0); // Número de notificaciones no leídas

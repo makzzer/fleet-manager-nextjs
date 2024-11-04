@@ -3,9 +3,9 @@ import dashboardImage from "../../../../public/landingMedia/dashboardSS.jpeg";
 import Image from "next/image";
 import { useRef } from "react";
 const ProductShowcase = () => {
-  const appImage = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
-    target: appImage,
+    target: containerRef,
     offset: ["start end", "end end"],
   });
   const rotateX = useTransform(scrollYProgress, [0, 1], [15, 0]);
@@ -25,22 +25,23 @@ const ProductShowcase = () => {
             Perspiciatis consequuntur nam eveniet adipisc.
           </p>
         </div>
+        <div className="overflow-hidden mt-10" ref={containerRef}>
         <motion.div
           style={{
             opacity: opacity,
             rotateX: rotateX,
             transformPerspective: "800px",
           }}
-          className="mt-10 flex justify-center"
+          className="flex justify-center"
         >
           <Image
             src={dashboardImage}
             alt={"Imagen del dashboard de la aplicación fleetfly"}
-            className="mt-10 max-w-5xl rounded-lg shadow-2xl"
-            ref={appImage}
+            className="max-w-5xl rounded-lg shadow-2xl"
             layout="responsive"
           />
         </motion.div>
+        </div>
       </div>
     </section>
   );

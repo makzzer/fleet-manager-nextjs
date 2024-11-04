@@ -70,10 +70,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             )
           : (
             <div className="relative">
+              <Navbar2 isLanding/>
                 <main className="flex-grow  transition-all duration-500 antialiased">
                   {children}
                 </main>
-
+              <Footer />
               </div>
           )}
 
