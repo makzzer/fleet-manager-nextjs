@@ -1,10 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IconButton } from "@mui/material";
-//import { FaCheck, FaFire } from "react-icons/fa";
-//import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-//import Image from "next/image";
 import { useRouter } from "next/navigation";
 import QRCode from "react-qr-code"; // Importamos el componente QRCode
 
@@ -114,7 +111,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
                     aria-label="Ver producto"
                     color="primary"
                     title="Ver producto"
-                    onClick={() => handleInter(product.id)}
+                    onClick={() => handleView(product.id)}
                     // onClick={() => handleView(product.id)}
                   >
                     <VisibilityIcon />
