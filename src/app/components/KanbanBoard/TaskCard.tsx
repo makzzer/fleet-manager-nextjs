@@ -288,7 +288,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         console.log(productNew);
         setSelectedProductsList([
           ...selectedProductsList,
-          { product: productNew, quantity: Number(selectedProductQuantity) },
+          { product: productNew, quantity: Number(selectedProductQuantity), isNew: true },
         ]);
       }
 
@@ -879,7 +879,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     {/* Lista de productos seleccionados solo visible cuando el estado es DONE */}
                     <ul className="bg-gray-100 rounded-lg p-4 w-full mt-4">
                       {selectedProductsList && (selectedProductsList.map((item, index) => (
-                        <li key={index} className="py-3 px-4 bg-gray-700 rounded-lg mb-2 flex justify-between items-center">
+                        <li key={index} className={`py-3 px-4 rounded-lg mb-2 flex justify-between items-center ${item.isNew ? "bg-blue-700" : "bg-gray-700"}`}>
                           <span className="font-semibold">{item.product.name} - {item.product.brand}</span>
                           <span className="text-sm text-gray-100 ml-2">Cantidad: {item.quantity}</span>
                           <button onClick={() => handleRemoveProduct(item.product.id)} className="text-red-500">
