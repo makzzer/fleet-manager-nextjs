@@ -104,12 +104,11 @@ const Testimonials = () => {
       <div>
         <div className="section-heading">
         <div className="flex justify-center">
-          <div className="tag">Testimonios</div>
+          <div className="tag">Experiencias de Éxito</div>
         </div>
-        <h2 className="section-title">Que dicen nuestros usuarios</h2>
+        <h2 className="section-title">Lo que Dicen Nuestros Clientes</h2>
         <p className="section-description">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. At possimus
-          porro non, suscipit facilis rem debitis iure consectetur quasi.
+        Descubre cómo Fleetfly ha transformado la gestión de flotas para empresas de todos los tamaños, mejorando la eficiencia y reduciendo costos.
         </p>
         </div>
       </div>

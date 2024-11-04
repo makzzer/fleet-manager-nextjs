@@ -9,10 +9,12 @@ const pricingTiers = [
     popular: false,
     inverse: false,
     features: [
-      "Capacidad para hasta 10 vehículos",
-      "Integración con QR",
-      "Soporte basico",
-      "Gestión basica de respuestos",
+      "Gestión de hasta 10 vehículos",
+      "Seguimiento básico de mantenimiento",
+      "Registro de conductores",
+      "Alertas de mantenimiento programado",
+      "Informes mensuales básicos",
+      "Soporte por correo electrónico",
     ],
   },
   {
@@ -22,10 +24,16 @@ const pricingTiers = [
     popular: true,
     inverse: true,
     features: [
-      "Capacidad para hasta 10 vehículos",
-      "Integración con QR",
-      "Soporte basico",
-      "Gestión basica de respuestos",
+      "Gestión de hasta 50 vehículos",
+      "Seguimiento avanzado de mantenimiento",
+      "Gestión completa de usuarios",
+      "Reservas de vehículos",
+      "Seguimiento GPS en tiempo real",
+      "Alertas personalizadas",
+      "Gestión de repuestos y stock",
+      "Informes detallados y análisis",
+      "Integración con proveedores",
+      "Ingreación con QR",
     ],
   },
   {
@@ -35,10 +43,16 @@ const pricingTiers = [
     popular: false,
     inverse: false,
     features: [
-      "Capacidad para hasta 10 vehículos",
-      "Integración con QR",
-      "Soporte basico",
-      "Gestión basica de respuestos",
+      "Gestión ilimitada de vehículos",
+      "Mantenimiento predictivo con IA",
+      "Gestión avanzada de roles y permisos",
+      "Optimización de rutas en tiempo real",
+      "Integración IoT para diagnóstico avanzado",
+      "Análisis predictivo de costos y eficiencia",
+      "Gestión automatizada de órdenes de compra",
+      "Informes personalizados y dashboards",
+      "API para integraciones personalizadas",
+      "Soporte dedicado 24/7",
     ],
   },
 ];
@@ -48,10 +62,10 @@ const Pricing = () => {
     <section className="py-24">
       <div>
         <div className="section-heading">
-        <h2 className="section-title">Pricing</h2>
+        <h2 className="section-title">Planes adaptados a tu flota</h2>
         <p className="section-description mt-5">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Exercitationem laudantium omnis soluta cumque, reprehenderit amet.
+        Desde pequeñas flotas hasta grandes empresas, tenemos la solución perfecta para optimizar la gestión de tus vehículos y maximizar tu eficiencia operativa.
+
         </p>
         </div>
         <div className="flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-end lg:justify-center">
@@ -64,13 +78,13 @@ const Pricing = () => {
                 key={`${title}-${index}`}
                 className={`card 
                   ${inverse 
-                    ? "border-gray-300 bg-gray-400 text-black/60"
-                  : "border-gray-900"}`}
+                    ? "border-gray-300 bg-gray-900 text-white/60"
+                  : "border-gray-600 bg-gray-700"}`}
               >
                 <div className="flex justify-between">
                   <h3 className="text-lg font-bold text-white/50">{title}</h3>
                   {popular && (
-                  <div className="inline-flex text-sm px-4 py-1.5 rounded-xl border border-black/20">
+                  <div className="inline-flex text-sm px-4 py-1.5 rounded-xl border border-white/20">
                     <motion.span 
                     animate={{
                       backgroundPositionX: '100%',
@@ -82,7 +96,7 @@ const Pricing = () => {
                       repeatType: 'loop',
                     }}
                     className="bg-[linear-gradient(to_right,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF)] [background-size:200%] text-transparent bg-clip-text font-medium">
-                      Popular
+                      Más popular
                     </motion.span>
                   </div>)
                   }
@@ -104,7 +118,7 @@ const Pricing = () => {
                       key={`${feature}-${index}`}
                       className="text-sm flex items-center gap-4"
                     >
-                      <FaCheck className="h-6 w-6" />
+                      <FaCheck className="h-6 w-6 text-blue-500" />
                       <span>{feature}</span>
                     </li>
                   ))}

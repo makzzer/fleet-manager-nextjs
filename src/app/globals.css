@@ -60,15 +60,15 @@
     }
 
     .tag {
-      @apply text-sm inline-flex border border-blue-500/10 px-3 py-1 rounded-lg tracking-tight;
+      @apply text-sm inline-flex border border-blue-500/10 px-3 py-1 rounded-lg tracking-tight text-blue-500/80;
     }
 
     .section-title {
-      @apply text-center text-3xl font-bold tracking-tighter bg-gradient-to-b from-white to-blue-800 text-transparent bg-clip-text;
+      @apply text-center text-3xl font-bold tracking-tighter text-white;
     }
-
+  
     .section-description {
-      @apply text-center text-[22px] leading-[30px] tracking-tight;
+      @apply text-center text-[22px] leading-[30px] tracking-tight text-gray-300;
     }
 
     .section-heading {
