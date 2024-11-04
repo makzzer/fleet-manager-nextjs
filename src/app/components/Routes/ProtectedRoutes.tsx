@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children, requiredModule }: ProtectedRouteProps) => {
     // Esperar a que termine de cargar el estado del usuario
     if (!isLoading) {
       if (!authenticatedUser) {
-        router.push('/login'); // Redirigir al login si no está autenticado
+        router.push('/home'); // Redirigir al login si no está autenticado
 
       } else if (requiredModule && !hasModuleAccess(requiredModule)) {
         router.push('/dashboard'); // Redirigir al dashboard si no está autenticado

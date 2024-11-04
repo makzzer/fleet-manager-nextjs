@@ -60,6 +60,11 @@ const Navbar = ({ isLanding }: { isLanding?: boolean }) => {
     router.push('/login');
   };
 
+  const handleDashboard = () => {
+    router.push('/dashboard')
+    closeProfileMenu();
+  }
+
   return (
     <nav className="bg-gray-900 text-white border-b-2 min-h-[80px] border-gray-800 p-4 sticky z-40 top-0 left-0 w-full shadow-md">
       <div className="container flex justify-between items-center">
@@ -82,7 +87,7 @@ const Navbar = ({ isLanding }: { isLanding?: boolean }) => {
           {authenticatedUser && (
             <>
               {/* Icono de la campanita con el indicador de notificación */}
-              {hasModuleAccess("ALERTS") && (
+              {(hasModuleAccess("ALERTS") && !isLanding) && (
               <Link href="/alertas">
                 <div className="relative">
                   <button className="relative focus:outline-none">
@@ -106,6 +111,8 @@ const Navbar = ({ isLanding }: { isLanding?: boolean }) => {
                 </div>
               </Link>)}
 
+              
+
               {/* Menú de perfil */}
               <div ref={profileMenuRef} className="relative">
                 <button onClick={toggleProfileMenu} className="focus:outline-none">
@@ -125,6 +132,14 @@ const Navbar = ({ isLanding }: { isLanding?: boolean }) => {
                     >
                       Cerrar sesión
                     </button>
+                    {isLanding && (
+                        <button
+                        onClick={handleDashboard}
+                        className="block w-full text-left px-4 py-2 text-sm text-blue-300 hover:bg-gray-500"
+                        >
+                          Ir a dashboard
+                        </button>
+                    )}
                   </div>
                 )}
               </div>
