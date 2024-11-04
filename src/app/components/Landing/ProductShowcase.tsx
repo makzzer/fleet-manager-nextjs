@@ -1,5 +1,4 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import dashboardImage from "../../../../public/landingMedia/dashboardSS.jpeg";
 import Image from "next/image";
 import { useRef } from "react";
 const ProductShowcase = () => {
@@ -34,8 +33,10 @@ const ProductShowcase = () => {
           className="flex justify-center"
         >
           <Image
-            src={dashboardImage}
+            src={'/landingMedia/dashboardSS.jpeg'}
             alt={"Imagen del dashboard de la aplicación fleetfly"}
+            width={1920}
+            height={1080}
             className="max-w-5xl rounded-lg shadow-2xl"
             layout="responsive"
           />
