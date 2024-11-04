@@ -6,6 +6,7 @@ import {
   useVehiculo,
   tiposCombustible,
   tiposVehiculo,
+  estadosVehiculo,
 } from "../../context/VehiculoContext";
 import dynamic from "next/dynamic";
 import QRCode from "react-qr-code"; // Importamos el componente QRCode
@@ -62,6 +63,10 @@ const VehiculoDinamicoPage = () => {
             {tiposVehiculo[vehiculoData.type] || vehiculoData.type}
           </p>
           <p className="mb-2">
+            <strong className="text-blue-300">Estado:</strong>{" "}
+            {estadosVehiculo[vehiculoData.status] || vehiculoData.status}
+          </p>
+          <p className="mb-2">
             <strong className="text-blue-300">Tipo de combustible:</strong>{" "}
             {tiposCombustible[vehiculoData.fuel_type] ||
               vehiculoData.fuel_type}
@@ -78,6 +83,23 @@ const VehiculoDinamicoPage = () => {
             <strong className="text-blue-300">Acoplado:</strong>{" "}
             {vehiculoData.has_trailer ? "Sí" : "No"}
           </p>
+           {/* Enlaces Condicionales según el estado */}
+           {vehiculoData.status === "MAINTENANCE" && (
+            <button
+              onClick={() => router.push(`/controles/${vehiculoData.id}`)}
+              className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out"
+            >
+              Ir a Controles
+            </button>
+          )}
+          {vehiculoData.status === "RESERVED" && (
+            <button
+              onClick={() => router.push(`/reservas/${vehiculoData.id}`)}
+              className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out"
+            >
+              Ir a Reservas
+            </button>
+          )}
         </div>
 
         {/* Resumen de Controles y QR */}

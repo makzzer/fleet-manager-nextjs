@@ -89,9 +89,9 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
   };
 
   const handleViewVehiculo = (id: string) => {
-    if (vehiculo.status === "AVAILABLE") {
+   
       router.push(`/vehiculos/${id}`);
-    }
+    
   };
 
   const handleDisableVehicle = async () => {
@@ -256,7 +256,7 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
         <button
           title="Detalle"
           onClick={() => handleViewVehiculo(vehiculo.id)}
-          disabled={vehiculo.status !== "AVAILABLE"}
+      
           className="bg-blue-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50 flex items-center justify-center w-full"
         >
           <FiEye className="w-5 h-5" />
