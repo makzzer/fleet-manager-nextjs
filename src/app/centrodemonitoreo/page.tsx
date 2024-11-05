@@ -201,6 +201,24 @@ const CentroDeMonitoreoConTabs = () => {
     }
   };
 
+  // *** Modificación agregada: Resetear estados al cambiar de pestaña ***
+  useEffect(() => {
+    if (activeTab !== 'simulador') {
+      setCoordenadasSimulador({
+        start: null,
+        end: null,
+        reservaId: null,
+      });
+    }
+    if (activeTab !== 'vehiculo') {
+      setVehiculoConRuta(null);
+    }
+    if (activeTab !== 'reservas') {
+      setVehiculoSeleccionado(null);
+    }
+  }, [activeTab]);
+  // *** Fin de la modificación ***
+
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
       <div className="p-6 bg-gray-900 rounded-xl min-h-screen text-white">
@@ -264,7 +282,9 @@ const CentroDeMonitoreoConTabs = () => {
                 {vehiculosEnViaje.length > 0 ? (
                   vehiculosEnViaje
                     .filter((vehiculo) =>
-                      filtroEstadoVehiculos === "Todos" ? true : vehiculo.status === filtroEstadoVehiculos
+                      filtroEstadoVehiculos === "Todos"
+                        ? true
+                        : vehiculo.status === filtroEstadoVehiculos
                     )
                     .map((vehiculo) => (
                       <li
@@ -313,7 +333,9 @@ const CentroDeMonitoreoConTabs = () => {
               {typeof window !== "undefined" && (
                 <MapCentroMonitoreo
                   vehiculos={vehiculosEnViaje.filter((vehiculo) =>
-                    filtroEstadoVehiculos === "Todos" ? true : vehiculo.status === filtroEstadoVehiculos
+                    filtroEstadoVehiculos === "Todos"
+                      ? true
+                      : vehiculo.status === filtroEstadoVehiculos
                   )}
                   vehiculoSeleccionado={vehiculoSeleccionado}
                 />
@@ -351,7 +373,9 @@ const CentroDeMonitoreoConTabs = () => {
                 {reservas.length > 0 ? (
                   reservas
                     .filter((reserva) =>
-                      filtroEstadoReservas === "Todos" ? true : reserva.status === filtroEstadoReservas
+                      filtroEstadoReservas === "Todos"
+                        ? true
+                        : reserva.status === filtroEstadoReservas
                     )
                     .map((reserva) => (
                       <li
@@ -449,7 +473,9 @@ const CentroDeMonitoreoConTabs = () => {
                 {reservas.length > 0 ? (
                   reservas
                     .filter((reserva) =>
-                      filtroEstadoSimulador === "Todos" ? true : reserva.status === filtroEstadoSimulador
+                      filtroEstadoSimulador === "Todos"
+                        ? true
+                        : reserva.status === filtroEstadoSimulador
                     )
                     .map((reserva) => (
                       <li
@@ -502,13 +528,10 @@ const CentroDeMonitoreoConTabs = () => {
                     <MapSimuladorVehiculo
                       startPosition={coordenadasSimulador.start}
                       endPosition={coordenadasSimulador.end}
-                      onActualizarCoordenadas={(nuevasCoordenadas: [number, number]) =>
+                      onActualizarCoordenadas={(nuevasCoordenadas: { latitude: number; longitude: number }) =>
                         actualizarCoordenadasVehiculo(
                           coordenadasSimulador.reservaId!,
-                          {
-                            latitude: nuevasCoordenadas[0],
-                            longitude: nuevasCoordenadas[1],
-                          }
+                          nuevasCoordenadas
                         )
                       }
                     />

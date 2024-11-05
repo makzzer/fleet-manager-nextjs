@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// MapSimuladorVehiculo.tsx
 
 "use client";
 
@@ -13,7 +12,6 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import markerRetina from 'leaflet/dist/images/marker-icon-2x.png';
 
-// Configurar el ícono personalizado de Leaflet
 const customMarker = new L.Icon({
   iconUrl: markerIcon.src,
   shadowUrl: markerShadow.src,
@@ -25,9 +23,9 @@ const customMarker = new L.Icon({
 });
 
 const customVehicle = new L.Icon({
-  iconUrl: '/icons/rocket.png', // Ruta relativa desde la carpeta `public`
-  iconSize: [40, 40], // Ajusta el tamaño del icono a tus necesidades
-  iconAnchor: [20, 40], // Ajusta la ancla del icono según su tamaño
+  iconUrl: '/icons/rocket.png',
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
@@ -35,28 +33,31 @@ const customVehicle = new L.Icon({
 interface MapSimuladorVehiculoProps {
   startPosition: [number, number];
   endPosition: [number, number];
-  onActualizarCoordenadas: (nuevasCoordenadas: { latitude: number; longitude: number }) => void; // Prop para actualizar coordenadas
+  onActualizarCoordenadas: (nuevasCoordenadas: { latitude: number; longitude: number }) => void;
 }
 
 const MapSimuladorVehiculo = ({ startPosition, endPosition, onActualizarCoordenadas }: MapSimuladorVehiculoProps) => {
-  const mapRef = useRef<L.Map | null>(null); // Referencia al mapa
-  const vehicleMarkerRef = useRef<L.Marker | null>(null); // Referencia al marcador del vehículo
-  const [isSimulating, setIsSimulating] = useState(false); // Estado para manejar la simulación
-  const routingControlRef = useRef<any>(null); // Referencia para el control de enrutamiento
-  const intervalRef = useRef<any>(null); // Referencia al intervalo de simulación
+  const mapRef = useRef<L.Map | null>(null);
+  const vehicleMarkerRef = useRef<L.Marker | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const routingControlRef = useRef<any>(null);
+  const intervalRef = useRef<any>(null);
 
-  // Función para iniciar la simulación
   const startSimulation = () => {
+    if (!startPosition || !endPosition) {
+      console.error('Start or End position is undefined');
+      return;
+    }
+
     setIsSimulating(true);
+
     if (mapRef.current) {
-      // Eliminar cualquier control de enrutamiento existente antes de iniciar uno nuevo
       if (routingControlRef.current) {
         mapRef.current.removeControl(routingControlRef.current);
       }
 
-      // Crear el control de enrutamiento
       routingControlRef.current = (L as any).Routing.control({
-        waypoints: [L.latLng(startPosition), L.latLng(endPosition)], // Puntos de inicio y fin
+        waypoints: [L.latLng(startPosition), L.latLng(endPosition)],
         lineOptions: {
           styles: [{ color: "#6FA1EC", weight: 4 }],
         },
@@ -66,63 +67,71 @@ const MapSimuladorVehiculo = ({ startPosition, endPosition, onActualizarCoordena
           });
         },
         routeWhileDragging: false,
-        showAlternatives: false, // Deshabilita rutas alternativas
-        addWaypoints: false, // No permitir agregar más waypoints
+        showAlternatives: false,
+        addWaypoints: false,
         plan: L.Routing.plan([L.latLng(startPosition), L.latLng(endPosition)], {
           createMarker: (i, waypoint) => L.marker(waypoint.latLng, { icon: customMarker }),
-          show: false, // Intenta ocultar las instrucciones visibles
+          show: false,
         }),
       }).addTo(mapRef.current);
 
-      // Eliminar manualmente el cuadro de instrucciones
       setTimeout(() => {
         const controlContainer = document.querySelector('.leaflet-routing-container');
         if (controlContainer) {
-          controlContainer.remove(); // Eliminar el cuadro de instrucciones de rutas
+          controlContainer.remove();
         }
       }, 500);
 
-      // Evento cuando se encuentra una ruta
       routingControlRef.current.on("routesfound", (e: any) => {
         const route = e.routes[0];
         const coordinates = route.coordinates;
 
-        // Colocar un marcador en la posición inicial del vehículo
         if (!vehicleMarkerRef.current) {
           vehicleMarkerRef.current = L.marker(startPosition, { icon: customVehicle }).addTo(mapRef.current!);
         }
 
-        // Simular el movimiento del vehículo a lo largo de la ruta
         let index = 0;
         intervalRef.current = setInterval(() => {
           if (index < coordinates.length && isSimulating) {
             const latLng = coordinates[index];
-
-            // Imprimir las coordenadas por las que va pasando
             console.log(`Coordenadas actuales: Latitud ${latLng.lat}, Longitud ${latLng.lng}`);
 
-            // Mover el marcador del vehículo
             if (vehicleMarkerRef.current) {
               vehicleMarkerRef.current.setLatLng([latLng.lat, latLng.lng]);
             }
 
-            // Actualizar las coordenadas en el componente padre
             onActualizarCoordenadas({ latitude: latLng.lat, longitude: latLng.lng });
 
             index++;
           } else {
-            clearInterval(intervalRef.current); // Detener el intervalo cuando llega al destino o se detiene la simulación
+            clearInterval(intervalRef.current);
           }
-        }, 1000); // Avanzar cada segundo
+        }, 1000);
       });
     }
   };
 
-  // Función para detener la simulación
   const stopSimulation = () => {
     setIsSimulating(false);
-    clearInterval(intervalRef.current); // Detener el intervalo
+    clearInterval(intervalRef.current);
   };
+
+  useEffect(() => {
+    return () => {
+      // Limpieza al desmontar el componente
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (routingControlRef.current && mapRef.current) {
+        mapRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current = null;
+      }
+      if (vehicleMarkerRef.current && mapRef.current) {
+        mapRef.current.removeLayer(vehicleMarkerRef.current);
+        vehicleMarkerRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div>
@@ -133,18 +142,17 @@ const MapSimuladorVehiculo = ({ startPosition, endPosition, onActualizarCoordena
           scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
           whenReady={(map: any) => {
-            mapRef.current = map.target; // Guardar la referencia al mapa cuando esté listo
+            mapRef.current = map.target;
           }}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution='&copy; OpenStreetMap contributors'
           />
           <Marker position={startPosition} icon={customMarker} />
         </MapContainer>
       </div>
 
-      {/* Botones para iniciar y detener la simulación */}
       <div className="mt-4 flex space-x-4 ms-2">
         <button
           onClick={startSimulation}
