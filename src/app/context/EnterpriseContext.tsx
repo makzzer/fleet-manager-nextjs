@@ -12,7 +12,7 @@ import {
 // API para autenticación de usuarios
 const apiEmpresas = "https://fleet-manager-vrxj.onrender.com/api/enterprises";
 
-type Module = "ALERTS" |
+export type Module = "ALERTS" |
       "ANALYTICS" |
       "CONTROLS" |
       "ENTERPRISES" |
@@ -23,7 +23,7 @@ type Module = "ALERTS" |
       "USERS" |
       "VEHICLES";
 
-interface Enterprise {
+export interface Enterprise {
   id: string;
   name: string;
   modules: Module[];
@@ -33,6 +33,9 @@ interface EnterpriseContextProps {
   enterprises: Enterprise[];
   fetchEnterprises: () => void;
   createEnterprise: (name: string) => Promise<void>
+  addEnterpriseModule: (id: string, module: Module) => Promise<void>;
+  removeEnterprise: (id: string) => Promise<void>;
+  removeEnterpriseModule: (id: string, module: Module) => Promise<void>;
 }
 
 const EnterpriseContext = createContext<EnterpriseContextProps | undefined>(
@@ -69,12 +72,43 @@ export const EnterpriseProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  const addEnterpriseModule = async (id: string, module: Module) => {
+    try {
+      await axios.put(`${apiEmpresas}/${id}/modules/${module}`);
+      fetchEnterprises();
+    } catch (error) {
+      console.error("Error adding a enterprise module", error);
+    }
+  }
+
+  const removeEnterprise = async (id: string) => {
+    try {
+      await axios.delete(`${apiEmpresas}/${id}`);
+      fetchEnterprises();
+    } catch (error) {
+      console.error("Error removing enterpise:", error);
+    }
+  }
+
+  const removeEnterpriseModule = async (id: string, module: Module) => {
+    try {
+      await axios.delete(`${apiEmpresas}/${id}/modules/${module}`)
+      fetchEnterprises();
+    } catch (error) {
+      console.error("Error removing enterprise module:", error);
+    }
+  }
+
+
   return (
     <EnterpriseContext.Provider
       value={{
         enterprises,
         fetchEnterprises,
         createEnterprise,
+        addEnterpriseModule,
+        removeEnterprise,
+        removeEnterpriseModule
       }}
     >
       {children}

@@ -2,13 +2,26 @@
 
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-import { useEnterprise } from "../context/EnterpriseContext";
+import { Module, Enterprise, useEnterprise } from "../context/EnterpriseContext";
 import { FaEye, FaFilter, FaPlus } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { MdFormatListBulletedAdd } from "react-icons/md";
+import { MdDomainDisabled, MdOutlinePlaylistAdd, MdOutlinePlaylistRemove } from "react-icons/md";
+
+const allModules: Module[] = [
+      "ALERTS",
+      "ANALYTICS",
+      "CONTROLS",
+      "ENTERPRISES",
+      "ORDERS",
+      "PRODUCTS",
+      "PROVIDERS",
+      "RESERVES",
+      "USERS",
+      "VEHICLES"
+    ]
 
 const Empresas = () => {
-  const { enterprises, fetchEnterprises, createEnterprise } = useEnterprise();
+  const { enterprises, fetchEnterprises, createEnterprise, removeEnterprise, addEnterpriseModule, removeEnterpriseModule } = useEnterprise();
 
   const [filteredEnterprises, setFilteredEnterprises] = useState(enterprises);
   const [quantityVisibleEnterprises, setQuantityVisibleEnterprises] =
@@ -64,7 +77,7 @@ const Empresas = () => {
       </div>
     `,
       customClass: {
-        popup: "bg-gray-800 text-white w-full max-w-4xl p-6 rounded-lg",
+        popup: "bg-gray-800 text-gray-200 w-full max-w-4xl p-6 rounded-lg",
         title: "text-2xl font-bold mb-4",
       },
       confirmButtonText: "Agregar",
@@ -92,10 +105,181 @@ const Empresas = () => {
         Swal.fire({
           title: "Empresa agregada con éxito",
           icon: "success",
+          customClass: {
+            popup: 'bg-gray-800 text-gray-200',
+          }
         });
       }
     });
   };
+
+  const handleRemoveEnterprise = (enterpriseId: string) => {
+    Swal.fire({
+      title: "¿Querés eliminar esta empresa?",
+      text: "No podés revertir esta acción",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, eliminar",
+      cancelButtonText: "Cancelar",
+      iconColor: 'red',
+      customClass: {
+        popup: 'bg-gray-800 text-gray-200',
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await removeEnterprise(enterpriseId);
+        Swal.fire({
+          title: "Eliminado",
+          text: "La empresa ha sido eliminada con éxito.",
+          icon: "success",
+          customClass: {
+            popup: 'bg-gray-800 text-gray-200',
+          }
+        });
+      }
+    });
+  }
+
+  const handleAddEnterpriseModule = (enterprise: Enterprise) => {
+    Swal.fire({
+      title: `Agregar roles para
+       ${enterprise.name}`,
+      html: `
+        <div class="flex flex-col space-y-4">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
+            <div class="space-y-2">
+            ${allModules
+          .map(
+            (module: Module) => `
+                  <label class="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="modulos" 
+                      value="${module}" 
+                      class="form-radio h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800"
+                      ${enterprise.modules.includes(module) ? "disabled" : ""
+              }
+                    >
+                    <span class="ml-2 text-gray-200">${module}</span>
+                  </label>
+                `
+          )
+          .join("")}
+          </div>
+          </div>
+      </div>
+      `,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Guardar",
+      focusConfirm: false,
+      customClass: {
+        popup: 'bg-gray-800 text-gray-200',
+      },
+      preConfirm: () => {
+        const moduloSeleccionado = (
+          document.querySelector(
+            'input[name="modulos"]:checked'
+          ) as HTMLInputElement
+        ).value;
+
+        if (!moduloSeleccionado) {
+          Swal.showValidationMessage("Debe seleccionar un modulo.");
+          return false;
+        }
+
+        const modulo = moduloSeleccionado.toUpperCase();
+
+        return { modulo };
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed && result.value) {
+        await addEnterpriseModule(enterprise.id, result.value.modulo);
+
+        Swal.fire({
+          title: "Modulos asignados con éxito",
+          text: "Los nuevos modulos han sidos asignados correctamente.",
+          icon: "success",
+          customClass: {
+            popup: 'bg-gray-800 text-gray-200',
+          }
+        });
+      }
+    });
+  };
+
+  const handleRemoveEnterpriseModule = (enterprise: Enterprise) => {
+    Swal.fire({
+      title: `Quitar modulos para
+       ${enterprise.name}`,
+      html: `
+        <div class="flex flex-col space-y-4">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
+            <div class="space-y-2">
+            ${allModules
+          .map(
+            (module: Module) => `
+                  <label class="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="modulos" 
+                      value="${module}" 
+                      class="form-radio h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800"
+                      ${enterprise.modules.includes(module) ? "" : "disabled"
+              }
+                    >
+                    <span class="ml-2 text-gray-100">${module}</span>
+                  </label>
+                `
+          )
+          .join("")}
+          </div>
+          </div>
+      </div>
+      `,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Guardar",
+      focusConfirm: false,
+      customClass: {
+        popup: 'bg-gray-800 text-gray-200',
+      },
+      preConfirm: () => {
+        const moduloSeleccionado = (
+          document.querySelector(
+            'input[name="modulos"]:checked'
+          ) as HTMLInputElement
+        ).value;
+
+        if (!moduloSeleccionado) {
+          Swal.showValidationMessage("Debe seleccionar un modulo.");
+          return false;
+        }
+
+        const modulo = moduloSeleccionado.toUpperCase();
+
+        return { modulo };
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed && result.value) {
+        await removeEnterpriseModule(enterprise.id, result.value.modulo);
+
+        Swal.fire({
+          title: "Modulos quitados con éxito",
+          text: "Los nuevos modulos han sidos quitados correctamente.",
+          icon: "success",
+          customClass: {
+            popup: 'bg-gray-800 text-gray-200',
+          }
+        });
+      }
+    });
+  }
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -172,10 +356,22 @@ const Empresas = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex justify-end space-x-4">
                       <button
-                      onClick={() => console.log("handleView(orden.id)")}
-                      className="text-sky-600 hover:text-sky-800"
+                      onClick={() => handleRemoveEnterprise(enterprise.id)}
+                      className="text-red-600 hover:text-red-800"
                       >
-                        <MdFormatListBulletedAdd className="w-5 h-5" />
+                        <MdDomainDisabled className="w-5 h-5" />
+                      </button>
+                      <button
+                      onClick={() => handleRemoveEnterpriseModule(enterprise)}
+                      className="text-orange-600 hover:text-orange-800"
+                      >
+                        <MdOutlinePlaylistRemove className="w-5 h-5" />
+                      </button>
+                      <button
+                      onClick={() => handleAddEnterpriseModule(enterprise)}
+                      className="text-green-600 hover:text-green-800"
+                      >
+                        <MdOutlinePlaylistAdd className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => console.log("handleView(orden.id)")}
