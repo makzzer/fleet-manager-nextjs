@@ -25,42 +25,42 @@ const LogoTicker = () => {
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_OCA_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_OCA.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de OCA"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_ups_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_ups.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de UPS"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_esmax_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_esmax.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de Esmax"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_correo_argentino_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_correo_argentino.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de Correo Argentino"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_dhl_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_dhl.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de DHL"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_fedex_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_fedex.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de FEDEX"}
@@ -76,42 +76,42 @@ const LogoTicker = () => {
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_OCA_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_OCA.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de OCA"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_ups_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_ups.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de UPS"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_esmax_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_esmax.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de Esmax"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_correo_argentino_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_correo_argentino.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de Correo Argentino"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_dhl_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_dhl.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de DHL"}
               className="logo-ticker-image grayscale"
             />
             <Image
-              src={'/landingMedia/enterprisesLogos/logo_fedex_bn.png'}
+              src={'/landingMedia/enterprisesLogos/logo_fedex.png'}
               width={1920}
               height={1080}
               alt={"Logotipo de FEDEX"}
