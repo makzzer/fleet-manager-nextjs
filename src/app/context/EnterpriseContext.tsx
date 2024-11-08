@@ -6,6 +6,7 @@ import {
   useContext,
   useState,
   ReactNode,
+  useEffect,
 } from "react";
 
 
@@ -99,6 +100,9 @@ export const EnterpriseProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  useEffect(() => {
+    fetchEnterprises();
+  }, []);
 
   return (
     <EnterpriseContext.Provider

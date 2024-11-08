@@ -2,59 +2,71 @@
 
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-import { Module, Enterprise, useEnterprise } from "../context/EnterpriseContext";
+import {
+  Module,
+  Enterprise,
+  useEnterprise,
+} from "../context/EnterpriseContext";
 import { FaEye, FaFilter, FaPlus } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { MdDomainDisabled, MdOutlinePlaylistAdd, MdOutlinePlaylistRemove } from "react-icons/md";
+import {
+  MdDomainDisabled,
+  MdOutlinePlaylistAdd,
+  MdOutlinePlaylistRemove,
+} from "react-icons/md";
 
 const allModules: Module[] = [
-      "ALERTS",
-      "ANALYTICS",
-      "CONTROLS",
-      "ENTERPRISES",
-      "ORDERS",
-      "PRODUCTS",
-      "PROVIDERS",
-      "RESERVES",
-      "USERS",
-      "VEHICLES"
-    ]
+  "ALERTS",
+  "ANALYTICS",
+  "CONTROLS",
+  "ENTERPRISES",
+  "ORDERS",
+  "PRODUCTS",
+  "PROVIDERS",
+  "RESERVES",
+  "USERS",
+  "VEHICLES",
+];
 
 const Empresas = () => {
-  const { enterprises, fetchEnterprises, createEnterprise, removeEnterprise, addEnterpriseModule, removeEnterpriseModule } = useEnterprise();
+  const {
+    enterprises,
+    createEnterprise,
+    removeEnterprise,
+    addEnterpriseModule,
+    removeEnterpriseModule,
+  } = useEnterprise();
 
-  const [filteredEnterprises, setFilteredEnterprises] = useState(enterprises);
+  const [filteredEnterprises, setFilteredEnterprises] = useState<Enterprise[]>(
+    []
+  );
   const [quantityVisibleEnterprises, setQuantityVisibleEnterprises] =
     useState(10);
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadEnterprises = async () => {
-      await fetchEnterprises();
-      setFilteredEnterprises(enterprises);
-    };
-    loadEnterprises();
+    setFilteredEnterprises(enterprises);
     setLoading(false);
-  }, [fetchEnterprises, setFilteredEnterprises, enterprises]);
+  }, [enterprises]);
 
   const assignColor = (index: number) => {
     const colors = [
-      'border-cyan-100 text-cyan-100',
-      'border-cyan-200 text-cyan-200',
-      'border-cyan-300 text-cyan-300',
-      'border-cyan-400 text-cyan-400',
-      'border-cyan-500 text-cyan-500',
-      'border-teal-100 text-teal-100',
-      'border-teal-200 text-teal-200',
-      'border-teal-300 text-teal-300',
-      'border-teal-400 text-teal-400',
-      'border-teal-500 text-teal-500',
-      'border-blue-100 text-blue-100',
-      'border-blue-200 text-blue-200',
-      'border-blue-300 text-blue-300',
-      'border-blue-400 text-blue-400',
-      'border-blue-500 text-blue-500',
+      "border-cyan-100 text-cyan-100",
+      "border-cyan-200 text-cyan-200",
+      "border-cyan-300 text-cyan-300",
+      "border-cyan-400 text-cyan-400",
+      "border-cyan-500 text-cyan-500",
+      "border-teal-100 text-teal-100",
+      "border-teal-200 text-teal-200",
+      "border-teal-300 text-teal-300",
+      "border-teal-400 text-teal-400",
+      "border-teal-500 text-teal-500",
+      "border-blue-100 text-blue-100",
+      "border-blue-200 text-blue-200",
+      "border-blue-300 text-blue-300",
+      "border-blue-400 text-blue-400",
+      "border-blue-500 text-blue-500",
     ];
     return colors[index];
   };
@@ -106,8 +118,8 @@ const Empresas = () => {
           title: "Empresa agregada con éxito",
           icon: "success",
           customClass: {
-            popup: 'bg-gray-800 text-gray-200',
-          }
+            popup: "bg-gray-800 text-gray-200",
+          },
         });
       }
     });
@@ -123,10 +135,10 @@ const Empresas = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Si, eliminar",
       cancelButtonText: "Cancelar",
-      iconColor: 'red',
+      iconColor: "red",
       customClass: {
-        popup: 'bg-gray-800 text-gray-200',
-      }
+        popup: "bg-gray-800 text-gray-200",
+      },
     }).then(async (result) => {
       if (result.isConfirmed) {
         await removeEnterprise(enterpriseId);
@@ -135,12 +147,12 @@ const Empresas = () => {
           text: "La empresa ha sido eliminada con éxito.",
           icon: "success",
           customClass: {
-            popup: 'bg-gray-800 text-gray-200',
-          }
+            popup: "bg-gray-800 text-gray-200",
+          },
         });
       }
     });
-  }
+  };
 
   const handleAddEnterpriseModule = (enterprise: Enterprise) => {
     Swal.fire({
@@ -152,22 +164,21 @@ const Empresas = () => {
             <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
             <div class="space-y-2">
             ${allModules
-          .map(
-            (module: Module) => `
+              .map(
+                (module: Module) => `
                   <label class="flex items-center">
                     <input 
                       type="radio" 
                       name="modulos" 
                       value="${module}" 
                       class="form-radio h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800"
-                      ${enterprise.modules.includes(module) ? "disabled" : ""
-              }
+                      ${enterprise.modules.includes(module) ? "disabled" : ""}
                     >
                     <span class="ml-2 text-gray-200">${module}</span>
                   </label>
                 `
-          )
-          .join("")}
+              )
+              .join("")}
           </div>
           </div>
       </div>
@@ -177,7 +188,7 @@ const Empresas = () => {
       confirmButtonText: "Guardar",
       focusConfirm: false,
       customClass: {
-        popup: 'bg-gray-800 text-gray-200',
+        popup: "bg-gray-800 text-gray-200",
       },
       preConfirm: () => {
         const moduloSeleccionado = (
@@ -204,8 +215,8 @@ const Empresas = () => {
           text: "Los nuevos modulos han sidos asignados correctamente.",
           icon: "success",
           customClass: {
-            popup: 'bg-gray-800 text-gray-200',
-          }
+            popup: "bg-gray-800 text-gray-200",
+          },
         });
       }
     });
@@ -221,22 +232,21 @@ const Empresas = () => {
             <label class="block text-sm font-medium text-gray-300 mb-2">Roles</label>
             <div class="space-y-2">
             ${allModules
-          .map(
-            (module: Module) => `
+              .map(
+                (module: Module) => `
                   <label class="flex items-center">
                     <input 
                       type="radio" 
                       name="modulos" 
                       value="${module}" 
                       class="form-radio h-5 w-5 text-blue-500 rounded focus:ring-blue-500 focus:ring-offset-slate-800"
-                      ${enterprise.modules.includes(module) ? "" : "disabled"
-              }
+                      ${enterprise.modules.includes(module) ? "" : "disabled"}
                     >
                     <span class="ml-2 text-gray-100">${module}</span>
                   </label>
                 `
-          )
-          .join("")}
+              )
+              .join("")}
           </div>
           </div>
       </div>
@@ -246,7 +256,7 @@ const Empresas = () => {
       confirmButtonText: "Guardar",
       focusConfirm: false,
       customClass: {
-        popup: 'bg-gray-800 text-gray-200',
+        popup: "bg-gray-800 text-gray-200",
       },
       preConfirm: () => {
         const moduloSeleccionado = (
@@ -273,13 +283,12 @@ const Empresas = () => {
           text: "Los nuevos modulos han sidos quitados correctamente.",
           icon: "success",
           customClass: {
-            popup: 'bg-gray-800 text-gray-200',
-          }
+            popup: "bg-gray-800 text-gray-200",
+          },
         });
       }
     });
-  }
-
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -304,7 +313,8 @@ const Empresas = () => {
               className="bg-gray-600 px-4 py-2 lg:py-1 rounded-full"
             />
             <button className="px-4 rounded-lg bg-gray-600 text-gray-300 py-2 hover:bg-gray-700 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 flex items-center justify-center">
-              <FaFilter className="mr-2" />Filtros
+              <FaFilter className="mr-2" />
+              Filtros
             </button>
             <button
               onClick={() => handleAddEnterprise()}
@@ -342,34 +352,38 @@ const Empresas = () => {
                     <td className={`px-6 py-4 whitespace-nowrap rounded-full`}>
                       {enterprise.name}
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap rounded-full w-1/2`}>
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap rounded-full w-1/2`}
+                    >
                       <div className="flex flex-wrap gap-1">
-                      {enterprise.modules.map((module, index) => (
-                        <span 
-                        key={`${enterprise.id}-${index}`}
-                        className={`text-xs px-3 py-1 rounded-full border-2 ${assignColor(index)} font-semibold shadow-md`}
-                        >
-                          {module}
-                        </span>
-                      ))}
+                        {enterprise.modules.map((module, index) => (
+                          <span
+                            key={`${enterprise.id}-${index}`}
+                            className={`text-xs px-3 py-1 rounded-full border-2 ${assignColor(
+                              index
+                            )} font-semibold shadow-md`}
+                          >
+                            {module}
+                          </span>
+                        ))}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex justify-end space-x-4">
                       <button
-                      onClick={() => handleRemoveEnterprise(enterprise.id)}
-                      className="text-red-600 hover:text-red-800"
+                        onClick={() => handleRemoveEnterprise(enterprise.id)}
+                        className="text-red-600 hover:text-red-800"
                       >
                         <MdDomainDisabled className="w-5 h-5" />
                       </button>
                       <button
-                      onClick={() => handleRemoveEnterpriseModule(enterprise)}
-                      className="text-orange-600 hover:text-orange-800"
+                        onClick={() => handleRemoveEnterpriseModule(enterprise)}
+                        className="text-orange-600 hover:text-orange-800"
                       >
                         <MdOutlinePlaylistRemove className="w-5 h-5" />
                       </button>
                       <button
-                      onClick={() => handleAddEnterpriseModule(enterprise)}
-                      className="text-green-600 hover:text-green-800"
+                        onClick={() => handleAddEnterpriseModule(enterprise)}
+                        className="text-green-600 hover:text-green-800"
                       >
                         <MdOutlinePlaylistAdd className="w-5 h-5" />
                       </button>
