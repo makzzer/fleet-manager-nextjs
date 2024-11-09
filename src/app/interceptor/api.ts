@@ -9,7 +9,6 @@ export const createApi = (getEnterpriseId: () => string | null) => {
     const enterpriseId = getEnterpriseId();
     if (enterpriseId) {
       if (config.method === 'get' || config.method === 'delete') {
-        console.log(config);
         config.params = { ...config.params, enterprise_id: enterpriseId };
       } else if (config.method === 'post' || config.method === 'put' || config.method === 'patch') {
         config.data = { ...config.data, enterprise_id: enterpriseId };
