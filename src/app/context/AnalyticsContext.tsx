@@ -9,6 +9,7 @@ import {
   ReactNode,
   useCallback,
 } from "react";
+import { useApi } from "./ApiContext";
 // import axios from "axios";
 
 export interface Avg {
@@ -71,10 +72,11 @@ const apiAnaliticasBackend = `https://fleet-manager-vrxj.onrender.com/api/analyt
 
 export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
   const [analytics, setAnalytics] = useState<AnalyticsData[] | null>(null);
+  const api = useApi();
 
   const fetchAnalytics = useCallback(async () => {
     try {
-      const response = await axios.get(apiAnaliticasBackend);
+      const response = await api.get(apiAnaliticasBackend);
       const fetchedAnalytics = response.data;
 
       if (Array.isArray(fetchedAnalytics)) {
@@ -85,7 +87,7 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error al obtener las analiticas:", error);
     }
-  }, []);
+  }, [api]);
 
   useEffect(() => {
     fetchAnalytics();

@@ -3,9 +3,11 @@
 
 import axios from "axios";
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import api from "../interceptor/api";
+import { useApi } from "./ApiContext";
 
 // API para autenticación de usuarios
-const apiUsuarios = "https://fleet-manager-vrxj.onrender.com/api/users";
+const apiUsuarios = "/users";
 
 interface NewUserRequest {
   username: string;
@@ -51,11 +53,12 @@ export const useUser = () => {
 // Provider que envuelve a la aplicación o a las partes necesarias
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<User[]>([]);
+  const api = useApi();
 
   // Función para obtener los usuarios
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(apiUsuarios);
+      const response = await api.get(apiUsuarios);
       const fetchedUsers = response.data;
       setUsers(fetchedUsers);
     } catch (error) {
