@@ -17,6 +17,7 @@ import { es } from "date-fns/locale";
 import dynamic from "next/dynamic";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { isSameDay, setHours, setMinutes } from "date-fns";
+import { useApi } from "../context/ApiContext";
 
 const MapPickCoordinates = dynamic(
   () => import("../components/Maps/MapPickCoordinates"),
@@ -46,6 +47,8 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
   const [pickedCoordinates, setPickedCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [vehiculosDisponibles, setVehiculosDisponibles] = useState<Vehiculo[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const api = useApi();
 
   useEffect(() => {
     const loadData = async () => {
@@ -179,7 +182,7 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
     };
 
     try {
-      const response = await axios.post(
+      const response = await api.post(
         "https://fleet-manager-vrxj.onrender.com/api/reserves",
         requestData
       );

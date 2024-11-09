@@ -10,6 +10,7 @@ import React, {
 } from "react";
 
 import axios from "axios";
+import { useApi } from "./ApiContext";
 
 // URL de la API para reservas
 const apiReservasBackend = `https://fleet-manager-vrxj.onrender.com/api/reserves`;
@@ -73,10 +74,11 @@ export const useReserva = () => {
 export const ReservaProvider = ({ children }: { children: ReactNode }) => {
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [reserva, setReserva] = useState<Reserva | null>(null);
+  const api = useApi();
 
   const fetchReservas = useCallback(async () => {
     try {
-      const response = await axios.get(apiReservasBackend);
+      const response = await api.get(apiReservasBackend);
       const fetchedReservas = response.data;
 
       if (Array.isArray(fetchedReservas)) {
@@ -90,21 +92,21 @@ export const ReservaProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error al obtener reservas:", error);
     }
-  }, []);
+  }, [api]);
 
   const fetchReserva = useCallback(async (id: string) => {
     try {
-      const response = await axios.get(`${apiReservasBackend}/${id}`);
+      const response = await api.get(`${apiReservasBackend}/${id}`);
       setReserva(response.data);
     } catch (error) {
       setReserva(null);
       console.error("Error al obtener la reserva:", error);
     }
-  }, []);
+  }, [api]);
 
   const createReserva = async (reserva: Reserva) => {
     try {
-      await axios.post(apiReservasBackend, reserva);
+      await api.post(apiReservasBackend, reserva);
       fetchReservas();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {

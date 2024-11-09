@@ -4,6 +4,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import axios from "axios";
+import { useApi } from "./ApiContext";
 
 // Interfaz para una alerta
 export interface Alert {
@@ -36,6 +37,7 @@ export const useAlert = () => {
 
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const api = useApi();
 
   // URL para el endpoint de las alertas (ajusta la URL según sea necesario)
   const apiAlertsBackend = `https://fleet-manager-vrxj.onrender.com/api/alerts`;
@@ -43,7 +45,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   // Función para obtener las alertas
   const fetchAlerts = useCallback(async () => {
     try {
-      const response = await axios.get(apiAlertsBackend);
+      const response = await api.get(apiAlertsBackend);
       setAlerts(response.data);
     } catch (error) {
       console.error("Error al obtener alertas:", error);
@@ -53,7 +55,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   // Función para reconocer una alerta
   const acknowledgeAlert = useCallback(async (id: string) => {
     try {
-      await axios.patch(`${apiAlertsBackend}/${id}`, { acknowledge: true });
+      await api.patch(`${apiAlertsBackend}/${id}`, { acknowledge: true });
       // Actualizar la alerta localmente
       setAlerts((prevAlerts) =>
         prevAlerts.map((alert) =>
