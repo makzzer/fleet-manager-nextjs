@@ -10,8 +10,9 @@ import React, {
 } from "react";
 import axios from "axios";
 import * as XLSX from 'xlsx';
+import { useApi } from "./ApiContext";
 
-const apiVehiculosBackend = `https://fleet-manager-vrxj.onrender.com/api/vehicles`;
+const apiVehiculosBackend = `/vehicles`;
 
 interface Coordinates {
   latitude: number;
@@ -92,10 +93,11 @@ export const useVehiculo = () => {
 
 export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
+  const api = useApi();
 
   const fetchVehiculos = useCallback(async () => {
     try {
-      const response = await axios.get(apiVehiculosBackend);
+      const response = await api.get(apiVehiculosBackend);
       if (Array.isArray(response.data)) {
         const fetchedVehiculos: Vehiculo[] = response.data;
 
@@ -109,14 +111,14 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error fetching vehiculos:", error);
     }
-  }, []);
+  }, [api]);
 
   const createVehiculo = async (
     vehiculo: Omit<Vehiculo, "date_created" | "date_updated">
   ): Promise<{ resultado: boolean, mensaje?: string}> => {
     try {
       console.log("Vahiculo a crear: ", vehiculo);
-      await axios.post(apiVehiculosBackend, vehiculo);
+      await api.post(apiVehiculosBackend, vehiculo);
       fetchVehiculos();
       return { resultado: true };
     } catch (error) {
@@ -134,7 +136,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log("Vahiculo a modificar: ", vehiculoEditado);
       // Realiza la solicitud PUT para modificar el vehículo en el backend
-      await axios.put(`${apiVehiculosBackend}/${vehiculoEditado.id}`, vehiculoEditado);
+      await api.put(`${apiVehiculosBackend}/${vehiculoEditado.id}`, vehiculoEditado);
   
       // Actualiza localmente los datos si la respuesta es exitosa
       setVehiculos((prevVehiculos) =>
@@ -154,7 +156,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
   const deleteVehiculo = async (vehiculoEliminado: Vehiculo) => {
     try {
       // Realiza DELETE para deshabilitar el vehículo en el backend
-      await axios.delete(`${apiVehiculosBackend}/${vehiculoEliminado.id}`);
+      await api.delete(`${apiVehiculosBackend}/${vehiculoEliminado.id}`);
       
       // Actualiza el estado localmente
       setVehiculos((prevVehiculos) =>
@@ -171,7 +173,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
 
   const enableVehiculo = async (id: string) => {
     try {
-      await axios.put(`${apiVehiculosBackend}/${id}`, { status: "AVAILABLE" });
+      await api.put(`${apiVehiculosBackend}/${id}`, { status: "AVAILABLE" });
       
       // Actualiza el estado localmente
       setVehiculos((prevVehiculos) =>

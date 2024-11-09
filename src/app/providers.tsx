@@ -11,29 +11,32 @@ import { ControlProvider } from "./context/ControlContext";
 import { ReservaProvider } from "./context/ReservesContext";
 import { AlertProvider } from "./context/AlertsContext";
 import { EnterpriseProvider } from "./context/EnterpriseContext";
+import { ApiProvider } from "./context/ApiContext";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
-    <AnalyticsProvider>
-      <EnterpriseProvider>
-        <ControlProvider>
-          <OrdenDeCompraProvider>
-            <ProductoProvider>
-              <ProveedorProvider>
-                <VehiculoProvider>
-                  <AuthProvider>
-                    <ReservaProvider>
-                      <UserProvider>
-                        <AlertProvider>{children}</AlertProvider>
-                      </UserProvider>
-                    </ReservaProvider>
-                  </AuthProvider>
-                </VehiculoProvider>
-              </ProveedorProvider>
-            </ProductoProvider>
-          </OrdenDeCompraProvider>
-        </ControlProvider>
-      </EnterpriseProvider>
-    </AnalyticsProvider>
+    <AuthProvider>
+      <ApiProvider>
+        <AnalyticsProvider>
+          <EnterpriseProvider>
+            <ControlProvider>
+              <OrdenDeCompraProvider>
+                <ProductoProvider>
+                  <ProveedorProvider>
+                    <VehiculoProvider>
+                      <ReservaProvider>
+                        <UserProvider>
+                          <AlertProvider>{children}</AlertProvider>
+                        </UserProvider>
+                      </ReservaProvider>
+                    </VehiculoProvider>
+                  </ProveedorProvider>
+                </ProductoProvider>
+              </OrdenDeCompraProvider>
+            </ControlProvider>
+          </EnterpriseProvider>
+        </AnalyticsProvider>
+      </ApiProvider>
+    </AuthProvider>
   );
 };

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import axios from "axios";
+import { Enterprise } from "./EnterpriseContext";
 
 // API para autenticación de usuarios
 const apiAuthBackend = `https://fleet-manager-vrxj.onrender.com/api/users/auths`;
@@ -19,6 +20,7 @@ interface User {
   permissions: Permissions[];
   date_created: string;
   date_updated: string;
+  enterprise: Enterprise;
 }
 
 interface AuthResponse {
@@ -34,6 +36,7 @@ interface AuthContextProps {
   hasPermission: (requiredPermissions: Permissions[]) => boolean;
   hasRole: (role: string) => boolean; // Añadimos la función para verificar roles
   hasModuleAccess: (module: string) => boolean; //acá añado la funcion para verificar si el usuario tiene el modulo habilitado
+  getEnterpriseId: () => string | null;
 }
 
 // Creamos el AuthContext
@@ -107,6 +110,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return authenticatedUser.permissions.some((perm) => perm.module === module);
   };
 
+  const getEnterpriseId = () => {
+    return authenticatedUser ? authenticatedUser.enterprise.id : null;
+  }
+
+  if(isLoading) {
+    return (
+      <div>Cargando...</div>
+    )
+  }
 
   return (
     <AuthContext.Provider value={{
@@ -117,6 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       hasPermission,
       hasRole,
       hasModuleAccess,
+      getEnterpriseId,
     }}>
       {children}
     </AuthContext.Provider>
