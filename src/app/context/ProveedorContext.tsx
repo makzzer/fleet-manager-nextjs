@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import { useApi } from "./ApiContext";
 
 const apiProveedoresBackend = `https://fleet-manager-vrxj.onrender.com/api/providers`;
 
@@ -39,10 +40,11 @@ export const useProveedor = () => {
 export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
   // proveedores de api
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+  const api = useApi();
 
   const fetchProveedores = useCallback(async () => {
     try {
-      const response = await axios.get(apiProveedoresBackend);
+      const response = await api.get(apiProveedoresBackend);
       const fetchedProveedores = response.data;
 
       if (Array.isArray(fetchedProveedores)) {
@@ -53,7 +55,7 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Error al obtener proveedor:', error);
     }
-  }, []);
+  }, [api]);
 
   // const createProveedor = async (proveedor: Proveedor) => {
   //   setProveedores((proveedoresLocales) => [
@@ -65,7 +67,7 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
   const createProveedor = async (proveedor: Omit<Proveedor, "date_created" | "date_updated">) => {
     try {
       console.log("Proveedor a enviar:", proveedor);
-      await axios.post(apiProveedoresBackend, proveedor);
+      await api.post(apiProveedoresBackend, proveedor);
       fetchProveedores();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
