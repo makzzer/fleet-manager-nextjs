@@ -7,8 +7,8 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
-import axios from "axios";
 import * as XLSX from 'xlsx';
+import { useApi } from "./ApiContext";
 
 const apiOrdenesDeCompraBackend = `https://fleet-manager-vrxj.onrender.com/api/orders`;
 const apiProveedoresBackend = `https://fleet-manager-vrxj.onrender.com/api/providers`;
@@ -86,10 +86,11 @@ export const useOrdenesDeCompra = () => {
 export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => {
   const [ordenesDeCompra, setOrdenesDeCompra] = useState<OrdenDeCompra[]>([]);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+  const api = useApi();
 
   const fetchOrdenesDeCompra = useCallback(async () => {
     try {
-      const response = await axios.get(apiOrdenesDeCompraBackend);
+      const response = await api.get(apiOrdenesDeCompraBackend);
       const fetchedOrdenesDeCompra = response.data;
 
       if (Array.isArray(fetchedOrdenesDeCompra)) {
@@ -103,29 +104,29 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
     } catch (error) {
       console.error("Error al obtener las ordenes de compra:", error);
     }
-  }, []);
+  }, [api]);
 
   const fetchProductos = useCallback(async (providerId: string) => {
     try {
-      const response = await axios.get(`${apiProveedoresBackend}/${providerId}/products`);
+      const response = await api.get(`${apiProveedoresBackend}/${providerId}/products`);
       return response.data;
     } catch (error) {
       console.error("Error al obtener los productos:", error);
     }
-  }, []);
+  }, [api]);
 
   const fetchProveedores = useCallback(async () => {
     try {
-      const response = await axios.get(apiProveedoresBackend);
+      const response = await api.get(apiProveedoresBackend);
       setProveedores(response.data);
     } catch (error) {
       console.error("Error al obtener los proveedores:", error);
     }
-  }, []);
+  }, [api]);
 
   const createOrdenDeCompra = async (provider_id: string) => {
     try {
-      await axios.post(apiOrdenesDeCompraBackend, { provider_id });
+      await api.post(apiOrdenesDeCompraBackend, { provider_id });
       fetchOrdenesDeCompra(); //despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
     } catch (error) {
       console.error("Error al crear la orden de compra:", error);
@@ -133,7 +134,7 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
   };
 
   const actualizarEstadoOrdenDeCompra = async (id: string, estado: string) => {
-    await axios.put(`${apiOrdenesDeCompraBackend}/${id}/status/${estado}`);
+    await api.put(`${apiOrdenesDeCompraBackend}/${id}/status/${estado}`);
     fetchOrdenesDeCompra(); //despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
   };
 
@@ -144,7 +145,7 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
     amount: number
   ) => {
     try {
-      await axios.put(`${apiOrdenesDeCompraBackend}/${orden_id}/products`, {
+      await api.put(`${apiOrdenesDeCompraBackend}/${orden_id}/products`, {
         product_id,
         quantity,
         amount,
