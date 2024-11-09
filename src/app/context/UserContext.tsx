@@ -3,7 +3,7 @@
 
 import axios from "axios";
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import api from "../interceptor/api";
+//import api from "../interceptor/api";
 import { useApi } from "./ApiContext";
 
 // API para autenticación de usuarios
