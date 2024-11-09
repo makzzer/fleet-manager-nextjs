@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import axios from "axios";
 import * as XLSX from 'xlsx';
+import { useApi } from "./ApiContext";
 
 const apiProductosBackend = `https://fleet-manager-vrxj.onrender.com/api/products`;
 const apiProveedoresBackend = `https://fleet-manager-vrxj.onrender.com/api/providers`;
@@ -69,10 +70,11 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [producto, setProducto] = useState<Producto | null>(null);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+  const api = useApi();
 
   const fetchProductos = useCallback(async () => {
     try {
-      const response = await axios.get(apiProductosBackend);
+      const response = await api.get(apiProductosBackend);
       const fetchedProductos = response.data;
 
       if (Array.isArray(fetchedProductos)) {
@@ -83,22 +85,22 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Error al obtener productos:', error);
     }
-  }, []);
+  }, [api]);
 
   const fetchProducto = useCallback(async (id : string) => {
     try {
-      const response = await axios.get(`${apiProductosBackend}/${id}`);
+      const response = await api.get(`${apiProductosBackend}/${id}`);
       setProducto(response.data);
     } catch (error) {
       setProducto(null);
       console.error('Error al obtener productos:', error);
     }
-  }, []);
+  }, [api]);
 
   const createProducto = async (producto: ProductoRequest) => {
     try {
       console.log("Producto a enviar:", producto);
-      await axios.post(apiProductosBackend, producto);
+      await api.post(apiProductosBackend, producto);
       fetchProductos();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -111,12 +113,12 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchProveedores = useCallback(async () => {
     try {
-      const response = await axios.get(apiProveedoresBackend);
+      const response = await api.get(apiProveedoresBackend);
       setProveedores(response.data);
     } catch (error) {
       console.error("Error al obtener los proveedores:", error);
     }
-  }, []);
+  }, [api]);
 
   const exportProductoToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(productos);
