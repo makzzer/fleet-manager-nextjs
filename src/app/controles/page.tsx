@@ -114,7 +114,7 @@ const Controles = () => {
     };
 
     loadControls();
-  }, [fetchControls]);
+  }, []);
 
   useEffect(() => {
     if (controls && controls.length > 0) {

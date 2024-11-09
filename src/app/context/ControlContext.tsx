@@ -1,7 +1,6 @@
 "use client";
 
 import axios from "axios";
-import { controllers } from "chart.js";
 import {
   createContext,
   useContext,
@@ -10,6 +9,7 @@ import {
   useEffect,
 } from "react";
 import * as XLSX from 'xlsx';
+import { useApi } from "./ApiContext";
 
 
 // API para autenticación de usuarios
@@ -118,10 +118,11 @@ export const useControl = () => {
 
 export const ControlProvider = ({ children }: { children: ReactNode }) => {
   const [controls, setControls] = useState<Control[]>([]);
+  const api = useApi();
 
   const fetchControls = async () => {
     try {
-      const response = await axios.get(apiControles);
+      const response = await api.get(apiControles);
       const fetchedControls = response.data;
       setControls(fetchedControls);
     } catch (error) {
@@ -135,7 +136,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     quantity: number,
   ) => {
     try {
-      await axios.put( `${apiControles}/${control_id}/products`, { product_id, quantity } );
+      await api.put( `${apiControles}/${control_id}/products`, { product_id, quantity } );
       fetchControls();
       return { resultado: true };
     } catch (error) {
@@ -151,7 +152,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     controlCorrectivo: POSTCorrectiveControl
   ) => {
     try {
-      await axios.post(apiControles, controlCorrectivo);
+      await api.post(apiControles, controlCorrectivo);
       fetchControls();
     } catch (error) {
       console.error("Error creating corrective control:", error);
@@ -162,7 +163,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     controlPredictivo: POSTPredictiveControl
   ) => {
     try {
-      await axios.post(`${apiControles}/predictive`, controlPredictivo);
+      await api.post(`${apiControles}/predictive`, controlPredictivo);
       fetchControls();
     } catch (error) {
       console.error("Error creating corrective control:", error);
@@ -172,7 +173,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
   const setControlStatus = async (control_id: string, new_status: string) => {
     console.log("Entró acá con:", control_id, " - ", new_status);
     try {
-      await axios.put(`${apiControles}/${control_id}/status/${new_status}`);
+      await api.put(`${apiControles}/${control_id}/status/${new_status}`);
       fetchControls();
     } catch (error) {
       console.error("Error changing control status:", error);
@@ -181,7 +182,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
 
   const assignOperator = async (control_id: string, operator_id: string) => {
     try {
-      await axios.put(`${apiControles}/${control_id}/operator/${operator_id}`);
+      await api.put(`${apiControles}/${control_id}/operator/${operator_id}`);
       fetchControls();
     } catch (error) {
       console.error("Error changing control status:", error);
