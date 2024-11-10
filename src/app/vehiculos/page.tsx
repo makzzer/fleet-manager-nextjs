@@ -51,9 +51,14 @@ const Vehiculos = () => {
     let filtered = vehiculos;
 
     // Filtro por disponibilidad
-    if (!showUnavailable) {
-      filtered = filtered.filter((vehiculo) => vehiculo.status === "AVAILABLE");
-    }
+    // if (!showUnavailable) {
+    //   filtered = filtered.filter((vehiculo) => vehiculo.status === "AVAILABLE");
+    // }
+
+    if (showUnavailable ? 
+      filtered = filtered.filter((vehiculo) => vehiculo.status === "UNAVAILABLE")
+    : filtered = filtered.filter((vehiculo) => vehiculo.status === "AVAILABLE")
+    )
 
     // Filtro por tipo de vehículo
     if (typeFilter) {
