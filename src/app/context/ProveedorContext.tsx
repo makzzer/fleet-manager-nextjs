@@ -22,6 +22,7 @@ interface ProveedorContextProps {
   proveedores: Proveedor[];
   fetchProveedores: () => void;
   createProveedor: (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => Promise<{ resultado: boolean, mensaje?: string }>;
+  modifyProvider: (proveedorEditado: Omit<Proveedor, "date_created" | "date_updated">) => Promise<void>;
   exportProveedorToExcel: () => void;
 }
 
@@ -80,6 +81,24 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   };
+
+  const modifyProvider = async (proveedorEditado: Omit<Proveedor, "date_created" | "date_updated">) => {
+    try {
+      console.log("Proveedor a editar:", proveedorEditado);
+      await api.put(`${apiProveedoresBackend}/${proveedorEditado.id}`, proveedorEditado);
+
+      setProveedores((prevProveedores) =>
+        prevProveedores.map((proveedor) =>
+          proveedor.id === proveedorEditado.id
+            ? { ...proveedor, ...proveedorEditado }
+            : proveedor
+        )
+      );
+      console.log(`El proveedor con ID ${proveedorEditado.id} ha sido editado en el backend.`);
+    } catch (error) {
+      console.error("Error editando proveedor en el backend:", error);
+    }
+  };
   
   const exportProveedorToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(proveedores);
@@ -94,7 +113,7 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ProveedorContext.Provider
-      value={{ proveedores, fetchProveedores, createProveedor, exportProveedorToExcel }}
+      value={{ proveedores, fetchProveedores, createProveedor, modifyProvider, exportProveedorToExcel }}
     >
       {children}
     </ProveedorContext.Provider>
