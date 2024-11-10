@@ -7,12 +7,10 @@ export const createApi = (getEnterpriseId: () => string | null) => {
 
   api.interceptors.request.use((config) => {
     const enterpriseId = getEnterpriseId();
-    if (enterpriseId) {
-      if (config.method === 'get' || config.method === 'delete') {
-        config.params = { ...config.params, enterprise_id: enterpriseId };
-      } else if (config.method === 'post' || config.method === 'put' || config.method === 'patch') {
-        config.data = { ...config.data, enterprise_id: enterpriseId };
-      }
+    if (config.method === 'get' || config.method === 'delete') {
+      config.params = { ...config.params, enterprise_id: enterpriseId ? enterpriseId : "null" };
+    } else if (config.method === 'post' || config.method === 'put' || config.method === 'patch') {
+      config.data = { ...config.data, enterprise_id: enterpriseId };
     }
     return config;
   });
