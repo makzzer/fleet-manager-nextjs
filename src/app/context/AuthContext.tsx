@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getEnterpriseId = () => {
-    return authenticatedUser ? authenticatedUser.enterprise.id : null;
+    return authenticatedUser ? authenticatedUser.enterprise?.id : null;
   }
 
   if(isLoading) {
