@@ -11,8 +11,8 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { FiPlus, FiDownload, FiCamera } from "react-icons/fi"; // Importamos FiCamera
 import { useRouter } from "next/navigation";
 import {
-  generateExcelTemplate,
-  processFile,
+  generateExcelVehicleTemplate,
+  processVehicleFile,
 } from "../util/excelProcessor";
 import QrScanner from "../components/QR/QrScanner"; // Importamos el componente del escáner
 
@@ -20,12 +20,8 @@ const MySwal = withReactContent(Swal); // Creamos una instancia de SweetAlert co
 
 const Vehiculos = () => {
   const router = useRouter();
-  const {
-    vehiculos,
-    fetchVehiculos,
-    createVehiculo,
-    exportVehiculosToExcel,
-  } = useVehiculo();
+  const { vehiculos, fetchVehiculos, createVehiculo, exportVehiculosToExcel } =
+    useVehiculo();
   const [isLoading, setIsLoading] = useState(true);
   const [filteredVehiculos, setFilteredVehiculos] = useState<Vehiculo[]>([]);
   const [showUnavailable, setShowUnavailable] = useState(false); // Filtro para ocultar/mostrar vehículos deshabilitados
@@ -56,9 +52,7 @@ const Vehiculos = () => {
 
     // Filtro por disponibilidad
     if (!showUnavailable) {
-      filtered = filtered.filter(
-        (vehiculo) => vehiculo.status === "AVAILABLE"
-      );
+      filtered = filtered.filter((vehiculo) => vehiculo.status === "AVAILABLE");
     }
 
     // Filtro por tipo de vehículo
@@ -169,7 +163,7 @@ const Vehiculos = () => {
 
         document
           .getElementById("downloadTemplate")
-          ?.addEventListener("click", generateExcelTemplate);
+          ?.addEventListener("click", generateExcelVehicleTemplate);
 
         dropZone?.addEventListener("click", () => fileUpload?.click());
 
@@ -202,11 +196,11 @@ const Vehiculos = () => {
 
   const handleFileUpload = async (file: File) => {
     try {
-      const formatedVehicles = await processFile(file);
+      const formatedVehicles = await processVehicleFile(file);
       let successCount = 0;
       let failedCount = 0;
 
-      console.log(formatedVehicles)
+      console.log(formatedVehicles);
       for (const formatedVehicle of formatedVehicles) {
         try {
           const vehicle: Vehiculo = {
@@ -251,11 +245,7 @@ const Vehiculos = () => {
       fetchVehiculos(); // Actualizar la lista de vehículos
     } catch (error) {
       console.error("Error processing file:", error);
-      Swal.fire(
-        "Error",
-        "Hubo un problema al procesar el archivo",
-        "error"
-      );
+      Swal.fire("Error", "Hubo un problema al procesar el archivo", "error");
     }
   };
 
@@ -316,7 +306,6 @@ const Vehiculos = () => {
               <span className="hidden sm:inline">Exportar a Excel</span>{" "}
               {/* Texto se oculta en pantallas pequeñas */}
             </button>
-
           </div>
         </div>
 

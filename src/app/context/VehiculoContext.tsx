@@ -77,6 +77,7 @@ interface VehiculoContextProps {
   deleteVehiculo: (vehiculoEliminado: Vehiculo) => Promise<void>;
   enableVehiculo: (id: string) => Promise<void>;
   exportVehiculosToExcel: () => void;
+  updateVehicleCoordinates: (vehicleId: string, newCoordinates: Coordinates) => Promise<void>; // Agregamos esta línea
 }
 
 const VehiculoContext = createContext<VehiculoContextProps | undefined>(
@@ -129,6 +130,24 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
       return { resultado: false, mensaje: "Ha ocurrido un error al crear el vehiculo."}
     }
   };
+
+  const updateVehicleCoordinates = async (vehicleId: string, newCoordinates: Coordinates) => {
+    try {
+      await api.put(`${apiVehiculosBackend}/${vehicleId}`, { coordinates: newCoordinates });
+      
+      // Actualiza el estado localmente
+      setVehiculos((prevVehiculos) =>
+        prevVehiculos.map((vehiculo) =>
+          vehiculo.id === vehicleId ? { ...vehiculo, coordinates: newCoordinates } : vehiculo
+        )
+      );
+
+      console.log(`Vehículo con ID ${vehicleId} ha actualizado sus coordenadas.`);
+    } catch (error) {
+      console.error("Error al actualizar las coordenadas del vehículo:", error);
+    }
+  };
+
 
   const modifyVehiculo = async (
     vehiculoEditado: Omit<Vehiculo, "date_created" | "date_updated">
@@ -202,7 +221,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <VehiculoContext.Provider
-      value={{ vehiculos, fetchVehiculos, createVehiculo, modifyVehiculo, deleteVehiculo, enableVehiculo, exportVehiculosToExcel, }}
+      value={{ vehiculos, fetchVehiculos, createVehiculo, updateVehicleCoordinates, modifyVehiculo, deleteVehiculo, enableVehiculo, exportVehiculosToExcel, }}
     >
       {children}
     </VehiculoContext.Provider>
