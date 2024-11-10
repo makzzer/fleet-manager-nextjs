@@ -20,22 +20,49 @@ import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal); // Creamos una instancia de SweetAlert con ReactContent
 
 //Lista de categorias de repuestos en productos
-const categorias = ['Aceite', 'Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas',
-  'Cristales', 'Dirección', 'Escape', 'Espejos', 'Filtros', 'Frenos', 'Líquido de frenos', 'Lubricantes', 'Luces',
-  'Motores', 'Motor', 'Neumáticos ', 'Paragolpes', 'Radiadores', 'Sistemas eléctricos', 'Sensores',
-  'Suspensión', 'Transmisión',
+const categorias = [
+  "Aceite",
+  "Aire Acondicionado",
+  "Amortiguadores",
+  "Baterías",
+  "Carrocería",
+  "Correas",
+  "Cristales",
+  "Dirección",
+  "Escape",
+  "Espejos",
+  "Filtros",
+  "Frenos",
+  "Líquido de frenos",
+  "Lubricantes",
+  "Luces",
+  "Motores",
+  "Motor",
+  "Neumáticos ",
+  "Paragolpes",
+  "Radiadores",
+  "Sistemas eléctricos",
+  "Sensores",
+  "Suspensión",
+  "Transmisión",
 ];
 
 const unidadesDeMedida: { [key: string]: string } = {
-  'LITER': 'Litros',
-  'UNIT': 'Unidades',
-  'KILOGRAM': 'kg',
+  LITER: "Litros",
+  UNIT: "Unidades",
+  KILOGRAM: "kg",
 };
-
 
 const Stock = () => {
   const router = useRouter();
-  const { productos, proveedores, fetchProductos, fetchProveedores, createProducto, exportProductoToExcel } = useProducto();
+  const {
+    productos,
+    proveedores,
+    fetchProductos,
+    fetchProveedores,
+    createProducto,
+    exportProductoToExcel,
+  } = useProducto();
   const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
   const [filteredProductos, setFilteredProductos] = useState(productos); // Estado para filtrar productos por la barra
   const [loadMoreCount, setLoadMoreCount] = useState(5); // Para cargar de a 4
@@ -43,7 +70,6 @@ const Stock = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(""); // Estado para el filtro seleccionado
   const [isSearchEnabled, setIsSearchEnabled] = useState(true); // (true): para que las barras sean siempre visibles
-
 
   useEffect(() => {
     const loadProductos = async () => {
@@ -73,13 +99,17 @@ const Stock = () => {
 
     if (searchTerm) {
       filtered = filtered.filter((producto) =>
-        removeAccents(producto.name.toLowerCase()).includes(removeAccents(searchTerm.toLowerCase()))
+        removeAccents(producto.name.toLowerCase()).includes(
+          removeAccents(searchTerm.toLowerCase())
+        )
       );
     }
 
     if (selectedCategory) {
-      filtered = filtered.filter((producto) =>
-        removeAccents(producto.category.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
+      filtered = filtered.filter(
+        (producto) =>
+          removeAccents(producto.category.toLowerCase()) ===
+          removeAccents(selectedCategory.toLowerCase())
       );
     }
 
@@ -91,8 +121,10 @@ const Stock = () => {
 
     // filtrar por categoría primero si hay una seleccionada.
     if (selectedCategory) {
-      filtered = filtered.filter((producto) =>
-        removeAccents(producto.category.toLowerCase()) === removeAccents(selectedCategory.toLowerCase())
+      filtered = filtered.filter(
+        (producto) =>
+          removeAccents(producto.category.toLowerCase()) ===
+          removeAccents(selectedCategory.toLowerCase())
       );
     }
 
@@ -102,12 +134,22 @@ const Stock = () => {
 
       filtered = filtered.filter((producto) => {
         if (selectedFilter === "name") {
-          return removeAccents(producto.name.toLowerCase()).includes(normalizedSearchTerm);
+          return removeAccents(producto.name.toLowerCase()).includes(
+            normalizedSearchTerm
+          );
         } else if (selectedFilter === "brand") {
-          return removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm);
+          return removeAccents(producto.brand.toLowerCase()).includes(
+            normalizedSearchTerm
+          );
         }
-        return (removeAccents(producto.name.toLowerCase()).includes(normalizedSearchTerm) ||
-          removeAccents(producto.brand.toLowerCase()).includes(normalizedSearchTerm));
+        return (
+          removeAccents(producto.name.toLowerCase()).includes(
+            normalizedSearchTerm
+          ) ||
+          removeAccents(producto.brand.toLowerCase()).includes(
+            normalizedSearchTerm
+          )
+        );
       });
     }
     setFilteredProductos(filtered.slice(0, loadMoreCount));
@@ -128,8 +170,9 @@ const Stock = () => {
 
     // actualizar productos filtrados cuando seleccionas la categoría
     if (selected === "category" && selectedCategory) {
-      const filtered = productos.filter((producto) =>
-        producto.category.toLowerCase() === selectedCategory.toLowerCase()
+      const filtered = productos.filter(
+        (producto) =>
+          producto.category.toLowerCase() === selectedCategory.toLowerCase()
       );
       setFilteredProductos(filtered);
     }
@@ -174,17 +217,68 @@ const Stock = () => {
     });
   };
 
+  const handleDesplegarOpciones = () => {
+    Swal.fire({
+      //libreria s. alert
+      title: "Agregar Producto",
+      html: `
+      <div class="grid grid-cols-2">
+        <button id="addIndividual" class="swal2-confirm swal2-styled flex flex-col justify-center items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+          </svg>
+          <span>Individual</span>
+        </button>
+        <button id="addMasivo" class="swal2-confirm swal2-styled flex flex-col justify-center items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+        </svg>
+        <span>Carga Masiva</span>
+        </button>
+      </div> 
+      `,
+      showConfirmButton: false,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      focusConfirm: false,
+      customClass: {
+        title: "text-white",
+        popup: "bg-gray-800",
+      },
+      didOpen: () => {
+        document
+          .getElementById("addIndividual")
+          ?.addEventListener("click", () => {
+            Swal.close();
+            handleAgregarProducto();
+          });
+        document.getElementById("addMasivo")?.addEventListener("click", () => {
+          Swal.close();
+          // handleCargaMasiva();
+        });
+      },
+    });
+  };
+
   const handleAgregarProducto = () => {
     // Construir las opciones del select
     const opcionesCategorias = categorias
-      .map(categoria => `<option value="${categoria}">${categoria}</option>`).join('');
+      .map((categoria) => `<option value="${categoria}">${categoria}</option>`)
+      .join("");
 
     const opcionesUnidadMedida = Object.entries(unidadesDeMedida)
-      .map(([key, value]) => `<option key="${key}" value="${key}">${value}</option>`).join('');
+      .map(
+        ([key, value]) =>
+          `<option key="${key}" value="${key}">${value}</option>`
+      )
+      .join("");
 
     const proveedoresOptions = proveedores
-      .map((proveedor) => `<option value="${proveedor.id}">${proveedor.name}</option>`).join("");
-
+      .map(
+        (proveedor) =>
+          `<option value="${proveedor.id}">${proveedor.name}</option>`
+      )
+      .join("");
 
     Swal.fire({
       title: "Agregar Producto",
@@ -227,14 +321,30 @@ const Stock = () => {
       focusConfirm: false,
       preConfirm: () => {
         const nameElement = document.getElementById("name") as HTMLInputElement;
-        const brandElement = document.getElementById("brand") as HTMLInputElement;
-        const descriptionElement = document.getElementById("description") as HTMLInputElement;
-        const categoryElement = document.getElementById("category") as HTMLInputElement;
-        const quantityElement = document.getElementById("quantity") as HTMLInputElement;
-        const measurementElement = document.getElementById("measurement") as HTMLInputElement;
-        const priceElement = document.getElementById("price") as HTMLInputElement;
-        const preferenceProviderIdElement = document.getElementById("preferenceProviderId") as HTMLInputElement;
-        const minStockElement = document.getElementById("minStock") as HTMLInputElement;
+        const brandElement = document.getElementById(
+          "brand"
+        ) as HTMLInputElement;
+        const descriptionElement = document.getElementById(
+          "description"
+        ) as HTMLInputElement;
+        const categoryElement = document.getElementById(
+          "category"
+        ) as HTMLInputElement;
+        const quantityElement = document.getElementById(
+          "quantity"
+        ) as HTMLInputElement;
+        const measurementElement = document.getElementById(
+          "measurement"
+        ) as HTMLInputElement;
+        const priceElement = document.getElementById(
+          "price"
+        ) as HTMLInputElement;
+        const preferenceProviderIdElement = document.getElementById(
+          "preferenceProviderId"
+        ) as HTMLInputElement;
+        const minStockElement = document.getElementById(
+          "minStock"
+        ) as HTMLInputElement;
 
         const name = nameElement?.value;
         const brand = brandElement?.value;
@@ -246,12 +356,32 @@ const Stock = () => {
         const preferenceProviderId = preferenceProviderIdElement?.value;
         const minStock = minStockElement?.value;
 
-        if (!name || !brand || !description || !category || !quantity || !measurement || !price || !preferenceProviderId || !minStock) {
+        if (
+          !name ||
+          !brand ||
+          !description ||
+          !category ||
+          !quantity ||
+          !measurement ||
+          !price ||
+          !preferenceProviderId ||
+          !minStock
+        ) {
           Swal.showValidationMessage("Completa todos los campos");
           return null;
         }
 
-        return { name, brand, description, category, quantity, measurement, price, preferenceProviderId, minStock };
+        return {
+          name,
+          brand,
+          description,
+          category,
+          quantity,
+          measurement,
+          price,
+          preferenceProviderId,
+          minStock,
+        };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
@@ -265,7 +395,7 @@ const Stock = () => {
           measurement: result.value.measurement,
           price: result.value.price,
           provider_id: result.value.preferenceProviderId,
-          min_stock: result.value.minStock
+          min_stock: result.value.minStock,
         };
 
         createProducto(producto);
@@ -290,7 +420,7 @@ const Stock = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
-              onClick={handleAgregarProducto}
+              onClick={handleDesplegarOpciones}
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out flex items-center justify-center"
             >
               <FaPlusCircle className="mr-2" /> Agregar Producto
@@ -312,7 +442,10 @@ const Stock = () => {
 
         {filteredProductos && filteredProductos.length > 0 ? (
           // <ProductTable products={localProducts} onProductDeleted={handleProductDeleted} />
-          <ProductTable products={filteredProductos} measurementUnits={unidadesDeMedida} />
+          <ProductTable
+            products={filteredProductos}
+            measurementUnits={unidadesDeMedida}
+          />
         ) : (
           <div className="flex flex-col items-center justify-center mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-lg font-semibold text-gray-800">
