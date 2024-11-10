@@ -9,6 +9,10 @@ import { useProveedor } from "../context/ProveedorContext";
 import { FaDownload, FaPlusCircle } from "react-icons/fa";
 import { TextField, InputAdornment } from "@mui/material";
 import { FaSearch } from "react-icons/fa";
+import {
+  generateExcelProviderTemplate,
+  processProviderFile,
+} from "../util/excelProcessor";
 
 interface Proveedor {
   id: string;
@@ -118,7 +122,7 @@ const Proveedores = () => {
           });
         document.getElementById("addMasivo")?.addEventListener("click", () => {
           Swal.close();
-          // handleCargaMasiva();
+           handleCargaMasiva();
         });
       },
     });
@@ -239,7 +243,7 @@ const Proveedores = () => {
           await createProveedor(proveedor);
           Swal.fire("Proveedor agregado con éxito", "", "success");
         } catch (error) {
-          console.error(error)
+          console.error(error);
           Swal.fire(
             "Error",
             "Hubo un problema al agregar el proveedor",
@@ -248,6 +252,123 @@ const Proveedores = () => {
         }
       }
     });
+  };
+
+  const handleCargaMasiva = () => {
+    Swal.fire({
+      title: "Carga Masiva de Proveedores",
+      html: `
+          <div class="text-left mb-4">
+            <p class="mb-2 ">Descargue la plantilla y luego suba el archivo Excel o CSV con los datos de los vehículos.</p>
+            <p class="text-sm text-gray-300">Formatos aceptados: .xlsx, .xls, .csv</p>
+          </div>
+          <div class="flex justify-start space-x-4 mb-4">
+            <button id="downloadTemplate" class="bg-blue-500 hover:bg-blue-600 text-white w-full font-bold py-2 px-4 rounded transition duration-200 ease-in-out">
+              Descargar Plantilla
+            </button>
+          </div>
+          <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="hidden">
+          <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition duration-200 ease-in-out">
+            <p class="">Arrastre y suelte su archivo aquí</p>
+            <p class="text-sm ">o haga clic para seleccionar</p>
+          </div>
+      `,
+      showCancelButton: true,
+      showConfirmButton: false,
+      cancelButtonText: "Cerrar",
+      customClass: {
+        popup: "rounded-lg bg-gray-800 text-white",
+        title: "font-bold text-blue-500",
+      },
+      didOpen: () => {
+        const dropZone = document.getElementById("dropZone");
+        const fileUpload = document.getElementById(
+          "fileUpload"
+        ) as HTMLInputElement;
+
+        document
+          .getElementById("downloadTemplate")
+          ?.addEventListener("click", generateExcelProviderTemplate);
+
+        dropZone?.addEventListener("click", () => fileUpload?.click());
+
+        dropZone?.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          dropZone.classList.add("border-blue-500");
+        });
+
+        dropZone?.addEventListener("dragleave", () => {
+          dropZone.classList.remove("border-blue-500");
+        });
+
+        dropZone?.addEventListener("drop", (e) => {
+          e.preventDefault();
+          dropZone.classList.remove("border-blue-500");
+          if (e.dataTransfer?.files.length) {
+            handleFileUpload(e.dataTransfer.files[0]);
+          }
+        });
+
+        fileUpload?.addEventListener("change", (e) => {
+          const fileInput = e.target as HTMLInputElement;
+          if (fileInput.files && fileInput.files[0]) {
+            handleFileUpload(fileInput.files[0]);
+          }
+        });
+      },
+    });
+  };
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      const formatedProviders = await processProviderFile(file);
+      let successCount = 0;
+      let failedCount = 0;
+
+      console.log(formatedProviders);
+      for (const formatedProvider of formatedProviders) {
+        try {
+          const provider = {
+            ...formatedProvider,
+            id:"0"
+          };
+          const result = await createProveedor(provider);
+          if (result) {
+            successCount++;
+          } else {
+            failedCount++;
+          }
+          // Actualizar la barra de progreso
+          Swal.update({
+            title: "Procesando vehículos...",
+            html: `Procesados: ${successCount + failedCount} de ${
+              formatedProviders.length
+            }
+                   <div class="progress-bar-container">
+                     <div class="progress-bar" style="width: ${
+                       ((successCount + failedCount) /
+                         formatedProviders.length) *
+                       100
+                     }%"></div>
+                   </div>`,
+          });
+        } catch (error) {
+          console.error("Error creando proveedor:", error);
+          failedCount++;
+        }
+      }
+
+      await Swal.fire({
+        title: "Carga completada",
+        html: `Proveedores agregados exitosamente: ${successCount}<br>Fallidos: ${failedCount}`,
+        icon: "success",
+      });
+
+      fetchProveedores(); // Actualizar la lista de vehículos
+    } catch (error) {
+      console.error("Error processing file:", error);
+      Swal.fire("Error", "Hubo un problema al procesar el archivo", "error");
+    }
   };
 
   return (
