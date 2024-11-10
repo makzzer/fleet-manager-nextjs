@@ -281,7 +281,7 @@ const OrdenesDeCompra = () => {
               ${productosOptions}
             </select>
             <input type="number" id="quantity" class="bg-gray-800 text-white p-2 rounded w-full mb-2" placeholder="Cantidad">
-            <input type="number" id="amount" class="bg-gray-800 text-white p-2 rounded w-full mb-2" placeholder="Monto">
+            
           </div>
           
           <div class="mt-4">
@@ -311,11 +311,11 @@ const OrdenesDeCompra = () => {
         const quantity = (
           document.getElementById("quantity") as HTMLInputElement
         ).value;
-        const amount = (
+        {/*const amount = (
           document.getElementById("amount") as HTMLInputElement
-        ).value;
+        ).value;*/}
 
-        if (!product_id || !quantity || !amount) {
+        if (!product_id || !quantity) {
           Swal.showValidationMessage("Por favor, complete todos los campos");
           return false;
         }
@@ -323,7 +323,7 @@ const OrdenesDeCompra = () => {
         return {
           product_id,
           quantity: Number(quantity),
-          amount: Number(amount),
+          //amount: Number(amount),
         };
       },
       didOpen: () => {
