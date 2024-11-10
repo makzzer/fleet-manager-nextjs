@@ -21,7 +21,7 @@ interface Proveedor {
 interface ProveedorContextProps {
   proveedores: Proveedor[];
   fetchProveedores: () => void;
-  createProveedor: (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => Promise<void>;
+  createProveedor: (proveedor: Omit<Proveedor, 'date_created' | 'date_updated'>) => Promise<{ resultado: boolean, mensaje?: string }>;
   exportProveedorToExcel: () => void;
 }
 
@@ -69,11 +69,14 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
       console.log("Proveedor a enviar:", proveedor);
       await api.post(apiProveedoresBackend, proveedor);
       fetchProveedores();
+      return { resultado: true };
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error("Error al crear proveedor:", error.response.data);
+        return { resultado: false, mensaje: error.response?.data.message};
       } else {
         console.error("Error desconocido al crear proveedor", error);
+        return { resultado: false, mensaje: "Ha ocurrido un error al crear el proveedor."}
       }
     }
   };
