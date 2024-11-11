@@ -53,7 +53,7 @@ const rolColors: { [key: string]: string } = {
 
 const ListaUsuarios = () => {
   const { users, createUser, setRoles, setPassword } = useUser(); // Accede al contexto de usuario
-  const { hasRole } = useAuth()
+  const { hasRole, hasPermission } = useAuth()
   const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para la barra de búsqueda
   const [selectedRole, setSelectedRole] = useState<string>(""); // Estado para el filtro por rol
 
@@ -299,7 +299,7 @@ const ListaUsuarios = () => {
           <h1 className="md:text-4xl text-3xl font-bold text-blue-400 mb-4 sm:mb-0">Gestión de Usuarios</h1>
 
 
-          {hasRole("SUPERVISOR") && (
+          {hasPermission([{module: 'USERS', operations: ['POST']}]) && (
             <button
               className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
               onClick={handleAddUser}

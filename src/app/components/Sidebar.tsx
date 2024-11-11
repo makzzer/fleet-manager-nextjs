@@ -30,7 +30,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const { hasModuleAccess, authenticatedUser } = useAuth()
+  const { hasModuleAccess, hasRole, authenticatedUser } = useAuth()
 
   // Función para alternar la apertura y cierre de la barra lateral
   const toggleSidebar = () => {
@@ -152,7 +152,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                 </div>
               </Link>
 
-              {hasModuleAccess("ANALYTICS") && (
+              {(hasRole("SUPERVISOR") || hasRole("MANAGER")) && (
                 <Link href="/centrodemonitoreo" onClick={handleLinkClick}>
                   <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                     <MdMonitor />
@@ -162,7 +162,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                   </div>
                 </Link>)}
 
-              {hasModuleAccess("RESERVES") && (
+              {hasModuleAccess("RESERVES") && hasRole("CUSTOMER") && (
                 <Link href="/reservas" onClick={handleLinkClick}>
                   <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                     <FaCalendarAlt />
@@ -171,8 +171,6 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                     </span>
                   </div>
                 </Link>)}
-
-
 
               {hasModuleAccess("VEHICLES") && (
                 <Link href="/vehiculos" onClick={handleLinkClick}>
@@ -238,7 +236,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                 </Link>
               )}
 
-              {hasModuleAccess("USERS") && (
+              {hasRole("ADMIN") && (
                 <Link href="/empresas" onClick={handleLinkClick}>
                   <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                     <MdBusinessCenter />
@@ -261,18 +259,18 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
 
               {/* LECTOR DE QR HABILITADO PARA TODOS LOS USUARIOS */}
               {/* Botón "ScanQR" */}
-              <div
-                onClick={handleScanQR}
-                className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg cursor-pointer"
-              >
-                <IoMdQrScanner />
-                <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
-                  ScanQR
-                </span>
-              </div>
 
-
-
+              {(hasRole("OPERATOR") || hasRole("CUSTOMER") || hasRole("SUPERVISOR")) && (
+                  <div
+                      onClick={handleScanQR}
+                      className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg cursor-pointer"
+                  >
+                    <IoMdQrScanner/>
+                    <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
+                      ScanQR
+                    </span>
+                  </div>
+              )}
             </nav>
           </div>
         </div>
