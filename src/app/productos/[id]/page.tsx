@@ -4,10 +4,12 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useProducto } from "@/app/context/ProductoContext";
 import QRCode from "react-qr-code"; // Importamos el componente QRCode
+import { FaPlusCircle, FaTrash } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const ProductPage = () => {
   const { id } = useParams();
-  const { producto, productos, proveedores, fetchProducto, fetchProveedores } = useProducto();
+  const { producto, productos, proveedores, proveedoresProducto, fetchProducto, fetchProveedores, fetchProveedoresProducto, associateProvider, removeProvider } = useProducto();
   const [nombreProveedor, setNombreProveedor] = useState('');
   const router = useRouter();
 
@@ -15,9 +17,10 @@ const ProductPage = () => {
 
   useEffect(() => {
     const loadProducto = async () => {
-      console.log(id);
-      await fetchProducto(Array.isArray(id) ? id[0] : id);
+      const idProducto = Array.isArray(id) ? id[0] : id;
+      await fetchProducto(idProducto);
       await fetchProveedores();
+      await fetchProveedoresProducto(idProducto);
     };
     loadProducto();
   }, [fetchProducto, fetchProveedores, id]);
@@ -28,6 +31,67 @@ const ProductPage = () => {
       setNombreProveedor(proveedor ? proveedor.name : 'Proveedor no encontrado');
     }
   }, [producto, proveedores]);
+
+  const handleAddProvider = (productId: string) => {
+
+    const proveedoresOptions = proveedores
+    .map(
+      (proveedor) =>
+        `<option value="${proveedor.id}">${proveedor.name}</option>`
+    )
+    .join("");
+
+    Swal.fire({
+    title: "Asociar Proveedor",
+    html: `
+      <style>
+        input.swal2-input, select.swal2-select {
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 10px;
+          width: 80%;
+          height: 54px;
+          margin-top: 5px;
+          margin-bottom: 10px;
+          box-sizing: border-box;
+        }
+      </style>
+      <select id="providerId" class="swal2-select">
+        <option value="" selected>Seleccione un proveedor</option>
+        ${proveedoresOptions}
+      </select>`,
+    confirmButtonText: "Asociar",
+    cancelButtonText: "Cancelar",
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      
+      const providerIdElement = document.getElementById( "providerId") as HTMLInputElement;
+      const providerId = providerIdElement?.value;
+
+      if (!providerId) {
+        Swal.showValidationMessage("Selecciona un proveedor");
+        return null;
+      }
+
+      return { providerId };
+    },
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        associateProvider(productId, result.value.providerId);
+
+        Swal.fire({
+          title: "Proveedor asociado con éxito",
+          text: "El proveedor se asoció correctamente al producto",
+          icon: "success",
+        });
+      }
+    });
+  };
+
+  const handleRemoveProvider = (productId: string, providerId: string) => {
+    removeProvider(productId, providerId);
+  };
 
   if (!producto || !productoData) {
     return (
@@ -65,6 +129,12 @@ const ProductPage = () => {
                   <p className="text-white font-semibold">{producto.category}</p>
                 </div>
                 <div className="bg-gray-800 p-3 rounded md:col-span-2">
+                  <p className="text-gray-400 text-sm">Decripción</p>
+                  <p className="text-white font-semibold">
+                    {producto.description}
+                  </p>
+                </div>
+                <div className="bg-gray-800 p-3 rounded md:col-span-2">
                   <p className="text-gray-400 text-sm">Cantidad</p>
                   <p className="text-white font-semibold">{producto.quantity}</p>
                 </div>
@@ -84,12 +154,39 @@ const ProductPage = () => {
                   <p className="text-gray-400 text-sm">Proveedor de preferencia</p>
                   <p className="text-white font-semibold">{nombreProveedor || 'Cargando...'}</p>
                 </div>
-                {/* El elemento ocupa 2 columnas en pantallas medianas o grandes */}
                 <div className="bg-gray-800 p-3 rounded md:col-span-2">
-                  <p className="text-gray-400 text-sm">Decripción</p>
-                  <p className="text-white font-semibold">
-                    {producto.description}
-                  </p>
+                  <p className="text-gray-400 text-sm">Todos los Proveedores</p>
+                  <div className="text-white font-semibold">
+                  {proveedoresProducto ? (
+                    <div>
+                      <ul>
+                        {proveedoresProducto.map((prov) => (
+                          <li key={prov.id} className="py-1 flex items-center justify-between">
+                            <div>
+                              <p>{prov.name}</p>
+                            </div>
+                            <button
+                              onClick={() => handleRemoveProvider(producto.id, prov.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <FaTrash className="mr-2" />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                      <div>
+                        <button
+                          onClick={() => handleAddProvider(producto.id)}
+                          className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                          >
+                            Asociar Proveedor
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                      <p>Cargando...</p>
+                  ) }
+                  </div>
                 </div>
                 {/* Código QR */}
                 <div className="mt-6 flex flex-col items-center rounded md:col-span-2">
