@@ -84,7 +84,7 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
 
   const modifyProvider = async (proveedorEditado: Omit<Proveedor, "date_created" | "date_updated">) => {
     try {
-      console.log("Proveedor a editar:", proveedorEditado);
+      console.log("consol 2- Proveedor a editar:", proveedorEditado);
       await api.put(`${apiProveedoresBackend}/${proveedorEditado.id}`, proveedorEditado);
 
       setProveedores((prevProveedores) =>
@@ -94,7 +94,7 @@ export const ProveedorProvider = ({ children }: { children: ReactNode }) => {
             : proveedor
         )
       );
-      console.log(`El proveedor con ID ${proveedorEditado.id} ha sido editado en el backend.`);
+      console.log(`consol 3- El proveedor con ID ${proveedorEditado.id} ha sido editado en el backend.`);
     } catch (error) {
       console.error("Error editando proveedor en el backend:", error);
     }

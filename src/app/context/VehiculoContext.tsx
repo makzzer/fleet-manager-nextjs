@@ -153,7 +153,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
     vehiculoEditado: Omit<Vehiculo, "date_created" | "date_updated">
   ) => {
     try {
-      console.log("Vahiculo a modificar: ", vehiculoEditado);
+      console.log("consol 2- Vahiculo a modificar: ", vehiculoEditado);
       // Realiza la solicitud PUT para modificar el vehículo en el backend
       await api.put(`${apiVehiculosBackend}/${vehiculoEditado.id}`, vehiculoEditado);
   
@@ -166,7 +166,7 @@ export const VehiculoProvider = ({ children }: { children: ReactNode }) => {
         )
       );
   
-      console.log(`El Vehículo con ID ${vehiculoEditado.id} ha sido editado en el backend.`);
+      console.log(`consol 3- El Vehículo con ID ${vehiculoEditado.id} ha sido editado en el backend.`);
     } catch (error) {
       console.error("Error editando vehículo en el backend:", error);
     }

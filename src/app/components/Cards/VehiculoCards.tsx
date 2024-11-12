@@ -202,7 +202,11 @@ const VehiculoCard = ({ vehiculo }: VehiculoCardProps) => {
           const { model, brand, year } = result.value;
           const updatedVehiculo = { ...vehiculo, model, brand, year };
 
+          console.log("consol 1- vehiculo cargado para actualizar: ", vehiculo);
+
           modifyVehiculo(updatedVehiculo);
+
+          console.log("consol 4- vehiculo actualizado");
 
           Swal.fire({
             title: "Actualizado!",
