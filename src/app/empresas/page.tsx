@@ -329,9 +329,6 @@ const Empresas = () => {
             <thead className="bg-gray-800">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                   Empresa
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
@@ -344,11 +341,8 @@ const Empresas = () => {
             </thead>
             <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
               {filteredEnterprises.length > 0 ? (
-                visibleEnterprises.map((enterprise, index) => (
+                visibleEnterprises.map((enterprise) => (
                   <tr key={enterprise.id}>
-                    <td className={`px-6 py-4 whitespace-nowrap rounded-full`}>
-                      {index}
-                    </td>
                     <td className={`px-6 py-4 whitespace-nowrap rounded-full`}>
                       {enterprise.name}
                     </td>

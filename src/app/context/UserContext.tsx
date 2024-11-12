@@ -14,6 +14,7 @@ interface NewUserRequest {
   fullName: string;
   password: string;
   role: string;
+  enterprise_id: string | null;
 }
 
 interface Permissions {
@@ -69,7 +70,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const createUser = async (usuario: NewUserRequest) => {
     try {
-      await axios.post(apiUsuarios, usuario);
+      if(usuario.enterprise_id){
+        axios.post(`https://fleet-manager-vrxj.onrender.com/api${apiUsuarios}`, usuario);
+      }
+      else {
+        api.post(apiUsuarios, usuario);
+      }
       fetchUsers();
     } catch (error) {
       console.error("Error creating user:", error);
@@ -78,7 +84,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const setRoles = async (id: string, role: string) => {
     try {
-      await axios.put(`${apiUsuarios}/${id}/roles`, { role });
+      await api.put(`${apiUsuarios}/${id}/roles`, { role });
       fetchUsers();
     } catch (error) {
       console.error("Error assigning role:", error);
@@ -87,7 +93,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const setPassword = async (id: string, password: string) => {
     try {
-      await axios.put(`${apiUsuarios}/${id}/passwords`, {password})
+      await api.put(`${apiUsuarios}/${id}/passwords`, {password})
     } catch (error) {
       console.error("Error assigning new password: ", error);
     }
