@@ -11,7 +11,6 @@ import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import markerRetina from 'leaflet/dist/images/marker-icon-2x.png';
-import { useApi } from "@/app/context/ApiContext"; // Importamos useApi
 
 const customMarker = new L.Icon({
   iconUrl: markerIcon.src,
@@ -34,23 +33,15 @@ const customVehicle = new L.Icon({
 interface MapSimuladorVehiculoProps {
   startPosition: [number, number];
   endPosition: [number, number];
-  vehicleId: string;
   onActualizarCoordenadas: (nuevasCoordenadas: { latitude: number; longitude: number }) => void;
 }
 
-const MapSimuladorVehiculo = ({
-  startPosition,
-  endPosition,
-  vehicleId,
-  onActualizarCoordenadas,
-}: MapSimuladorVehiculoProps) => {
+const MapSimuladorVehiculo = ({ startPosition, endPosition, onActualizarCoordenadas }: MapSimuladorVehiculoProps) => {
   const mapRef = useRef<L.Map | null>(null);
   const vehicleMarkerRef = useRef<L.Marker | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const routingControlRef = useRef<any>(null);
   const intervalRef = useRef<any>(null);
-
-  const api = useApi(); // Obtenemos la instancia de la API
 
   const startSimulation = () => {
     if (!startPosition || !endPosition) {
@@ -100,7 +91,7 @@ const MapSimuladorVehiculo = ({
         }
 
         let index = 0;
-        intervalRef.current = setInterval(async () => {
+        intervalRef.current = setInterval(() => {
           if (index < coordinates.length && isSimulating) {
             const latLng = coordinates[index];
             console.log(`Coordenadas actuales: Latitud ${latLng.lat}, Longitud ${latLng.lng}`);
@@ -110,15 +101,6 @@ const MapSimuladorVehiculo = ({
             }
 
             onActualizarCoordenadas({ latitude: latLng.lat, longitude: latLng.lng });
-
-            // Enviar PUT al backend con las coordenadas
-            try {
-              await api.put(`/vehicles/${vehicleId}`, {
-                coordinates: { latitude: latLng.lat, longitude: latLng.lng },
-              });
-            } catch (error) {
-              console.error("Error al actualizar las coordenadas del vehículo:", error);
-            }
 
             index++;
           } else {

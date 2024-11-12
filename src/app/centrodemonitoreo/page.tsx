@@ -1,6 +1,5 @@
-// CentroDeMonitoreoConTabs.tsx
-
 "use client";
+//mod v1
 import { useState, useEffect } from "react";
 import { useReserva } from "@/app/context/ReservesContext";
 import { useVehiculo } from "@/app/context/VehiculoContext";
@@ -38,7 +37,7 @@ interface Vehiculo {
     latitude: number;
     longitude: number;
   };
-  status?: string;
+  status?: string; // Agregamos el campo status opcionalmente
 }
 
 interface Reserva {
@@ -74,7 +73,6 @@ interface CoordenadasSimulador {
   start: [number, number] | null;
   end: [number, number] | null;
   reservaId: string | null;
-  vehicleId: string | null;
 }
 
 const CentroDeMonitoreoConTabs = () => {
@@ -89,7 +87,6 @@ const CentroDeMonitoreoConTabs = () => {
     start: null,
     end: null,
     reservaId: null,
-    vehicleId: null,
   });
 
   // Estados para los filtros
@@ -159,7 +156,7 @@ const CentroDeMonitoreoConTabs = () => {
   // Manejar selección de un vehículo para el trazado de rutas
   const handleSeleccionarVehiculoConRuta = (reservaId: string) => {
     const reservaSeleccionada = reservas.find(
-      (reserva: Reserva) => reserva.id === reservaId
+      (reserva: Reserva) => reserva.vehicle_id === reservaId
     );
 
     if (reservaSeleccionada) {
@@ -186,41 +183,31 @@ const CentroDeMonitoreoConTabs = () => {
   // Manejar selección de un vehículo para el simulador
   const handleSeleccionarVehiculoSimulador = (reservaId: string) => {
     const reservaSeleccionada = reservas.find(
-      (reserva: Reserva) => reserva.id === reservaId
+      (reserva: Reserva) => reserva.vehicle_id === reservaId
     );
 
     if (reservaSeleccionada) {
-      const vehiculoSeleccionado = vehiculos.find(
-        (vehiculo: Vehiculo) => vehiculo.id === reservaSeleccionada.vehicle_id
-      );
-
-      if (vehiculoSeleccionado && vehiculoSeleccionado.coordinates) {
-        setCoordenadasSimulador({
-          start: [
-            vehiculoSeleccionado.coordinates.latitude,
-            vehiculoSeleccionado.coordinates.longitude,
-          ],
-          end: [
-            reservaSeleccionada.trip.destination.coordinates.latitude,
-            reservaSeleccionada.trip.destination.coordinates.longitude,
-          ],
-          reservaId: reservaSeleccionada.id,
-          vehicleId: reservaSeleccionada.vehicle_id,
-        });
-      } else {
-        console.error("No se encontró el vehículo o no tiene coordenadas.");
-      }
+      setCoordenadasSimulador({
+        start: [
+          reservaSeleccionada.trip.origin.coordinates.latitude,
+          reservaSeleccionada.trip.origin.coordinates.longitude,
+        ],
+        end: [
+          reservaSeleccionada.trip.destination.coordinates.latitude,
+          reservaSeleccionada.trip.destination.coordinates.longitude,
+        ],
+        reservaId,
+      });
     }
   };
 
-  // Resetear estados al cambiar de pestaña
+  // *** Modificación agregada: Resetear estados al cambiar de pestaña ***
   useEffect(() => {
     if (activeTab !== 'simulador') {
       setCoordenadasSimulador({
         start: null,
         end: null,
         reservaId: null,
-        vehicleId: null,
       });
     }
     if (activeTab !== 'vehiculo') {
@@ -230,6 +217,7 @@ const CentroDeMonitoreoConTabs = () => {
       setVehiculoSeleccionado(null);
     }
   }, [activeTab]);
+  // *** Fin de la modificación ***
 
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
@@ -391,18 +379,18 @@ const CentroDeMonitoreoConTabs = () => {
                     )
                     .map((reserva) => (
                       <li
-                        key={reserva.id}
+                        key={reserva.vehicle_id}
                         className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
                         onClick={() =>
-                          handleSeleccionarVehiculoConRuta(reserva.id)
+                          handleSeleccionarVehiculoConRuta(reserva.vehicle_id)
                         }
                       >
                         <div className="flex flex-col items-center justify-between">
                           <div className="text-lg font-bold">
-                            Reserva {reserva.id}
+                            Reserva {reserva.vehicle_id}
                           </div>
                           <div className="text-sm text-gray-400">
-                            Vehículo ID: {reserva.vehicle_id}
+                            ID: {reserva.vehicle_id}
                           </div>
                           <div
                             className={`text-sm font-semibold ${
@@ -491,18 +479,18 @@ const CentroDeMonitoreoConTabs = () => {
                     )
                     .map((reserva) => (
                       <li
-                        key={reserva.id}
+                        key={reserva.vehicle_id}
                         className="bg-gray-700 hover:bg-gray-600 transition p-4 rounded-lg shadow-md cursor-pointer"
                         onClick={() =>
-                          handleSeleccionarVehiculoSimulador(reserva.id)
+                          handleSeleccionarVehiculoSimulador(reserva.vehicle_id)
                         }
                       >
                         <div className="flex flex-col items-center justify-between">
                           <div className="text-lg font-bold">
-                            Reserva {reserva.id}
+                            Reserva {reserva.vehicle_id}
                           </div>
                           <div className="text-sm text-gray-400">
-                            Vehículo ID: {reserva.vehicle_id}
+                            ID: {reserva.vehicle_id}
                           </div>
                           <div
                             className={`text-sm font-semibold ${
@@ -535,16 +523,14 @@ const CentroDeMonitoreoConTabs = () => {
               {typeof window !== "undefined" &&
                 coordenadasSimulador.start &&
                 coordenadasSimulador.end &&
-                coordenadasSimulador.reservaId &&
-                coordenadasSimulador.vehicleId && (
+                coordenadasSimulador.reservaId && (
                   <div style={{ height: "100%", width: "100%" }}>
                     <MapSimuladorVehiculo
                       startPosition={coordenadasSimulador.start}
                       endPosition={coordenadasSimulador.end}
-                      vehicleId={coordenadasSimulador.vehicleId}
                       onActualizarCoordenadas={(nuevasCoordenadas: { latitude: number; longitude: number }) =>
                         actualizarCoordenadasVehiculo(
-                          coordenadasSimulador.vehicleId!,
+                          coordenadasSimulador.reservaId!,
                           nuevasCoordenadas
                         )
                       }
