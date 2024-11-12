@@ -2,19 +2,23 @@
 
 import { useUser } from "../context/UserContext";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import UserCard from "../components/Cards/UserCard";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { FaEye } from "react-icons/fa";
 import { MdGroupAdd } from "react-icons/md";
 import LockResetIcon from '@mui/icons-material/LockReset';
+import ReactDOM from "react-dom/client";
+import AutocompleteSearchBox from "../components/AutocompleteSearchBox";
+import { useEnterprise } from "../context/EnterpriseContext";
 
 interface NewUserRequest {
   username: string;
   fullName: string;
   password: string;
   role: string;
+  enterprise_id: string | null;
 }
 
 interface Permissions {
@@ -52,10 +56,15 @@ const rolColors: { [key: string]: string } = {
 };
 
 const ListaUsuarios = () => {
-  const { users, createUser, setRoles, setPassword } = useUser(); // Accede al contexto de usuario
+  const { users, fetchUsers, createUser, setRoles, setPassword } = useUser(); // Accede al contexto de usuario
   const { hasRole, hasPermission } = useAuth()
   const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para la barra de búsqueda
   const [selectedRole, setSelectedRole] = useState<string>(""); // Estado para el filtro por rol
+  const { enterprises } = useEnterprise();
+
+  useEffect(() => {
+    fetchUsers();
+  }, [])
 
   // Filtra los usuarios según el término de búsqueda y el rol
   const filteredUsers = users.filter((user) => {
@@ -90,10 +99,12 @@ const ListaUsuarios = () => {
 
   // Función para agregar usuarios (no cambiado visualmente)
   const handleAddUser = () => {
+    let localSelectedEnterpriseId: string | null = null; 
     Swal.fire({
       title: `Agregar un usuario`,
       html: `
-        <div class="flex flex-col space-y-4">
+      <div class="flex flex-col space-y-4">
+          <div id="enterprise-select-container"></div>
           <div class="flex flex-col">
             <input id="add-user-userName" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" placeholder="Nombre de usuario">
           </div>
@@ -108,6 +119,21 @@ const ListaUsuarios = () => {
           </div>
       </div>
       `,
+      didOpen: () => {
+        const enterpriseContainer = document.getElementById('enterprise-select-container');
+       
+        if (hasRole('ADMIN') && enterpriseContainer) {
+          ReactDOM.createRoot(enterpriseContainer).render(
+            <AutocompleteSearchBox
+              options={enterprises.map(enterprise => ({ id: enterprise.id, nombre: enterprise.name }))}
+              onSelection={(opcion) => {
+                localSelectedEnterpriseId = opcion ? opcion.id : null;
+              }}
+              placeholder="Seleccionar empresa"
+            />
+          );
+        }
+      },
       showCancelButton: true,
       cancelButtonText: "Cancelar",
       confirmButtonText: "Registrar",
@@ -157,7 +183,7 @@ const ListaUsuarios = () => {
           );
           return null;
         }
-        return { username, full_name, password };
+        return { username, full_name, password, enterprise_id: localSelectedEnterpriseId };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
