@@ -41,7 +41,7 @@ interface Operador {
   date_updated: string;
 }
 
-interface Control {
+export interface Control {
   id: string;
   type: string;
   subject: string;
