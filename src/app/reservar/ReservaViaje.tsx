@@ -8,7 +8,6 @@ import { useVehiculo, Vehiculo } from "../context/VehiculoContext";
 import { useAuth } from "../context/AuthContext";
 import { useReserva } from "../context/ReservesContext";
 import Swal from "sweetalert2";
-import axios from "axios";
 import Carousel from "../components/Carousel/Carousel";
 import { EmblaOptionsType } from "embla-carousel";
 import DatePicker from "react-datepicker";
@@ -16,7 +15,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale";
 import dynamic from "next/dynamic";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-import { isSameDay, setHours, setMinutes } from "date-fns";
 import { useApi } from "../context/ApiContext";
 
 const MapPickCoordinates = dynamic(
@@ -81,6 +79,7 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
     });
   };
 
+  /*
   useEffect(() => {
     if (vehiculos.length > 0 && reservas.length >= 0 && startDate && endDate) {
       if (vehicleIdFromQuery) {
@@ -139,6 +138,77 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
     searchTerm,
     vehicleIdFromQuery,
   ]);
+*/
+
+
+  useEffect(() => {
+    if (vehiculos.length > 0 && reservas.length >= 0 && startDate && endDate) {
+      if (vehicleIdFromQuery) {
+        const vehiculo = vehiculos.find((v) => v.id === vehicleIdFromQuery);
+
+        if (vehiculo) {
+          // **Check if the vehicle is AVAILABLE and has no overlapping reservations**
+          if (vehiculo.status === "AVAILABLE" && isVehicleAvailable(vehiculo.id)) {
+            setVehiculosDisponibles([vehiculo]);
+            setSelectedVehicle(vehiculo.id);
+          } else {
+            Swal.fire(
+              "Vehículo no disponible",
+              `El vehículo ${vehiculo.brand} ${vehiculo.model} no está disponible para las fechas seleccionadas. Por favor, selecciona otro vehículo o cambia las fechas.`,
+              "warning"
+            );
+            // **Filter out the unavailable vehicle and only include AVAILABLE vehicles without overlapping reservations**
+            const disponibles = vehiculos.filter(
+              (v) =>
+                v.id !== vehiculo.id &&
+                v.status === "AVAILABLE" &&
+                isVehicleAvailable(v.id)
+            );
+            setVehiculosDisponibles(disponibles);
+            setSelectedVehicle(null);
+          }
+        } else {
+          Swal.fire(
+            "Vehículo no encontrado",
+            "El vehículo especificado no existe.",
+            "error"
+          );
+          setVehiculosDisponibles([]);
+          setSelectedVehicle(null);
+        }
+      } else {
+        // **Filter to only include AVAILABLE vehicles without overlapping reservations**
+        const disponibles = vehiculos.filter(
+          (vehiculo) =>
+            vehiculo.status === "AVAILABLE" && isVehicleAvailable(vehiculo.id)
+        );
+
+        const filtrados = disponibles.filter((vehiculo) => {
+          const search = searchTerm.toLowerCase();
+          return (
+            vehiculo.id.toLowerCase().includes(search) ||
+            vehiculo.brand.toLowerCase().includes(search) ||
+            vehiculo.model.toLowerCase().includes(search)
+          );
+        });
+
+        setVehiculosDisponibles(filtrados);
+      }
+    } else {
+      setVehiculosDisponibles([]);
+      setSelectedVehicle(null);
+    }
+  }, [
+    vehiculos,
+    reservas,
+    startDate,
+    endDate,
+    searchTerm,
+    vehicleIdFromQuery,
+  ]);
+
+
+
 
   const handleSelectVehicle = (vehicleId: string) => {
     setSelectedVehicle(vehicleId);
