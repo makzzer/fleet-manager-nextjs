@@ -137,7 +137,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const [showModal, setShowModal] = useState(false);
   const hasOperator = control.operator;
   const { users } = useUser();
-  const { addProductList } = useControl();
+  const { addProductList, controls } = useControl();
 
   const { productos, fetchProductos } = useProducto();
   const [loading, setLoading] = useState(false);
@@ -152,13 +152,24 @@ const TaskCard: React.FC<TaskCardProps> = ({
     productList: [], // Lista vacía de productos al inicio
   });
 
-  const usuarios = users;
-  const operadores = usuarios
+  const getControlCount = (operatorId: string) => {
+    return controls
+      .filter(control => control.operator && control.operator.id == operatorId)
+      .length;
+  }
+
+  const operadores = users
     .filter((usuario) => usuario.roles.includes("OPERATOR"))
-    .map((usuario) => ({
-      id: usuario.id,
-      full_name: usuario.full_name,
-    }));
+    .map(usuario => {
+      const controCount = getControlCount(usuario.id);
+      return {
+        id: usuario.id,
+        full_name: `${usuario.full_name} (${controCount} controles)`,
+        control_count: controCount
+      };})
+    .filter(operator => operator.control_count <= 5)
+    .sort((a, b) => a.control_count - b.control_count);
+    
 
   // Carga de productos
   useEffect(() => {
