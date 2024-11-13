@@ -91,6 +91,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
         </thead>
         <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
           {products.map((product) => {
+            console.log("producto:", product, "id: ", product.id);
             // Usamos una ruta relativa en el QR para evitar problemas con diferentes dominios
             // const qrValue = `/productos/${product.id}/page`;
             const qrValue = `${window.location.origin}/inter_p/${product.id}`;

@@ -53,6 +53,7 @@ interface ProductoContextProps {
   fetchProveedores: () => void;
   fetchProveedoresProducto: (id: string) => void;
   createProducto: (producto: ProductoRequest) => Promise<void>;
+  modifyProducto: (producto: ProductoRequest) => Promise<void>;
   exportProductoToExcel: () => void;
   associateProvider: (productId: string, providerId: string) => void;
   removeProvider: (productId: string, providerId: string) => void;
@@ -116,6 +117,27 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const modifyProducto = async (productoEditado: ProductoRequest) => {
+    try {
+      console.log("consol 2- producto a modificar: ", productoEditado);
+      // Realiza la solicitud PUT para modificar el producto en el backend
+      await api.put(`${apiProductosBackend}/${productoEditado.id}`, productoEditado);
+  
+      // Actualiza localmente los datos si la respuesta es exitosa
+      setProductos((prevProductos) =>
+        prevProductos.map((producto) =>
+          producto.id === productoEditado.id
+            ? { ...producto, ...productoEditado }
+            : producto
+        )
+      );
+  
+      console.log(`consol 3- El Producto con ID ${productoEditado.id} ha sido editado en el backend.`);
+    } catch (error) {
+      console.error("Error editando producto en el backend:", error);
+    }
+  };  
+
   const fetchProveedores = useCallback(async () => {
     try {
       const response = await api.get(apiProveedoresBackend);
@@ -177,7 +199,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ProductoContext.Provider
       value={{ productos, producto, proveedores, proveedoresProducto, 
-        fetchProductos, fetchProducto, fetchProveedores, fetchProveedoresProducto, createProducto, exportProductoToExcel, 
+        fetchProductos, fetchProducto, fetchProveedores, fetchProveedoresProducto, createProducto, modifyProducto, exportProductoToExcel, 
         associateProvider, removeProvider }}
     >
       {children}

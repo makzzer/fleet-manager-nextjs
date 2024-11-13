@@ -61,6 +61,7 @@ const Stock = () => {
     fetchProductos,
     fetchProveedores,
     createProducto,
+    modifyProducto,
     exportProductoToExcel,
   } = useProducto();
   const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
@@ -385,26 +386,56 @@ const Stock = () => {
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        const producto = {
-          id: result.value.id,
-          name: result.value.name,
-          brand: result.value.brand,
-          description: result.value.description,
-          category: result.value.category,
-          quantity: result.value.quantity,
-          measurement: result.value.measurement,
-          price: result.value.price,
-          provider_id: result.value.preferenceProviderId,
-          min_stock: result.value.minStock,
-        };
+        // Buscar un producto en la lista que coincida con los atributos ingresados
+        const existingProduct = productos.find(
+          (product) =>
+            product.name === result.value.name &&
+            product.brand === result.value.brand &&
+            product.category === result.value.category
+        );
+  
+        if (existingProduct) {
+          // Si el producto ya existe, incrementar su cantidad
+          const updatedProduct = {
+            ...existingProduct,
+            quantity: existingProduct.quantity + result.value.quantity,
+            provider_id: existingProduct.preference_provider_id,  // Asegurarse de que tiene provider_id
+          };
 
-        createProducto(producto);
+          console.log("consol de modificacion para producto: ", existingProduct, "id: ", existingProduct.id);
+  
+          modifyProducto(updatedProduct);
+  
+          Swal.fire({
+            title: "Producto actualizado",
+            text: `La cantidad del producto '${existingProduct.name}' ha sido incrementada en ${result.value.quantity}.`,
+            icon: "success",
+          });
+        } else {
+          // Si el producto no existe, crear un nuevo producto
+          const nuevoProducto = {
+            id: "", // Usar un valor vacío o nulo si no tienes la ID al momento de crear
+            name: result.value.name,
+            brand: result.value.brand,
+            description: result.value.description,
+            category: result.value.category,
+            quantity: result.value.quantity,
+            measurement: result.value.measurement,
+            price: result.value.price,
+            provider_id: result.value.provider_id,
+            min_stock: result.value.min_stock,
+          };
 
-        Swal.fire({
-          title: "Producto agregado con éxito",
-          text: "El nuevo producto ha sido creado y registrado correctamente.",
-          icon: "success",
-        });
+          console.log("consol de producto creado: ", nuevoProducto.id)
+  
+          createProducto(nuevoProducto);
+  
+          Swal.fire({
+            title: "Producto agregado",
+            text: "El nuevo producto ha sido creado y registrado correctamente.",
+            icon: "success",
+          });
+        }
       }
     });
   };
