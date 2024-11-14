@@ -29,6 +29,7 @@ interface Vehiculo {
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
+  type: string;
 }
 
 interface Operador {
