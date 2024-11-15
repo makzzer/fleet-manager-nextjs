@@ -1,8 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+} from "react";
 import axios from "axios";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 import { useApi } from "./ApiContext";
 
 const apiProductosBackend = `https://fleet-manager-vrxj.onrender.com/api/products`;
@@ -52,7 +59,9 @@ interface ProductoContextProps {
   fetchProducto: (id: string) => void;
   fetchProveedores: () => void;
   fetchProveedoresProducto: (id: string) => void;
-  createProducto: (producto: ProductoRequest) => Promise<void>;
+  createProducto: (
+    producto: Omit<ProductoRequest, "id">
+  ) => Promise<{ resultado: boolean; mensaje?: string }>;
   exportProductoToExcel: () => void;
   associateProvider: (productId: string, providerId: string) => void;
   removeProvider: (productId: string, providerId: string) => void;
@@ -74,7 +83,9 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [producto, setProducto] = useState<Producto | null>(null);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
-  const [proveedoresProducto, setProveedoresProducto] = useState<Proveedor[]>([]);
+  const [proveedoresProducto, setProveedoresProducto] = useState<Proveedor[]>(
+    []
+  );
   const api = useApi();
 
   const fetchProductos = useCallback(async () => {
@@ -85,33 +96,45 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
       if (Array.isArray(fetchedProductos)) {
         setProductos(fetchedProductos);
       } else {
-        console.error('Error: La respuesta de la API no es un array válido', fetchedProductos);
+        console.error(
+          "Error: La respuesta de la API no es un array válido",
+          fetchedProductos
+        );
       }
     } catch (error) {
-      console.error('Error al obtener productos:', error);
+      console.error("Error al obtener productos:", error);
     }
   }, [api]);
 
-  const fetchProducto = useCallback(async (id : string) => {
-    try {
-      const response = await api.get(`${apiProductosBackend}/${id}`);
-      setProducto(response.data);
-    } catch (error) {
-      setProducto(null);
-      console.error('Error al obtener productos:', error);
-    }
-  }, [api]);
+  const fetchProducto = useCallback(
+    async (id: string) => {
+      try {
+        const response = await api.get(`${apiProductosBackend}/${id}`);
+        setProducto(response.data);
+      } catch (error) {
+        setProducto(null);
+        console.error("Error al obtener productos:", error);
+      }
+    },
+    [api]
+  );
 
-  const createProducto = async (producto: ProductoRequest) => {
+  const createProducto = async (producto: Omit<ProductoRequest, "id">) => {
     try {
       console.log("Producto a enviar:", producto);
       await api.post(apiProductosBackend, producto);
       fetchProductos();
+      return { resultado: true };
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error("Error al crear producto:", error.response.data);
+        return { resultado: false, mensaje: error.response?.data.message };
       } else {
         console.error("Error desconocido al crear producto", error);
+        return {
+          resultado: false,
+          mensaje: "Ha ocurrido un error al crear el producto.",
+        };
       }
     }
   };
@@ -125,20 +148,27 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [api]);
 
-  const fetchProveedoresProducto = useCallback(async (id : string) => {
-    try {
-      const response = await api.get(`${apiProductosBackend}/${id}/providers`);
-      setProveedoresProducto(response.data);
-    } catch (error) {
-      setProveedoresProducto([]);
-      console.error('Error al obtener proveedores del producto: ', error);
-    }
-  }, [api]);
+  const fetchProveedoresProducto = useCallback(
+    async (id: string) => {
+      try {
+        const response = await api.get(
+          `${apiProductosBackend}/${id}/providers`
+        );
+        setProveedoresProducto(response.data);
+      } catch (error) {
+        setProveedoresProducto([]);
+        console.error("Error al obtener proveedores del producto: ", error);
+      }
+    },
+    [api]
+  );
 
   const associateProvider = async (productId: string, providerId: string) => {
     try {
       console.log(`Asociando ${productId} a proveedor ${providerId}`);
-      await api.put(`${apiProductosBackend}/${productId}/providers/${providerId}`);
+      await api.put(
+        `${apiProductosBackend}/${productId}/providers/${providerId}`
+      );
       fetchProveedoresProducto(productId);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -151,8 +181,12 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
 
   const removeProvider = async (productId: string, providerId: string) => {
     try {
-      console.log(`Removiendo proveedor ${providerId} del producto ${productId}`);
-      await api.delete(`${apiProductosBackend}/${productId}/providers/${providerId}`);
+      console.log(
+        `Removiendo proveedor ${providerId} del producto ${productId}`
+      );
+      await api.delete(
+        `${apiProductosBackend}/${productId}/providers/${providerId}`
+      );
       fetchProveedoresProducto(productId);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -166,9 +200,9 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
   const exportProductoToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(productos);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Productos');
-    XLSX.writeFile(workbook, 'Productos.xlsx');
-  }
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Productos");
+    XLSX.writeFile(workbook, "Productos.xlsx");
+  };
 
   useEffect(() => {
     fetchProductos();
@@ -176,13 +210,22 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ProductoContext.Provider
-      value={{ productos, producto, proveedores, proveedoresProducto, 
-        fetchProductos, fetchProducto, fetchProveedores, fetchProveedoresProducto, createProducto, exportProductoToExcel, 
-        associateProvider, removeProvider }}
+      value={{
+        productos,
+        producto,
+        proveedores,
+        proveedoresProducto,
+        fetchProductos,
+        fetchProducto,
+        fetchProveedores,
+        fetchProveedoresProducto,
+        createProducto,
+        exportProductoToExcel,
+        associateProvider,
+        removeProvider,
+      }}
     >
       {children}
     </ProductoContext.Provider>
   );
 };
-
-
