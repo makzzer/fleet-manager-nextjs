@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { DropIndicator } from "./DropIndicator";
 import { Control } from "@/app/context/ControlContext";
@@ -9,8 +9,8 @@ import { FaCar, FaMotorcycle, FaRegCalendarAlt, FaTruck, FaUserCircle } from "re
 import { FiAlertCircle, FiTool } from "react-icons/fi";
 import { IoIosArrowDown, IoIosArrowUp, IoIosRemove } from "react-icons/io";
 import { IoPulse } from "react-icons/io5";
-import Link from "next/link";
 import { FaVanShuttle } from "react-icons/fa6";
+import CardModal from "./CardModal";
 
 interface CardProps {
   control: Control;
@@ -18,6 +18,17 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ control, handleDragStart }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const handleViewDetails = () => {
+    setShowModal(true);
+  };
+
+
   const vehicleTypeLogo = (type: string) => {
     switch (type) {
       case "CAR":
@@ -74,13 +85,13 @@ export const Card: React.FC<CardProps> = ({ control, handleDragStart }) => {
   return (
     <>
       <DropIndicator beforeId={control.id} column={control.status} />
-      <Link href={`/control/${control.id}`} scroll={false} passHref>
         <motion.div
           layout
           layoutId={control.id}
           draggable="true"
           onDragStart={(e) => handleDragStart(e, control)}
-          className="cursor-grab rounded border border-neutral-700 bg-neutral-800 p-3 active:cursor-grabbing"
+          onClick={() => handleViewDetails()}
+          className="cursor-grab rounded-lg border border-gray-700 hover:border-blue-500 bg-gray-900 p-3 active:cursor-grabbing"
         >
           <div className="flex justify-between items-start mb-2">
             <h3 className="text-lg font-semibold text-white truncate">
@@ -98,10 +109,14 @@ export const Card: React.FC<CardProps> = ({ control, handleDragStart }) => {
               <FaRegCalendarAlt />
               <span>{new Date(control.date_created).toLocaleDateString()}</span>
             </div>
-            {control.operator && <FaUserCircle className="w-5 h-5" />}
+            {control.operator && <FaUserCircle className="w-5 h-5" aria-label={`${control.operator.full_name}`}/>}
           </div>
         </motion.div>
-      </Link>
+        <CardModal
+        control={control}
+        closeModal={closeModal}
+        showModal={showModal}
+      />
     </>
   );
 };
