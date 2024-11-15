@@ -4,50 +4,21 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { DropIndicator } from "./DropIndicator";
-import { Control, useControl } from "@/app/context/ControlContext";
+import { Control } from "@/app/context/ControlContext";
 import { FaCar, FaMotorcycle, FaRegCalendarAlt, FaTruck, FaUserCircle } from "react-icons/fa";
-import { FiAlertCircle, FiTool, FiX } from "react-icons/fi";
+import { FiAlertCircle, FiTool } from "react-icons/fi";
 import { IoIosArrowDown, IoIosArrowUp, IoIosRemove } from "react-icons/io";
 import { IoPulse } from "react-icons/io5";
 import { FaVanShuttle } from "react-icons/fa6";
-import { useUser } from "@/app/context/UserContext";
-import dynamic from "next/dynamic";
+import CardModal from "./CardModal";
 
 interface CardProps {
   control: Control;
   handleDragStart: (e: any, control: any) => void;
 }
 
-const MapVehiculo = dynamic(
-  () => import("@/app/components/Maps/MapVehiculo"),
-  {
-    ssr: false,
-  }
-);
-
 export const Card: React.FC<CardProps> = ({ control, handleDragStart }) => {
   const [showModal, setShowModal] = useState(false);
-  const { controls, assignOperator } = useControl();
-  const { users } = useUser();
-
-  
-  const getControlCount = (operatorId: string) => {
-    return controls
-      .filter(control => control.operator && control.operator.id == operatorId)
-      .length;
-  }
-
-  const operadores = users
-    .filter((usuario) => usuario.roles.includes("OPERATOR"))
-    .map(usuario => {
-      const controCount = getControlCount(usuario.id);
-      return {
-        id: usuario.id,
-        full_name: `${usuario.full_name} (${controCount} controles)`,
-        control_count: controCount
-      };})
-    .filter(operator => operator.control_count <= 5)
-    .sort((a, b) => a.control_count - b.control_count);
 
   const closeModal = () => {
     setShowModal(false);
@@ -141,123 +112,11 @@ export const Card: React.FC<CardProps> = ({ control, handleDragStart }) => {
             {control.operator && <FaUserCircle className="w-5 h-5" aria-label={`${control.operator.full_name}`}/>}
           </div>
         </motion.div>
-        {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-900 text-white p-6 rounded-lg max-w-3xl w-full relative max-h-screen overflow-y-auto">
-            <button
-              className="absolute top-2 right-2 text-gray-300 hover:text-gray-100"
-              onClick={closeModal}
-            >
-              <FiX className="w-6 h-6" />
-            </button>
-            <div className="flex flex-col gap-6 w-full">
-              <div className="flex gap-2 md:gap-5 text-xs justify-start align-start">
-                {typeLogo(control.type)}
-                /
-                <p>
-                  ({control.vehicle.id}) - {control.vehicle.brand}{" "}
-                  {control.vehicle.model} {control.vehicle.year}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-4 md:flex-row md:justify-between">
-                <div className="flex flex-col gap-2 items-start">
-                  <h3 className="text-3xl mb-6 font-bold text-left">
-                    {control.subject}
-                  </h3>
-                  <h4 className="text-xl font-semibold text-left">
-                    Descripción
-                  </h4>
-                  <p className="text-base text-left">
-                    {control.description}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-2 items-start md:px-4 md:border-l-2 border-gray-700">
-                  <h4 className="text-xl font-semibold">Detalles</h4>
-                  {control.operator ? (
-                    <p className="text-left">
-                      Persona asignada:{" "}
-                      {control.operator.full_name}
-                    </p>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <label
-                        htmlFor="operator-select"
-                        className="text-left"
-                      >
-                        Asignar operador:
-                      </label>
-                      <select
-                        id="operator-select"
-                        className="bg-gray-800 text-white rounded-md p-2"
-                        onChange={async (e) => {
-                          const selectedOperatorId = e.target.value;
-                           if (
-                             selectedOperatorId &&
-                             assignOperator
-                           ) {
-                             try {
-                               await assignOperator(
-                                 control.id,
-                                 selectedOperatorId
-                               );
-                               closeModal();
-                             } catch (error) {
-                               console.error(error);
-                               // Mostrar mensaje de error
-                             }
-                           }
-                        }}
-                      >
-                        <option value="">
-                          Seleccionar operador
-                        </option>
-                        {operadores.map((operador) => (
-                          <option
-                            key={operador.id}
-                            value={operador.id}
-                          >
-                            {operador.full_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                  <div className="flex gap-2 justify-start">
-                    <p className="text-left">Estado:</p>
-                    <p className="text-left">
-                      {control.status === "TODO"
-                        ? "Pendiente"
-                        : control.status === "DOING"
-                          ? "En proceso"
-                          : "Hecho"}
-                    </p>
-                  </div>
-                  <p className="text-left">
-                    Prioridad:{" "}
-                    {control.priority === "HIGH"
-                      ? "Alta"
-                      : control.priority === "MEDIUM"
-                        ? "Media"
-                        : "Baja"}
-                  </p>
-                </div>
-              </div>
-              {control.type === "CORRECTIVE" &&
-                <div className="mt-4">
-                  <h4 className="text-xl font-semibold">Ubicación</h4>
-                  <div className="h-64 rounded-lg shadow-lg flex items-center justify-center">
-                    <MapVehiculo coordinates={control.vehicle.coordinates} />
-                  </div>
-                </div>}
-              <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={closeModal}>
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        <CardModal
+        control={control}
+        closeModal={closeModal}
+        showModal={showModal}
+      />
     </>
   );
 };
