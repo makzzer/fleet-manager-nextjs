@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import { Control } from '@/app/context/ControlContext'
 import { Column } from './Column'
@@ -10,11 +12,12 @@ interface KanbanBoardProps {
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({ controls, setControlStatus }) => {
 
   return (
-    <div className="flex w-full gap-3 overflow-y-auto p-12">
+    <div className="flex w-full gap-3 min-h-screen overflow-y-hidden overflow-x-auto">
       <Column
         title="Por hacer"
         column="TODO"
         headingColor="text-yellow-200"
+        allControls={controls}
         controls={controls.filter(c => c.status === 'TODO')}
         setControlStatus={setControlStatus}
       />
@@ -22,6 +25,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ controls, setControlSt
         title="En progreso"
         column="DOING"
         headingColor="text-blue-200"
+        allControls={controls}
         controls={controls.filter(c => c.status === 'DOING')}
         setControlStatus={setControlStatus}
       />
@@ -29,6 +33,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ controls, setControlSt
         title="Completado"
         column="DONE"
         headingColor="text-emerald-200"
+        allControls={controls}
         controls={controls.filter(c => c.status === 'DONE')}
         setControlStatus={setControlStatus}
       />
