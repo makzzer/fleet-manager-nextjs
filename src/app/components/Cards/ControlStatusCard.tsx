@@ -66,7 +66,7 @@ const ControlStatusCard: React.FC<ControlStatusCardProps> = ({ control }) => {
       <div className="mb-4">
         <span
           className={`inline-block px-3 py-1 rounded-full text-sm font-semibold text-white ${
-            control.type === 'PREVENTIVE' ? 'bg-blue-500' : 'bg-red-500'
+            control.type === 'PREVENTIVE' ? 'bg-blue-500' : 'bg-yellow-500'
           }`}
         >
           {control.type}
