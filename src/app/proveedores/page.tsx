@@ -122,7 +122,7 @@ const Proveedores = () => {
           });
         document.getElementById("addMasivo")?.addEventListener("click", () => {
           Swal.close();
-           handleCargaMasiva();
+          handleCargaMasiva();
         });
       },
     });
@@ -259,7 +259,7 @@ const Proveedores = () => {
       title: "Carga Masiva de Proveedores",
       html: `
           <div class="text-left mb-4">
-            <p class="mb-2 ">Descargue la plantilla y luego suba el archivo Excel o CSV con los datos de los vehículos.</p>
+            <p class="mb-2 ">Descargue la plantilla y luego suba el archivo Excel o CSV con los datos de los proveedores.</p>
             <p class="text-sm text-gray-300">Formatos aceptados: .xlsx, .xls, .csv</p>
           </div>
           <div class="flex justify-start space-x-4 mb-4">
@@ -330,7 +330,7 @@ const Proveedores = () => {
         try {
           const provider = {
             ...formatedProvider,
-            id:"0"
+            id: "0",
           };
           const result = await createProveedor(provider);
           if (result) {

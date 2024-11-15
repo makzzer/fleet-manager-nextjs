@@ -17,6 +17,11 @@ import QrScanner from "../components/QR/QrScanner"; // Importamos el componente 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
+import {
+  generateExcelProductTemplate,
+  processProductFile,
+} from "../util/excelProcessor";
+
 const MySwal = withReactContent(Swal); // Creamos una instancia de SweetAlert con ReactContent
 
 //Lista de categorias de repuestos en productos
@@ -163,6 +168,122 @@ const Stock = () => {
     return <div>Cargando...</div>;
   }
 
+  const handleCargaMasiva = () => {
+    Swal.fire({
+      title: "Carga Masiva de Productos",
+      html: `
+          <div class="text-left mb-4">
+            <p class="mb-2 ">Descargue la plantilla y luego suba el archivo Excel o CSV con los datos de los productos.</p>
+            <p class="text-sm text-gray-300">Formatos aceptados: .xlsx, .xls, .csv</p>
+          </div>
+          <div class="flex justify-start space-x-4 mb-4">
+            <button id="downloadTemplate" class="bg-blue-500 hover:bg-blue-600 text-white w-full font-bold py-2 px-4 rounded transition duration-200 ease-in-out">
+              Descargar Plantilla
+            </button>
+          </div>
+          <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="hidden">
+          <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition duration-200 ease-in-out">
+            <p class="">Arrastre y suelte su archivo aquí</p>
+            <p class="text-sm ">o haga clic para seleccionar</p>
+          </div>
+      `,
+      showCancelButton: true,
+      showConfirmButton: false,
+      cancelButtonText: "Cerrar",
+      customClass: {
+        popup: "rounded-lg bg-gray-800 text-white",
+        title: "font-bold text-blue-500",
+      },
+      didOpen: () => {
+        const dropZone = document.getElementById("dropZone");
+        const fileUpload = document.getElementById(
+          "fileUpload"
+        ) as HTMLInputElement;
+
+        document
+          .getElementById("downloadTemplate")
+          ?.addEventListener("click", generateExcelProductTemplate);
+
+        dropZone?.addEventListener("click", () => fileUpload?.click());
+
+        dropZone?.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          dropZone.classList.add("border-blue-500");
+        });
+
+        dropZone?.addEventListener("dragleave", () => {
+          dropZone.classList.remove("border-blue-500");
+        });
+
+        dropZone?.addEventListener("drop", (e) => {
+          e.preventDefault();
+          dropZone.classList.remove("border-blue-500");
+          if (e.dataTransfer?.files.length) {
+            handleFileUpload(e.dataTransfer.files[0]);
+          }
+        });
+
+        fileUpload?.addEventListener("change", (e) => {
+          const fileInput = e.target as HTMLInputElement;
+          if (fileInput.files && fileInput.files[0]) {
+            handleFileUpload(fileInput.files[0]);
+          }
+        });
+      },
+    });
+  };
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      const formatedProducts = await processProductFile(file);
+      let successCount = 0;
+      let failedCount = 0;
+
+      console.log(formatedProducts);
+      for (const formatedProduct of formatedProducts) {
+        try {
+          const product = {
+            ...formatedProduct,
+          };
+          const result = await createProducto(product);
+          if (result) {
+            successCount++;
+          } else {
+            failedCount++;
+          }
+          // Actualizar la barra de progreso
+          Swal.update({
+            title: "Procesando vehículos...",
+            html: `Procesados: ${successCount + failedCount} de ${
+              formatedProducts.length
+            }
+                   <div class="progress-bar-container">
+                     <div class="progress-bar" style="width: ${
+                       ((successCount + failedCount) /
+                         formatedProducts.length) *
+                       100
+                     }%"></div>
+                   </div>`,
+          });
+        } catch (error) {
+          console.error("Error creando proveedor:", error);
+          failedCount++;
+        }
+      }
+
+      await Swal.fire({
+        title: "Carga completada",
+        html: `Proveedores agregados exitosamente: ${successCount}<br>Fallidos: ${failedCount}`,
+        icon: "success",
+      });
+
+      fetchProveedores(); // Actualizar la lista de vehículos
+    } catch (error) {
+      console.error("Error processing file:", error);
+      Swal.fire("Error", "Hubo un problema al procesar el archivo", "error");
+    }
+  };
+
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value;
     setSelectedFilter(selected);
@@ -254,7 +375,7 @@ const Stock = () => {
           });
         document.getElementById("addMasivo")?.addEventListener("click", () => {
           Swal.close();
-          // handleCargaMasiva();
+          handleCargaMasiva();
         });
       },
     });
