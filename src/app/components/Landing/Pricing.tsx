@@ -61,14 +61,14 @@ const Pricing = () => {
   return (
     <section className="py-24">
       <div>
-        <div className="section-heading">
-        <h2 className="section-title">Planes adaptados a tu flota</h2>
-        <p className="section-description mt-5">
+        <div className="section-heading text-center px-6 sm:px-8 md:px-16">
+        <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-semibold text-white">Planes adaptados a tu flota</h2>
+        <p className="section-description mt-5 text-lg sm:text-xl md:text-2xl text-gray-300">
         Desde pequeñas flotas hasta grandes empresas, tenemos la solución perfecta para optimizar la gestión de tus vehículos y maximizar tu eficiencia operativa.
 
         </p>
         </div>
-        <div className="flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-end lg:justify-center">
+        <div className="flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-start lg:justify-center  lg:gap-8">
           {pricingTiers.map(
             (
               { title, monthlyPrice, buttonText, popular, inverse, features },
@@ -76,12 +76,10 @@ const Pricing = () => {
             ) => (
               <div
                 key={`${title}-${index}`}
-                className={`card 
-                  ${inverse 
-                    ? "border-gray-300 bg-gray-900 text-white/60"
-                  : "border-gray-600 bg-gray-700"}`}
+                className={`card p-6 rounded-lg w-full sm:w-96 md:w-80 lg:w-96 
+                  ${inverse ? "border-gray-300 bg-gray-900 text-white/60" : "border-gray-600 bg-gray-700"}`}
               >
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <h3 className="text-lg font-bold text-white/50">{title}</h3>
                   {popular && (
                   <div className="inline-flex text-sm px-4 py-1.5 rounded-xl border border-white/20">
@@ -101,7 +99,7 @@ const Pricing = () => {
                   </div>)
                   }
                 </div>
-                <div className="flex items-baseline gap-1 mt-[30px]">
+                <div className="flex items-baseline gap-1 mt-4">
                   <span className="text-4xl font-bold tracking-tighter leading-none">
                     ${monthlyPrice}
                   </span>
@@ -109,7 +107,7 @@ const Pricing = () => {
                     /mes
                   </span>
                 </div>
-                <button className="btn btn-primary w-full mt-[30px]">
+                <button className="btn btn-primary w-full mt-6">
                   {buttonText}
                 </button>
                 <ul className="flex flex-col gap-5 mt-8">
