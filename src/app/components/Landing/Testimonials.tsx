@@ -101,7 +101,7 @@ const TestimonialsColumn = (props: { testimonials: typeof testimonials, customCl
 const Testimonials = () => {
   return (
     <section>
-      <div>
+      <div className="container mx-auto px-6 sm:px-8">
         <div className="section-heading px-4 sm:px-8 md:px-16">
         <div className="flex justify-center">
           <div className="tag text-lg sm:text-xl md:text-2xl">Experiencias de Éxito</div>

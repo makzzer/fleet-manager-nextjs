@@ -60,7 +60,7 @@ const pricingTiers = [
 const Pricing = () => {
   return (
     <section className="py-24">
-      <div>
+      <div className="container mx-auto px-6 sm:px-8">
         <div className="section-heading text-center px-6 sm:px-8 md:px-16">
         <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-semibold text-white">Planes adaptados a tu flota</h2>
         <p className="section-description mt-5 text-lg sm:text-xl md:text-2xl text-gray-300">
