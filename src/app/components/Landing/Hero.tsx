@@ -9,11 +9,11 @@ const Hero = () => {
   };
 
   return (
-    <section className="bg-gradient-to-b from-blue-950 to-gray-800 py-24">
+    <section className="pt-8 pb-20 md:pt-5 md:pb-10 bg-gradient-to-b from-gray-900 to-blue-950 md:px-20">
       <div className="container mx-auto px-6 sm:px-8">
         <div className="flex flex-col-reverse md:flex-row items-center">
           <div className="md:w-[600px] text-center md:text-left">
-            <div className="tag mb-4 text-sm md:text-base">Integración con IA</div>
+            <div className="tag mb-4 text-sm md:text-base">Integración con ChatGPT</div>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter text-white mt-4 md:mt-6">
               Impulsa tu <span className="text-blue-400">flota</span>
             </h1>

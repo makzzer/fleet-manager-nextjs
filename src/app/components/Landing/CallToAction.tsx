@@ -2,7 +2,7 @@ import { FaArrowRight } from "react-icons/fa";
 
 const CallToAction = () => {
   return (
-    <section className="bg-gradient-to-b from-blue-950 to-gray-800 py-24">
+    <section className="bg-gradient-to-b from-gray-800 to-gray-900 py-24">
       <div className="container mx-auto px-6 sm:px-8">
         <div className="section-heading text-center">
         <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-semibold text-white mt-5">Comienza a Optimizar tu Flota Hoy</h2>
