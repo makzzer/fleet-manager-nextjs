@@ -639,7 +639,16 @@ const AddVehicle = () => {
                   className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out"
                 >
                   <option value="">Seleccionar consumo</option>
-                  {fuelConsumptionOptions[vehicleData.type].map((option) => (
+
+                  {/* Si el vehículo es eléctrico, las opciones de consumo deben ser entre 15 y 30 kWh */}
+                  {vehicleData.fuel_type === "ELECTRIC"
+                    ? Array.from({ length: 16 }, (_, i) => 15 + i).map((option) => (
+                      <option key={option} value={option}>
+                        {option} kWh/100km
+                      </option>
+                    ))
+
+                  :fuelConsumptionOptions[vehicleData.type].map((option) => (
                     <option key={option} value={option}>
                       {option} L/100km
                     </option>
