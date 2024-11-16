@@ -97,7 +97,8 @@ const SolicitarAsistenciaForm: React.FC<SolicitarAsistenciaFormProps> = ({ vehic
       description: description,
       vehicle_id: selectedReserva,
       priority: 'HIGH',
-      operator_id: 'bb21c935-c3ad-489d-a81d-446465d3e318', // Por ahora el operador fijo
+      //operator_id: 'bb21c935-c3ad-489d-a81d-446465d3e318', // Por ahora el operador fijo
+      method: 'default'
     };
 
     try {

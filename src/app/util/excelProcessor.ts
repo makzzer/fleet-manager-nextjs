@@ -38,7 +38,7 @@ export interface FormatedProducto {
   quantity: number;
   measurement: string;
   price: number;
-  preference_provider_id: string;
+  provider_id: string;
   min_stock: number;
 }
 
@@ -222,7 +222,7 @@ export const generateExcelProductTemplate = () => {
       quantity: "0",
       measurement: "medida",
       price: "0",
-      preference_provider_id: "ID_proveedor",
+      provider_id: "ID_proveedor",
       min_stock: "0",
     },
   ];

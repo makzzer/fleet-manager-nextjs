@@ -5,8 +5,6 @@ import { Reserva } from "@/app/context/ReservesContext";
 import { useAuth } from "@/app/context/AuthContext";
 import { useVehiculo } from "@/app/context/VehiculoContext";
 import { useRouter } from "next/navigation";
-
-// Asegúrate de tener el tipo Vehiculo importado correctamente
 import { Vehiculo } from "@/app/context/VehiculoContext";
 
 interface ListadoReservasProps {
@@ -127,64 +125,96 @@ const ListadoReservas: React.FC<ListadoReservasProps> = ({
             return (
               <li
                 key={reserva.id}
-                className="bg-gray-800 p-6 rounded-lg shadow-md cursor-pointer hover:bg-gray-700 transition"
-                onClick={() => router.push(`/detalleReserva/${reserva.id}`)}
+                className="bg-gray-800 p-6 rounded-lg shadow-md transition"
               >
-                <div className="flex items-center justify-between border-b border-gray-700 pb-2 mb-4">
-                  <h2 className="text-xl font-bold text-blue-400">
-                    Reserva #{reserva.id}
-                  </h2>
-                  <div
-                    className={`text-sm font-semibold rounded-full px-3 py-1 ${
-                      reserva.status === "ACTIVATED"
-                        ? "bg-blue-600 text-white"
-                        : reserva.status === "CREATED"
-                        ? "bg-yellow-500 text-white"
-                        : reserva.status === "COMPLETED"
-                        ? "bg-green-500 text-white"
-                        : "bg-red-500 text-white"
-                    }`}
-                  >
-                    {reserva.status}
+                <div
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/detalleReserva/${reserva.id}`)}
+                >
+                  <div className="flex items-center justify-between border-b border-gray-700 pb-2 mb-4">
+                    <h2 className="text-xl font-bold text-blue-400">
+                      Reserva #{reserva.id}
+                    </h2>
+                    <div
+                      className={`text-sm font-semibold rounded-full px-3 py-1 ${
+                        reserva.status === "ACTIVATED"
+                          ? "bg-blue-600 text-white"
+                          : reserva.status === "CREATED"
+                          ? "bg-yellow-500 text-white"
+                          : reserva.status === "COMPLETED"
+                          ? "bg-green-500 text-white"
+                          : "bg-red-500 text-white"
+                      }`}
+                    >
+                      {reserva.status}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <p className="text-gray-400">
+                        <strong>Fecha de creación:</strong>{" "}
+                        {new Date(reserva.date_created).toLocaleDateString()}
+                      </p>
+                      <p className="text-gray-400">
+                        <strong>Fecha de inicio:</strong>{" "}
+                        {new Date(reserva.date_reserve).toLocaleDateString()}
+                      </p>
+                      <p className="text-gray-400">
+                        <strong>Fecha de fin:</strong>{" "}
+                        {new Date(reserva.date_finish_reserve).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    {vehiculoReserva ? (
+                      <div className="bg-gray-700 p-4 rounded-lg">
+                        <h3 className="text-lg font-medium text-blue-300 mb-2">
+                          Vehículo Reservado
+                        </h3>
+                        <p className="text-gray-300">
+                          <strong>Marca:</strong> {vehiculoReserva.brand}
+                        </p>
+                        <p className="text-gray-300">
+                          <strong>Modelo:</strong> {vehiculoReserva.model}
+                        </p>
+                        <p className="text-gray-300">
+                          <strong>Patente:</strong> {vehiculoReserva.id}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-red-400">
+                        Información del vehículo no disponible
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <p className="text-gray-400">
-                      <strong>Fecha de creación:</strong>{" "}
-                      {new Date(reserva.date_created).toLocaleDateString()}
-                    </p>
-                    <p className="text-gray-400">
-                      <strong>Fecha de inicio:</strong>{" "}
-                      {new Date(reserva.date_reserve).toLocaleDateString()}
-                    </p>
-                    <p className="text-gray-400">
-                      <strong>Fecha de fin:</strong>{" "}
-                      {new Date(reserva.date_finish_reserve).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  {vehiculoReserva ? (
-                    <div className="bg-gray-700 p-4 rounded-lg">
-                      <h3 className="text-lg font-medium text-blue-300 mb-2">
-                        Vehículo Reservado
-                      </h3>
-                      <p className="text-gray-300">
-                        <strong>Marca:</strong> {vehiculoReserva.brand}
-                      </p>
-                      <p className="text-gray-300">
-                        <strong>Modelo:</strong> {vehiculoReserva.model}
-                      </p>
-                      <p className="text-gray-300">
-                        <strong>Patente:</strong> {vehiculoReserva.id}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-red-400">
-                      Información del vehículo no disponible
-                    </p>
-                  )}
+                {/* Botones adicionales */}
+                <div className="mt-4 flex space-x-4">
+                  <button
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+                    onClick={() =>
+                      router.push(
+                        `/solicitarasistencia?vehiculoId=${encodeURIComponent(
+                          vehiculoReserva?.id || ""
+                        )}&reservaId=${encodeURIComponent(reserva.id)}`
+                      )
+                    }
+                  >
+                    Solicitar Asistencia
+                  </button>
+                  <button
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+                    onClick={() =>
+                      router.push(
+                        `/verControlesAuto?vehiculoId=${encodeURIComponent(
+                          vehiculoReserva?.id || ""
+                        )}`
+                      )
+                    }
+                  >
+                    Ver Controles del Auto
+                  </button>
                 </div>
               </li>
             );

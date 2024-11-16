@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 // Cargar LeafletMap dinámicamente para evitar problemas con SSR
 const LeafletMap = dynamic(() => import("../../components/Maps/MapTrazadoRuta"), { ssr: false });
@@ -22,7 +23,8 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
 
   const [reserva, setReserva] = useState<Reserva>(initialReserva); // Utilizamos un estado para manejar la reserva localmente
   const [loading, setLoading] = useState(false); // Estado de carga
-
+  const router = useRouter();
+  
   useEffect(() => {
     const vehiculoEncontrado = vehiculos.find((v) => v.id === reserva.vehicle_id);
     if (vehiculoEncontrado) {
@@ -186,7 +188,23 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
         )}
 
         {/* Botón de Volver más responsivo */}
-        <div className="w-full mt-4">
+        <div className="w-full mt-4 ">
+
+       
+          <button
+            className="bg-red-600 hover:bg-red-700 mb-2 w-full text-white font-bold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
+            onClick={() =>
+              router.push(
+                `/solicitarasistencia?vehiculoId=${vehiculo?.id}&reservaId=${encodeURIComponent(reservaId)}`
+              )
+            }
+          >
+            Solicitar Asistencia
+          </button>
+   
+
+
+
           <button
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
             onClick={() => window.history.back()}

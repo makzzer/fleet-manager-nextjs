@@ -146,27 +146,55 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
 
   const handleCreateReserva = async () => {
     if (!selectedVehicle) {
-      alert("Por favor, selecciona un vehículo.");
+      Swal.fire("Error", "Por favor, selecciona un vehículo.", "warning");
       return;
     }
 
     if (!authenticatedUser) {
-      alert("Debes estar autenticado para reservar un vehículo.");
+      Swal.fire("Error", "Debes estar autenticado para reservar un vehículo.", "error");
+      return;
+    }
+
+    // Verificar si el usuario ya tiene una reserva ACTIVATED o CREATED
+    const userActiveReservations = reservas.filter(
+      (reserva) =>
+        reserva.user_id === authenticatedUser.id &&
+        (reserva.status === "ACTIVATED" || reserva.status === "CREATED")
+    );
+
+    if (userActiveReservations.length > 0) {
+      Swal.fire(
+        "Error",
+        "No puede tener más de una reserva activa.",
+        "error"
+      );
       return;
     }
 
     if (!pickedCoordinates) {
-      alert("Por favor, selecciona un destino en el mapa.");
+      Swal.fire(
+        "Error",
+        "Por favor, selecciona un destino en el mapa.",
+        "warning"
+      );
       return;
     }
 
     if (!startDate || !endDate) {
-      alert("Por favor, selecciona las fechas de inicio y fin del viaje.");
+      Swal.fire(
+        "Error",
+        "Por favor, selecciona las fechas de inicio y fin del viaje.",
+        "warning"
+      );
       return;
     }
 
     if (startDate >= endDate) {
-      alert("La fecha de inicio debe ser anterior a la fecha de fin.");
+      Swal.fire(
+        "Error",
+        "La fecha de inicio debe ser anterior a la fecha de fin.",
+        "warning"
+      );
       return;
     }
 
@@ -188,13 +216,25 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
       );
 
       if (response.status === 201) {
-        Swal.fire("Reserva creada", "Tu reserva se ha creado exitosamente.", "success");
+        Swal.fire(
+          "Reserva creada",
+          "Tu reserva se ha creado exitosamente.",
+          "success"
+        );
         router.push("/reservas");
       } else {
-        Swal.fire("Error", "No se pudo crear la reserva. Inténtalo nuevamente.", "error");
+        Swal.fire(
+          "Error",
+          "No se pudo crear la reserva. Inténtalo nuevamente.",
+          "error"
+        );
       }
     } catch (error) {
-      Swal.fire("Error", "Ocurrió un error al crear la reserva.", "error");
+      Swal.fire(
+        "Error",
+        "Ocurrió un error al crear la reserva.",
+        "error"
+      );
     }
   };
 
@@ -206,10 +246,14 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
         </div>
 
         <div className="flex-shrink-0 mb-6 relative z-30">
-          <h2 className="text-2xl font-semibold mb-2">Seleccionar Fechas del Viaje</h2>
+          <h2 className="text-2xl font-semibold mb-2">
+            Seleccionar Fechas del Viaje
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Fecha y hora de inicio</label>
+              <label className="block text-sm font-medium mb-2">
+                Fecha y hora de inicio
+              </label>
               <DatePicker
                 selected={startDate}
                 onChange={(date: Date | null) => {
@@ -228,7 +272,9 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Fecha y hora de fin</label>
+              <label className="block text-sm font-medium mb-2">
+                Fecha y hora de fin
+              </label>
               <DatePicker
                 selected={endDate}
                 onChange={(date: Date | null) => {
@@ -250,7 +296,9 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
 
         {!vehicleIdFromQuery && (
           <div className="flex-shrink-0 mb-4">
-            <label className="block text-sm font-medium mb-2">Buscar vehículo por patente, marca o modelo</label>
+            <label className="block text-sm font-medium mb-2">
+              Buscar vehículo por patente, marca o modelo
+            </label>
             <input
               type="text"
               placeholder="Buscar..."
@@ -262,7 +310,9 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
         )}
 
         <div className="flex-shrink-0 mb-4">
-          <h2 className="text-2xl font-semibold mb-5">Seleccionar Vehículo</h2>
+          <h2 className="text-2xl font-semibold mb-5">
+            Seleccionar Vehículo
+          </h2>
           {isLoading ? (
             <p className="text-gray-400">Cargando vehículos...</p>
           ) : (
@@ -276,17 +326,25 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
                     selectedVehicleId={selectedVehicle}
                   />
                 ) : (
-                  <p className="text-gray-400">No hay vehículos disponibles en el rango de fechas seleccionado.</p>
+                  <p className="text-gray-400">
+                    No hay vehículos disponibles en el rango de fechas
+                    seleccionado.
+                  </p>
                 )
               ) : (
-                <p className="text-gray-400">Por favor, selecciona las fechas de inicio y fin para ver los vehículos disponibles.</p>
+                <p className="text-gray-400">
+                  Por favor, selecciona las fechas de inicio y fin para ver los
+                  vehículos disponibles.
+                </p>
               )}
             </>
           )}
         </div>
 
         <div className="flex-grow z-20 mb-4">
-          <h2 className="text-2xl font-semibold mb-2">Seleccionar Destino en el Mapa</h2>
+          <h2 className="text-2xl font-semibold mb-2">
+            Seleccionar Destino en el Mapa
+          </h2>
           <MapPickCoordinates setPickedCoordinates={setPickedCoordinates} />
         </div>
 

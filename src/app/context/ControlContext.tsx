@@ -29,6 +29,7 @@ interface Vehiculo {
   coordinates: Coordinates;
   date_created: string;
   date_updated: string;
+  type: string;
 }
 
 interface Operador {
@@ -41,9 +42,10 @@ interface Operador {
   date_updated: string;
 }
 
-interface Control {
+export interface Control {
   id: string;
   type: string;
+  method: string;
   subject: string;
   description: string;
   vehicle: Vehiculo;
@@ -80,7 +82,8 @@ interface POSTCorrectiveControl {
   subject: string;
   description: string;
   vehicle_id: string;
-  operator_id: string;
+  //operator_id: string;
+  method: string;
 }
 
 interface POSTPredictiveControl {
@@ -131,20 +134,20 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addProductList = async (
-    control_id:  string,
+    control_id: string,
     product_id: string,
     quantity: number,
   ) => {
     try {
-      await api.put( `${apiControles}/${control_id}/products`, { product_id, quantity } );
+      await api.put(`${apiControles}/${control_id}/products`, { product_id, quantity });
       fetchControls();
       return { resultado: true };
     } catch (error) {
-      if(axios.isAxiosError(error)){
-        return { resultado: false, mensaje: error.response?.data.message};
+      if (axios.isAxiosError(error)) {
+        return { resultado: false, mensaje: error.response?.data.message };
       }
       console.error("Error creating vehiculo:", error);
-      return { resultado: false, mensaje: "Ha ocurrido un error al crear el vehiculo."}
+      return { resultado: false, mensaje: "Ha ocurrido un error al crear el vehiculo." }
     }
   }
 
