@@ -21,7 +21,7 @@ interface KanbanCardModalProps {
 }
 
 export default function CardModal({ control, closeModal, showModal }: KanbanCardModalProps) {
-  const { controls, assignOperator, addProductList } = useControl()
+  const { controls, assignOperator, addProductList, setControlStatus } = useControl()
   const { users } = useUser()
   const { productos } = useProducto()
 
@@ -30,6 +30,8 @@ export default function CardModal({ control, closeModal, showModal }: KanbanCard
   const [selectedProductQuantity, setQuantity] = useState<number>(1)
   const [selectedProductsList, setSelectedProductsList] = useState<any[]>(control.products)
   const [filteredProducts, setFilteredProducts] = useState<any[]>([])
+  const [currentStatus, setCurrentStatus] = useState(control.status)
+
 
   const categorias = [
     'Aceite', 'Aire Acondicionado', 'Amortiguadores', 'Baterías', 'Carrocería', 'Correas',
@@ -41,6 +43,42 @@ export default function CardModal({ control, closeModal, showModal }: KanbanCard
   useEffect(() => {
     setSelectedProductsList(control.products);
   }, [control.products])
+
+  const showErrorToast = (message: string) => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: message,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1F2937',
+      color: '#F3F4F6',
+      iconColor: '#EF4444',
+      customClass: {
+        popup: 'swal2-modern',
+        title: 'swal2-modern-title',
+        htmlContainer: 'swal2-modern-content'
+      },
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  }
+
+  const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStatus = event.target.value
+    if (!control.operator) {
+      showErrorToast('Debe asignarse un operador antes de cambiar el estado');
+      setCurrentStatus(control.status);
+    } else if (newStatus !== control.status) {
+      setCurrentStatus(newStatus);
+      setControlStatus(control.id, newStatus)
+    }
+  }
 
   const getControlCount = (operatorId: string) => {
     return controls
@@ -278,15 +316,20 @@ export default function CardModal({ control, closeModal, showModal }: KanbanCard
                   </select>
                 </div>
               )}
-              <div className="flex gap-2 justify-start">
-                <p className="text-left">Estado:</p>
-                <p className="text-left">
-                  {control.status === 'TODO'
-                    ? 'Pendiente'
-                    : control.status === 'DOING'
-                    ? 'En proceso'
-                    : 'Hecho'}
-                </p>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="status-select" className="text-left">
+                  Estado:
+                </label>
+                <select
+                  id="status-select"
+                  className="bg-gray-800 rounded-md p-2"
+                  value={currentStatus}
+                  onChange={handleStatusChange}
+                >
+                  <option value="TODO" className='text-yellow-200'>Por hacer</option>
+                  <option value="DOING" className='text-blue-200'>En proceso</option>
+                  <option value="DONE" className='text-emerald-200'>Completado</option>
+                </select>
               </div>
               <p className="text-left">
                 Prioridad:{' '}
