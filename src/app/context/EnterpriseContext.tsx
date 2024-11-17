@@ -37,6 +37,7 @@ interface EnterpriseContextProps {
   addEnterpriseModule: (id: string, module: Module) => Promise<void>;
   removeEnterprise: (id: string) => Promise<void>;
   removeEnterpriseModule: (id: string, module: Module) => Promise<void>;
+  updateEnterpriseConfig: (id: string, key: string, value: string) => Promise<void>;
 }
 
 const EnterpriseContext = createContext<EnterpriseContextProps | undefined>(
@@ -100,6 +101,20 @@ export const EnterpriseProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  const updateEnterpriseConfig = async (id: string, key: string, value: string) => {
+    try {
+      await axios.put(`${apiEmpresas}/${id}/configs`, {
+        key,
+        value,
+        secret: key !== "OPSGENIE_LINK", // valor secreto o no
+      });
+      fetchEnterprises();
+    } catch (error) {
+      console.error("Error updating enterprise configuration", error);
+      throw new Error("Error al actualizar la configuración de la empresa");
+    }
+  };  
+
   useEffect(() => {
     fetchEnterprises();
   }, []);
@@ -112,7 +127,8 @@ export const EnterpriseProvider = ({ children }: { children: ReactNode }) => {
         createEnterprise,
         addEnterpriseModule,
         removeEnterprise,
-        removeEnterpriseModule
+        removeEnterpriseModule,
+        updateEnterpriseConfig,
       }}
     >
       {children}

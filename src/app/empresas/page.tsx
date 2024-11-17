@@ -36,6 +36,7 @@ const Empresas = () => {
     removeEnterprise,
     addEnterpriseModule,
     removeEnterpriseModule,
+    updateEnterpriseConfig,
   } = useEnterprise();
 
   const [filteredEnterprises, setFilteredEnterprises] = useState<Enterprise[]>(
@@ -296,17 +297,26 @@ const Empresas = () => {
       title: `Configuración de API para ${enterprise.name}`,
       html: `
         <div class="flex flex-col space-y-4">  
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Acciones</label>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Seleccione una API</label>
             <select 
-              id="actions" 
+              id="apiAction" 
               class="w-full border-gray-500 bg-gray-700 text-gray-200 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="" disabled selected>Seleccione una API</option>
-              <option value="googleKey">Google Directions KEY</option>
-              <option value="opsGenie">OpsGenie KEY</option>
-              <option value="link">OpsGenie Link</option>
+              <option value="GOOGLE_DIRECTIONS_KEY">Google Directions KEY</option>
+              <option value="OPSGENIE_KEY">OpsGenie KEY</option>
+              <option value="OPSGENIE_LINK">OpsGenie Link</option>
             </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Valor</label>
+            <input 
+              id="apiValue" 
+              type="text" 
+              placeholder="Ingrese el valor" 
+              class="w-full border-gray-500 bg-gray-700 text-gray-200 rounded-md p-2"
+            />
           </div>
         </div>
       `,
@@ -318,33 +328,27 @@ const Empresas = () => {
         popup: "bg-gray-800 text-gray-200",
       },
       preConfirm: () => {
-        const googleApiKey = (
-          document.getElementById("googleApiKey") as HTMLInputElement
-        )?.value;
-        const opsgenieAction = (
-          document.getElementById("opsgenieAction") as HTMLSelectElement
-        )?.value;
+        const apiAction = (document.getElementById("apiAction") as HTMLSelectElement)?.value;
+        const apiValue = (document.getElementById("apiValue") as HTMLInputElement)?.value;
   
-        if (!googleApiKey) {
-          Swal.showValidationMessage("Debe ingresar la clave de Google Directions API.");
+        if (!apiAction) {
+          Swal.showValidationMessage("Debe seleccionar una API.");
           return false;
         }
   
-        if (!opsgenieAction) {
-          Swal.showValidationMessage("Debe seleccionar una acción en OpsGenie.");
+        if (!apiValue) {
+          Swal.showValidationMessage("Debe ingresar un valor.");
           return false;
         }
   
-        return { googleApiKey, opsgenieAction };
+        return { apiAction, apiValue };
       },
     }).then(async (result) => {
       if (result.isConfirmed && result.value) {
-        const { googleApiKey, opsgenieAction } = result.value;
+        const { apiAction, apiValue } = result.value;
   
         try {
-          // await addGoogleApiKey(enterprise.id, googleApiKey);
-          // await addOpsGenieAction(enterprise.id, opsgenieAction);
-  
+          await updateEnterpriseConfig(enterprise.id, apiAction, apiValue);
           Swal.fire({
             title: "Configuración guardada",
             text: "Se han configurado correctamente las integraciones.",
@@ -367,6 +371,7 @@ const Empresas = () => {
       }
     });
   };
+  
   
 
   if (loading) {
