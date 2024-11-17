@@ -13,6 +13,7 @@ import {
   MdDomainDisabled,
   MdOutlinePlaylistAdd,
   MdOutlinePlaylistRemove,
+  MdOutlineRocketLaunch,
 } from "react-icons/md";
 
 const allModules: Module[] = [
@@ -290,6 +291,84 @@ const Empresas = () => {
     });
   };
 
+  const handleOpenApiEnterprise = (enterprise: Enterprise) => {
+    Swal.fire({
+      title: `Configuración de API para ${enterprise.name}`,
+      html: `
+        <div class="flex flex-col space-y-4">  
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Acciones</label>
+            <select 
+              id="actions" 
+              class="w-full border-gray-500 bg-gray-700 text-gray-200 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="" disabled selected>Seleccione una API</option>
+              <option value="googleKey">Google Directions KEY</option>
+              <option value="opsGenie">OpsGenie KEY</option>
+              <option value="link">OpsGenie Link</option>
+            </select>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Guardar",
+      focusConfirm: false,
+      customClass: {
+        popup: "bg-gray-800 text-gray-200",
+      },
+      preConfirm: () => {
+        const googleApiKey = (
+          document.getElementById("googleApiKey") as HTMLInputElement
+        )?.value;
+        const opsgenieAction = (
+          document.getElementById("opsgenieAction") as HTMLSelectElement
+        )?.value;
+  
+        if (!googleApiKey) {
+          Swal.showValidationMessage("Debe ingresar la clave de Google Directions API.");
+          return false;
+        }
+  
+        if (!opsgenieAction) {
+          Swal.showValidationMessage("Debe seleccionar una acción en OpsGenie.");
+          return false;
+        }
+  
+        return { googleApiKey, opsgenieAction };
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed && result.value) {
+        const { googleApiKey, opsgenieAction } = result.value;
+  
+        try {
+          // await addGoogleApiKey(enterprise.id, googleApiKey);
+          // await addOpsGenieAction(enterprise.id, opsgenieAction);
+  
+          Swal.fire({
+            title: "Configuración guardada",
+            text: "Se han configurado correctamente las integraciones.",
+            icon: "success",
+            customClass: {
+              popup: "bg-gray-800 text-gray-200",
+            },
+          });
+        } catch (error) {
+          console.error(error);
+          Swal.fire({
+            title: "Error",
+            text: "Ocurrió un error al guardar la configuración.",
+            icon: "error",
+            customClass: {
+              popup: "bg-gray-800 text-gray-200",
+            },
+          });
+        }
+      }
+    });
+  };
+  
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -363,6 +442,13 @@ const Empresas = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex justify-end space-x-4">
+                      <button
+                        onClick={() => handleOpenApiEnterprise(enterprise)}
+                        // onClick={() => console.log("handleView(orden.id)")}
+                        className="text-pink-600 hover:text-pink-800"
+                      >
+                        <MdOutlineRocketLaunch className="w-5 h-5" />
+                      </button>
                       <button
                         onClick={() => handleRemoveEnterprise(enterprise.id)}
                         className="text-red-600 hover:text-red-800"
