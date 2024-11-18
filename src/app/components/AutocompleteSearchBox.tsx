@@ -11,9 +11,10 @@ interface AutocompleteSearchBoxProps {
   placeholder?: string;
   customInputStyles?: string;
   customItemsStyles?: string;
+  customItemContainerStyles?: string;
 }
 
-const AutocompleteSearchBox: React.FC<AutocompleteSearchBoxProps> = ({ options, onSelection, placeholder = "Buscar...", customInputStyles, customItemsStyles }) => {
+const AutocompleteSearchBox: React.FC<AutocompleteSearchBoxProps> = ({ options, onSelection, placeholder = "Buscar...", customInputStyles, customItemsStyles, customItemContainerStyles }) => {
   const [search, setSearch] = useState('');
   const [filteredOptions, setFilteredOptions] = useState<Opcion[]>([]);
   const [showOptions, setShowOptions] = useState(false);
@@ -81,7 +82,7 @@ const AutocompleteSearchBox: React.FC<AutocompleteSearchBoxProps> = ({ options, 
       )}
       </div>
       {showOptions && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+        <ul className={`${customItemContainerStyles ? customItemContainerStyles : 'absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto'}`}>
           {filteredOptions.map((option) => (
             <li
               key={option.id}

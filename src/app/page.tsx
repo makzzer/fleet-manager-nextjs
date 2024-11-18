@@ -3,14 +3,15 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthContext';
+import { redirect } from './util/redirect';
 
 export default function Home() {
   const router = useRouter();
-  //const { authenticatedUser } = useAuth();
+  const { authenticatedUser } = useAuth();
 
   useEffect(() => {
-    router.push("/dashboard");
-  }, [router]);
+    router.push(redirect(authenticatedUser?.roles[0].toUpperCase()));
+  }, []);
 
 
   //Te comento esto Mati porque rompe cuando no estas logueado

@@ -77,7 +77,7 @@ interface Product {
   autoPurchase: string;
 }
 
-interface POSTCorrectiveControl {
+export interface POSTCorrectiveControl {
   type: string;
   subject: string;
   description: string;
@@ -86,14 +86,21 @@ interface POSTCorrectiveControl {
   method: string;
 }
 
-interface POSTPredictiveControl {
+export interface POSTMassiveControl {
+  method: string;
   subject: string;
   description: string;
+  priority: string;
+  operator_id?: string;
   brand: string;
   model: string;
   year: number;
-  priority: string;
-  operator_id: string;
+}
+
+export interface POSTPredictiveControl {
+  method: string;
+  vehicle_id: string;
+  operator_id?: string;
 }
 
 interface ControlContextProps {
@@ -101,6 +108,7 @@ interface ControlContextProps {
   fetchControls: () => void;
   addProductList: (control_id: string, product_id: string, quantity: number) => Promise<{ resultado: boolean, mensaje?: string }>;
   createCorrectiveControl: (controlCorrectivo: POSTCorrectiveControl) => void;
+  createMassiveControl: (controlMasivo: POSTMassiveControl) => void;
   createPredictiveControl: (controlPredictivo: POSTPredictiveControl) => void;
   setControlStatus: (control_id: string, new_status: string) => void;
   assignOperator: (control_id: string, operator_id: string) => Promise<void>;
@@ -155,6 +163,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     controlCorrectivo: POSTCorrectiveControl
   ) => {
     try {
+      console.log(controlCorrectivo)
       await api.post(apiControles, controlCorrectivo);
       fetchControls();
     } catch (error) {
@@ -162,16 +171,29 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const createMassiveControl = async (
+    controlMasivo: POSTMassiveControl
+  ) => {
+    try {
+      console.log(controlMasivo)
+      await api.post(apiControles, controlMasivo);
+      fetchControls();
+    } catch (error) {
+      console.error("Error creating massive control:", error);
+    }
+  };
+
   const createPredictiveControl = async (
     controlPredictivo: POSTPredictiveControl
   ) => {
     try {
-      await api.post(`${apiControles}/predictive`, controlPredictivo);
+      console.log(controlPredictivo)
+      await api.post(apiControles, controlPredictivo);
       fetchControls();
     } catch (error) {
-      console.error("Error creating corrective control:", error);
+      console.error("Error creating massive control:", error);
     }
-  };
+  }
 
   const setControlStatus = async (control_id: string, new_status: string) => {
     console.log("Entró acá con:", control_id, " - ", new_status);
@@ -229,6 +251,7 @@ export const ControlProvider = ({ children }: { children: ReactNode }) => {
         fetchControls,
         addProductList,
         createCorrectiveControl,
+        createMassiveControl,
         createPredictiveControl,
         setControlStatus,
         assignOperator,
