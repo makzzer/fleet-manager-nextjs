@@ -183,7 +183,7 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
                 </Link>)}
 
               {hasModuleAccess("CONTROLS") && (
-                <Link href="/controles" onClick={handleLinkClick}>
+                <Link href="/control" onClick={handleLinkClick}>
                   <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                     <FaTools />
                     <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
