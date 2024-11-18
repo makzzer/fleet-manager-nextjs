@@ -1,59 +1,76 @@
-import { FaCheck } from "react-icons/fa";
+import {FaCheck, FaTimes} from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const pricingTiers = [
   {
-    title: "Gratis",
-    monthlyPrice: 0,
-    buttonText: "Inicia una prueba gratuita",
+    title: "Standard",
+    monthlyPrice: 10,
+    buttonText: "Inicia ahora",
     popular: false,
     inverse: false,
     features: [
-      "Gestión de hasta 10 vehículos",
-      "Seguimiento básico de mantenimiento",
-      "Registro de conductores",
-      "Alertas de mantenimiento programado",
-      "Informes mensuales básicos",
-      "Soporte por correo electrónico",
+      "3 meses gratis sin compromiso de permanencia",
+      "Administración de tus vehículos",
+      "Servicios de mantenimiento de vehículos",
+      "Gestión de stock de respuestos y proveedores",
+      "Reservas de vehículos",
+      "Reportes y analíticas",
+      "Gestión avanzada de roles y permisos",
     ],
+    notIncluded: [
+      "Optimización de rutas en tiempo real",
+      "Monitoreo real time de tu flota",
+      "Alertas y rotación de guardias",
+      "Controles automáticos de bajo stock",
+      "Controles automáticos de bajo stock",
+      "Mantenimiento predictivos de vehiculos con AI",
+    ]
   },
   {
     title: "Pro",
-    monthlyPrice: 10,
+    monthlyPrice: 20,
     buttonText: "Inicia ahora",
-    popular: true,
-    inverse: true,
+    popular: false,
+    inverse: false,
     features: [
-      "Gestión de hasta 50 vehículos",
-      "Seguimiento avanzado de mantenimiento",
-      "Gestión completa de usuarios",
+      "3 meses gratis sin compromiso de permanencia",
+      "Administración de tus vehículos",
+      "Servicios de mantenimiento de vehículos",
+      "Gestión de stock de respuestos y proveedores",
+      "Mantenimiento predictivo de tu flota mediante AI",
+      "Gestión avanzada de roles y permisos",
       "Reservas de vehículos",
-      "Seguimiento GPS en tiempo real",
-      "Alertas personalizadas",
-      "Gestión de repuestos y stock",
-      "Informes detallados y análisis",
-      "Integración con proveedores",
-      "Ingreación con QR",
+      "Optimización de rutas en tiempo real",
+      "Monitoreo real time de tu flota"
     ],
+    notIncluded: [
+      "Reportes y analíticas",
+      "Alertas y rotación de guardias",
+      "Controles automáticos de bajo stock",
+      "Mantenimiento predictivos de vehiculos con AI",
+    ]
   },
   {
     title: "Ejecutivo",
     monthlyPrice: 25,
     buttonText: "Inicia ahora",
-    popular: false,
-    inverse: false,
+    popular: true,
+    inverse: true,
     features: [
-      "Gestión ilimitada de vehículos",
-      "Mantenimiento predictivo con IA",
+      "3 meses gratis sin compromiso de permanencia",
+      "Administración de tus vehículos",
+      "Servicios de mantenimiento de vehículos",
+      "Gestión de stock de respuestos y proveedores",
       "Gestión avanzada de roles y permisos",
+      "Reservas de vehículos",
       "Optimización de rutas en tiempo real",
-      "Integración IoT para diagnóstico avanzado",
-      "Análisis predictivo de costos y eficiencia",
-      "Gestión automatizada de órdenes de compra",
-      "Informes personalizados y dashboards",
-      "API para integraciones personalizadas",
-      "Soporte dedicado 24/7",
+      "Monitoreo real time de tu flota",
+      "Alertas y rotación de guardias",
+      "Reportes y analíticas",
+      "Controles automáticos de bajo stock",
+      "Mantenimiento predictivos de vehiculos con AI",
     ],
+    notIncluded: []
   },
 ];
 
@@ -71,7 +88,7 @@ const Pricing = () => {
         <div className="flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-start lg:justify-center  lg:gap-8">
           {pricingTiers.map(
             (
-              { title, monthlyPrice, buttonText, popular, inverse, features },
+              { title, monthlyPrice, buttonText, popular, inverse, features, notIncluded },
               index
             ) => (
               <div
@@ -119,6 +136,15 @@ const Pricing = () => {
                       <FaCheck className="h-6 w-6 text-blue-500" />
                       <span>{feature}</span>
                     </li>
+                  ))}
+                  {notIncluded.map((item, index) => (
+                      <li
+                          key={`${item}-${index}`}
+                          className="text-sm flex items-center gap-4"
+                      >
+                        <FaTimes className="h-6 w-6 text-blue-500" />
+                        <span>{item}</span>
+                      </li>
                   ))}
                 </ul>
               </div>
