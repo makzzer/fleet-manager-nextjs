@@ -70,8 +70,8 @@ export const ControlCreation: React.FC = () => {
       html: `
         <div class="flex flex-col gap-4">
           <h3 class="text-left font-bold text-sm text-gray-200">Informe</h3>
-          <input id="asunto" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Asunto">
-          <textarea id="descripcion" class="w-full h-40 px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Descripción"></textarea>
+          <input id="subject" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Asunto">
+          <textarea id="description" class="w-full h-40 px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Descripción"></textarea>
           <select id="vehicle" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="" disabled selected>Seleccione un vehículo</option>
             ${vehicleOptions}
