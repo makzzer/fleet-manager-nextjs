@@ -1,6 +1,11 @@
 import { FaArrowRight } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 const CallToAction = () => {
+  const router = useRouter();
+  const handleLogin = () => {
+    router.push("/login");
+  };
   return (
     <section className="bg-gradient-to-b from-gray-800 to-gray-900 py-24">
       <div className="container mx-auto px-6 sm:px-8">
@@ -9,7 +14,7 @@ const CallToAction = () => {
         <p className="section-description mt-5 text-lg sm:text-xl text-gray-300">Únete a las empresas líderes que ya están ahorrando tiempo y dinero con Fleetfly. Prueba nuestra plataforma sin compromiso y descubre el poder de una gestión de flota inteligente.</p>
         </div>
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-8">
-        <button className="btn btn-primary w-full sm:w-auto">
+        <button className="btn btn-primary w-full sm:w-auto" onClick={handleLogin}>
           Iniciar Prueba Gratuita
         </button>
         <button className="btn btn-text gap-1 w-full sm:w-auto">

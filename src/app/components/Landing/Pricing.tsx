@@ -1,4 +1,4 @@
-import {FaCheck, FaTimes} from "react-icons/fa";
+import { FaCheck, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const pricingTiers = [
@@ -14,17 +14,15 @@ const pricingTiers = [
       "Servicios de mantenimiento de vehículos",
       "Gestión de stock de respuestos y proveedores",
       "Reservas de vehículos",
-      "Reportes y analíticas",
       "Gestión avanzada de roles y permisos",
+      "Reportes y analíticas",
     ],
     notIncluded: [
       "Optimización de rutas en tiempo real",
       "Monitoreo real time de tu flota",
       "Alertas y rotación de guardias",
       "Controles automáticos de bajo stock",
-      "Controles automáticos de bajo stock",
-      "Mantenimiento predictivos de vehiculos con AI",
-    ]
+      "Mantenimiento predictivo de vehiculos con AI",]
   },
   {
     title: "Pro",
@@ -37,17 +35,18 @@ const pricingTiers = [
       "Administración de tus vehículos",
       "Servicios de mantenimiento de vehículos",
       "Gestión de stock de respuestos y proveedores",
-      "Mantenimiento predictivo de tu flota mediante AI",
-      "Gestión avanzada de roles y permisos",
       "Reservas de vehículos",
+      "Gestión avanzada de roles y permisos",
+      "Reportes y analíticas",
       "Optimización de rutas en tiempo real",
-      "Monitoreo real time de tu flota"
+      "Monitoreo real time de tu flota",
     ],
     notIncluded: [
-      "Reportes y analíticas",
+
       "Alertas y rotación de guardias",
       "Controles automáticos de bajo stock",
-      "Mantenimiento predictivos de vehiculos con AI",
+      "Mantenimiento predictivo de vehiculos con AI",
+
     ]
   },
   {
@@ -61,14 +60,15 @@ const pricingTiers = [
       "Administración de tus vehículos",
       "Servicios de mantenimiento de vehículos",
       "Gestión de stock de respuestos y proveedores",
-      "Gestión avanzada de roles y permisos",
       "Reservas de vehículos",
+      "Gestión avanzada de roles y permisos",
+      "Reportes y analíticas",
       "Optimización de rutas en tiempo real",
       "Monitoreo real time de tu flota",
       "Alertas y rotación de guardias",
-      "Reportes y analíticas",
+
       "Controles automáticos de bajo stock",
-      "Mantenimiento predictivos de vehiculos con AI",
+      "Mantenimiento predictivo de vehiculos con AI",
     ],
     notIncluded: []
   },
@@ -79,11 +79,11 @@ const Pricing = () => {
     <section className="py-24">
       <div className="container mx-auto px-6 sm:px-8">
         <div className="section-heading text-center px-6 sm:px-8 md:px-16">
-        <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-semibold text-white">Planes adaptados a tu flota</h2>
-        <p className="section-description mt-5 text-lg sm:text-xl md:text-2xl text-gray-300">
-        Desde pequeñas flotas hasta grandes empresas, tenemos la solución perfecta para optimizar la gestión de tus vehículos y maximizar tu eficiencia operativa.
+          <h2 className="section-title text-3xl sm:text-4xl md:text-5xl font-semibold text-white">Planes adaptados a tu flota</h2>
+          <p className="section-description mt-5 text-lg sm:text-xl md:text-2xl text-gray-300">
+            Desde pequeñas flotas hasta grandes empresas, tenemos la solución perfecta para optimizar la gestión de tus vehículos y maximizar tu eficiencia operativa.
 
-        </p>
+          </p>
         </div>
         <div className="flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-start lg:justify-center  lg:gap-8">
           {pricingTiers.map(
@@ -99,21 +99,21 @@ const Pricing = () => {
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-bold text-white/50">{title}</h3>
                   {popular && (
-                  <div className="inline-flex text-sm px-4 py-1.5 rounded-xl border border-white/20">
-                    <motion.span 
-                    animate={{
-                      backgroundPositionX: '100%',
-                    }}
-                    transition={{
-                      duration: 1,
-                      repeat: Infinity,
-                      ease: 'linear',
-                      repeatType: 'loop',
-                    }}
-                    className="bg-[linear-gradient(to_right,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF)] [background-size:200%] text-transparent bg-clip-text font-medium">
-                      Más popular
-                    </motion.span>
-                  </div>)
+                    <div className="inline-flex text-sm px-4 py-1.5 rounded-xl border border-white/20">
+                      <motion.span
+                        animate={{
+                          backgroundPositionX: '100%',
+                        }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: 'linear',
+                          repeatType: 'loop',
+                        }}
+                        className="bg-[linear-gradient(to_right,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF)] [background-size:200%] text-transparent bg-clip-text font-medium">
+                        Más popular
+                      </motion.span>
+                    </div>)
                   }
                 </div>
                 <div className="flex items-baseline gap-1 mt-4">
@@ -138,13 +138,13 @@ const Pricing = () => {
                     </li>
                   ))}
                   {notIncluded.map((item, index) => (
-                      <li
-                          key={`${item}-${index}`}
-                          className="text-sm flex items-center gap-4"
-                      >
-                        <FaTimes className="h-6 w-6 text-blue-500" />
-                        <span>{item}</span>
-                      </li>
+                    <li
+                      key={`${item}-${index}`}
+                      className="text-sm flex items-center gap-4"
+                    >
+                      <FaTimes className="h-6 w-6 text-red-500" />
+                      <span>{item}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
