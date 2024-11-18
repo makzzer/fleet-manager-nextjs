@@ -59,7 +59,8 @@ interface ProductoContextProps {
   fetchProducto: (id: string) => void;
   fetchProveedores: () => void;
   fetchProveedoresProducto: (id: string) => void;
-  createProducto: (producto: ProductoRequest) => Promise<void>;
+  // createProducto: (producto: ProductoRequest) => Promise<void>;
+  createProducto: (producto: Omit<ProductoRequest, "id">) => Promise<{ resultado: boolean; mensaje?: string}>;
   modifyProducto: (producto: ProductoRequest) => Promise<void>;
   exportProductoToExcel: () => void;
   associateProvider: (productId: string, providerId: string) => void;
@@ -118,7 +119,8 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     [api]
   );
 
-  const createProducto = async (producto: Omit<ProductoRequest, "id">) => {
+  const createProducto = async (producto: Omit<ProductoRequest, "id">) => 
+    {
     try {
       console.log("Producto a enviar:", producto);
       await api.post(apiProductosBackend, producto);
@@ -130,6 +132,10 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
         return { resultado: false, mensaje: error.response?.data.message };
       } else {
         console.error("Error desconocido al crear producto", error);
+        return {
+          resultado: false,
+          mensaje: "Ha ocurrido un error al crear el producto.",
+        };
       }
     }
   };
