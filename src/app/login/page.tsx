@@ -14,6 +14,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { redirect } from '../util/redirect';
 
 // Definimos el tema oscuro con Material UI
 const theme = createTheme({
@@ -67,7 +68,7 @@ const Login: React.FC = () => {
       console.log('Error:', error); // Debug por consola
     } else if (user) {
       setErrorMessage(''); // Limpiamos los errores si autenticamos correctamente
-      router.push("/dashboard")
+      router.push(redirect(user.roles[0].toUpperCase()))
       console.log('Usuario autenticado:', user); // Debug del usuario autenticado
     }
   };

@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from "react";
 import { FaCar, FaUsers, FaBars, FaBox, FaFileAlt, FaTimes, FaSellsy, FaCalendarAlt, FaTools } from "react-icons/fa";
 import { MdMonitor } from "react-icons/md";
-import { MdDashboard, MdBusinessCenter } from "react-icons/md"
+import { MdBusinessCenter } from "react-icons/md"
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 import React from "react";
@@ -143,14 +143,14 @@ const Sidebar = ({ onToggleSidebar }: SidebarProps) => {
 
 
             <nav className="space-y-8 ms-1 mt-20 bg-gray-900">
-              <Link href="/dashboard" onClick={handleLinkClick}>
+              {/* <Link href="/dashboard" onClick={handleLinkClick}>
                 <div className="flex items-center space-x-3 text-white hover:bg-gray-800 p-2 rounded-lg">
                   <MdDashboard />
                   <span className={`${isOpen ? "block" : "hidden"} lg:${isOpen ? "block" : "hidden"} lg:flex`}>
                     Dashboard
                   </span>
                 </div>
-              </Link>
+              </Link> */}
 
               {(hasRole("SUPERVISOR") || hasRole("MANAGER")) && (
                 <Link href="/centrodemonitoreo" onClick={handleLinkClick}>
