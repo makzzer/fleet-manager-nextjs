@@ -97,6 +97,9 @@ const CentroDeMonitoreoConTabs = () => {
   const [filtroEstadoReservas, setFiltroEstadoReservas] = useState<string>("Todos");
   const [filtroEstadoSimulador, setFiltroEstadoSimulador] = useState<string>("Todos");
 
+  // Estado para la barra de búsqueda por patente (usaremos el mismo estado en todas las pestañas)
+  const [busquedaPatente, setBusquedaPatente] = useState<string>("");
+
   // Opciones de estado para los filtros
   const opcionesEstado = ["Todos", "CREATED", "ACTIVATED", "COMPLETED", "CANCELED"];
 
@@ -128,7 +131,7 @@ const CentroDeMonitoreoConTabs = () => {
     };
 
     cargarDatos();
-  }, [activeTab,fetchReservas, fetchVehiculos]);
+  }, [activeTab, fetchReservas, fetchVehiculos]);
 
   // Procesar reservas y obtener coordenadas de los vehículos
   useEffect(() => {
@@ -273,6 +276,19 @@ const CentroDeMonitoreoConTabs = () => {
               <h2 className="text-2xl font-semibold mb-4">
                 Vehículos en viaje
               </h2>
+              {/* Barra de búsqueda por patente */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Buscar por patente:
+                </label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-700 text-white rounded-md p-2"
+                  placeholder="Ingresa la patente del vehículo"
+                  value={busquedaPatente}
+                  onChange={(e) => setBusquedaPatente(e.target.value)}
+                />
+              </div>
               {/* Filtro de estado */}
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">
@@ -294,9 +310,8 @@ const CentroDeMonitoreoConTabs = () => {
                 {vehiculosEnViaje.length > 0 ? (
                   vehiculosEnViaje
                     .filter((vehiculo) =>
-                      filtroEstadoVehiculos === "Todos"
-                        ? true
-                        : vehiculo.status === filtroEstadoVehiculos
+                      (filtroEstadoVehiculos === "Todos" || vehiculo.status === filtroEstadoVehiculos) &&
+                      vehiculo.id.toLowerCase().includes(busquedaPatente.toLowerCase())
                     )
                     .map((vehiculo) => (
                       <li
@@ -344,11 +359,10 @@ const CentroDeMonitoreoConTabs = () => {
             <div className="w-full lg:w-3/4 h-full relative z-0">
               {typeof window !== "undefined" && (
                 <MapCentroMonitoreo
-                //key={`map-centro-monitoreo-${activeTab}-${vehiculoSeleccionado}`}
+                  //key={`map-centro-monitoreo-${activeTab}-${vehiculoSeleccionado}`}
                   vehiculos={vehiculosEnViaje.filter((vehiculo) =>
-                    filtroEstadoVehiculos === "Todos"
-                      ? true
-                      : vehiculo.status === filtroEstadoVehiculos
+                    (filtroEstadoVehiculos === "Todos" || vehiculo.status === filtroEstadoVehiculos) &&
+                    vehiculo.id.toLowerCase().includes(busquedaPatente.toLowerCase())
                   )}
                   vehiculoSeleccionado={vehiculoSeleccionado}
                 />
@@ -365,6 +379,19 @@ const CentroDeMonitoreoConTabs = () => {
               <h2 className="text-2xl font-semibold mb-4">
                 Trazado de rutas
               </h2>
+              {/* Barra de búsqueda por patente */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Buscar por patente:
+                </label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-700 text-white rounded-md p-2"
+                  placeholder="Ingresa la patente del vehículo"
+                  value={busquedaPatente}
+                  onChange={(e) => setBusquedaPatente(e.target.value)}
+                />
+              </div>
               {/* Filtro de estado */}
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">
@@ -386,9 +413,8 @@ const CentroDeMonitoreoConTabs = () => {
                 {reservas.length > 0 ? (
                   reservas
                     .filter((reserva) =>
-                      filtroEstadoReservas === "Todos"
-                        ? true
-                        : reserva.status === filtroEstadoReservas
+                      (filtroEstadoReservas === "Todos" || reserva.status === filtroEstadoReservas) &&
+                      reserva.vehicle_id.toLowerCase().includes(busquedaPatente.toLowerCase())
                     )
                     .map((reserva) => (
                       <li
@@ -404,9 +430,6 @@ const CentroDeMonitoreoConTabs = () => {
                           </div>
                           <div className="text-sm text-gray-400">
                             Vehículo ID: {reserva.vehicle_id}
-                          </div>
-                          <div className="text-sm text-gray-400">
-                           {}
                           </div>
                           <div
                             className={`text-sm font-semibold ${
@@ -438,7 +461,8 @@ const CentroDeMonitoreoConTabs = () => {
             <div className="w-full lg:w-3/4 h-full relative z-0">
               {typeof window !== "undefined" && (
                 <MapContainer
-                key={`map-trazado-ruta-${activeTab}-${vehiculoConRuta ? vehiculoConRuta.id : ''}`}                  center={[-34.493027, -58.639397]}
+                  key={`map-trazado-ruta-${activeTab}-${vehiculoConRuta ? vehiculoConRuta.id : ''}`}
+                  center={[-34.493027, -58.639397]}
                   zoom={14}
                   scrollWheelZoom={false}
                   style={{ height: "100%", width: "100%" }}
@@ -466,6 +490,19 @@ const CentroDeMonitoreoConTabs = () => {
               <h2 className="text-2xl font-semibold mb-4">
                 Simulador de Viaje
               </h2>
+              {/* Barra de búsqueda por patente */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Buscar por patente:
+                </label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-700 text-white rounded-md p-2"
+                  placeholder="Ingresa la patente del vehículo"
+                  value={busquedaPatente}
+                  onChange={(e) => setBusquedaPatente(e.target.value)}
+                />
+              </div>
               {/* Filtro de estado */}
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">
@@ -489,9 +526,8 @@ const CentroDeMonitoreoConTabs = () => {
                 {reservas.length > 0 ? (
                   reservas
                     .filter((reserva) =>
-                      filtroEstadoSimulador === "Todos"
-                        ? true
-                        : reserva.status === filtroEstadoSimulador
+                      (filtroEstadoSimulador === "Todos" || reserva.status === filtroEstadoSimulador) &&
+                      reserva.vehicle_id.toLowerCase().includes(busquedaPatente.toLowerCase())
                     )
                     .map((reserva) => (
                       <li
@@ -503,10 +539,8 @@ const CentroDeMonitoreoConTabs = () => {
                       >
                         <div className="flex flex-col items-center justify-between">
                           <div className="text-lg font-bold">
-                            
                             Reserva: {reserva.id.slice(0,8)}
                           </div>
-                          
                           <div className="text-sm text-gray-400">
                             Vehículo ID: {reserva.vehicle_id}
                           </div>
@@ -545,7 +579,7 @@ const CentroDeMonitoreoConTabs = () => {
                 coordenadasSimulador.vehicleId && (
                   <div style={{ height: "100%", width: "100%" }}>
                     <MapSimuladorVehiculo
-                    key={`map-simulador-${activeTab}-${coordenadasSimulador.vehicleId}`}
+                      key={`map-simulador-${activeTab}-${coordenadasSimulador.vehicleId}`}
                       startPosition={coordenadasSimulador.start}
                       endPosition={coordenadasSimulador.end}
                       vehicleId={coordenadasSimulador.vehicleId}
