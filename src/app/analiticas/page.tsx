@@ -142,7 +142,7 @@ const Analytics = () => {
 
   const renderStatCards = (charts: ProcessedChartData[]) => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {charts.map((chart, index) => {
           const valor: number = chart.data.datasets.reduce((acc, dataset) => {
             if (dataset.data && Array.isArray(dataset.data)) {
