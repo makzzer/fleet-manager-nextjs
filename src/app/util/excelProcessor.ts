@@ -31,6 +31,17 @@ export interface FormatedProveedor {
 }
 
 export interface FormatedProducto {
+  // name: string;
+  // brand: string;
+  // description: string;
+  // category: string;
+  // quantity: number;
+  // measurement: string;
+  // price: number;
+  // provider_id: string;
+  // min_stock: number;
+
+  id: string;
   name: string;
   brand: string;
   description: string;
@@ -38,8 +49,10 @@ export interface FormatedProducto {
   quantity: number;
   measurement: string;
   price: number;
-  provider_id: string;
-  min_stock: number;
+  providerId: string;
+  minStock: number;
+  autoPurchase: string;
+  enterpriseId: string;
 }
 
 export const processVehicleFile = (file: File): Promise<FormatedVehiculo[]> => {

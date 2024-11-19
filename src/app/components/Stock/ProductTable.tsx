@@ -6,6 +6,17 @@ import { useRouter } from "next/navigation";
 import QRCode from "react-qr-code"; // Importamos el componente QRCode
 
 interface Producto {
+  // id: string;
+  // name: string;
+  // brand: string;
+  // description: string;
+  // category: string;
+  // quantity: number;
+  // measurement: string;
+  // price: number;
+  // preference_provider_id: string;
+  // min_stock: number;
+
   id: string;
   name: string;
   brand: string;
@@ -14,8 +25,10 @@ interface Producto {
   quantity: number;
   measurement: string;
   price: number;
-  preference_provider_id: string;
-  min_stock: number;
+  providerId: string;
+  minStock: number;
+  autoPurchase: string;
+  enterpriseId: string;
 }
 
 interface ProductTableProps {

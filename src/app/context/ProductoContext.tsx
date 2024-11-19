@@ -25,8 +25,10 @@ export interface Producto {
   quantity: number;
   measurement: string;
   price: number;
-  preference_provider_id: string;
-  min_stock: number;
+  providerId: string;
+  minStock: number;
+  autoPurchase: string;
+  enterpriseId: string;
 }
 
 export interface ProductoRequest {

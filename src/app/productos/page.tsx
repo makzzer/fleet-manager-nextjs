@@ -254,7 +254,18 @@ const Stock = () => {
       for (const formatedProduct of formatedProducts) {
         try {
           const product = {
-            ...formatedProduct,
+            // ...formatedProduct,
+            name: formatedProduct.name, 
+            brand: formatedProduct.brand, 
+            description: formatedProduct.description, 
+            category: formatedProduct.category, 
+            quantity: formatedProduct.quantity, 
+            measurement: formatedProduct.measurement, 
+            price: formatedProduct.price, 
+            providerId: formatedProduct.providerId, 
+            minStock: formatedProduct.minStock, 
+            autoPurchase: formatedProduct.autoPurchase, 
+            enterpriseId: formatedProduct.enterpriseId
           };
           const result = await createProducto(product);
           if (result) {
