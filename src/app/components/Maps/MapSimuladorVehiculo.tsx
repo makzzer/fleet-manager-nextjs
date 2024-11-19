@@ -21,6 +21,20 @@ const customMarker = new L.Icon({
   shadowSize: [41, 41],
 });
 
+// **Nuevo icono para el vehículo**
+const vehicleIcon = L.divIcon({
+  html: `<div style="
+    background-color: orange;
+    border: 2px solid red;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  "></div>`,
+  className: '',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
+
 interface MapSimuladorVehiculoProps {
   startPosition: [number, number];
   endPosition: [number, number];
@@ -86,7 +100,7 @@ const MapSimuladorVehiculo = ({
         const coordinates = route.coordinates;
 
         if (!vehicleMarkerRef.current) {
-          vehicleMarkerRef.current = L.marker(startPosition, { icon: customMarker }).addTo(mapRef.current!);
+          vehicleMarkerRef.current = L.marker(startPosition, { icon: vehicleIcon }).addTo(mapRef.current!);
 
           // Añadimos el tooltip permanente con el ID del vehículo
           vehicleMarkerRef.current.bindTooltip(vehicleId, {
