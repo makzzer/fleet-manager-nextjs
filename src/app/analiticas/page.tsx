@@ -23,6 +23,7 @@ import BarChart from "../components/Charts/BarChart";
 import StatCard from "../components/StatCard";
 import { FaBox, FaCalendarAlt, FaCar, FaFileAlt, FaTools } from "react-icons/fa";
 import DoughnutChart from "../components/Charts/DoughnutChart";
+import { motion } from "framer-motion";
 
 interface ProcessedChartData {
   origin: string;
@@ -34,6 +35,7 @@ interface ProcessedChartData {
       label: string;
       data: number[] | number;
       backgroundColor?: string | string[];
+      time?: string;
     }[];
   };
 }
@@ -66,7 +68,11 @@ const Analytics = () => {
   }, [fetchAnalytics]);
 
   if (!analytics) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   const modulesTitleEsp = (module: string) => {
@@ -118,28 +124,25 @@ const Analytics = () => {
   const origins = ["CONTROLS", "ORDERS", "RESERVES", "ALERTS", "VEHICLES", "PRODUCTS"];
   const types = ["value", "bar", "pie"] as const;
 
-  const groupChartsByOriginAndType = (
+  const groupChartsByTypeAndOrigin = (
     processedChartData: ProcessedChartData[]
   ) => {
-    return origins.reduce((acc, origin) => {
-      const chartsForOrigin = processedChartData.filter(
-        (chart) => chart.origin === origin
-      );
-
-      acc[origin] = types.reduce((typeAcc, type) => {
-        typeAcc[type] = chartsForOrigin.filter((chart) => chart.type === type);
-        return typeAcc;
-      }, {} as Record<(typeof types)[number], ProcessedChartData[]>);
-
+    return types.reduce((acc, type) => {
+      acc[type] = origins.reduce((originAcc, origin) => {
+        originAcc[origin] = processedChartData.filter(
+          (chart) => chart.type === type && chart.origin === origin
+        );
+        return originAcc;
+      }, {} as Record<string, ProcessedChartData[]>);
       return acc;
-    }, {} as Record<string, Record<(typeof types)[number], ProcessedChartData[]>>);
+    }, {} as Record<(typeof types)[number], Record<string, ProcessedChartData[]>>);
   };
 
-  const groupedCharts = groupChartsByOriginAndType(processedChartData);
+  const groupedCharts = groupChartsByTypeAndOrigin(processedChartData);
 
   const renderStatCards = (charts: ProcessedChartData[]) => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {charts.map((chart, index) => {
           const valor: number = chart.data.datasets.reduce((acc, dataset) => {
             if (dataset.data && Array.isArray(dataset.data)) {
@@ -149,13 +152,22 @@ const Analytics = () => {
             }
           }, 0);
 
+          const timeUnit = chart.data.datasets[0].time;
+
           return (
+            <motion.div
+            key={`${chart.origin}-${chart.type}-${index}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
             <StatCard
-              key={`${chart.origin}-${chart.type}-${index}`}
               title={chart.title}
               value={valor}
+              unit={timeUnit}
               icon={modulesIcons(chart.origin)}
             />
+          </motion.div>
           );
         })}
       </div>
@@ -188,12 +200,16 @@ const Analytics = () => {
     );
   };
 
-  console.log(groupedCharts["PRODUCTS"]);
-
   return (
     <ProtectedRoute requiredModule="ANALYTICS">
       <div className="p-6 bg-gray-900 min-h-screen text-white">
         <h1 className="md:text-4xl text-3xl font-bold mb-8 text-blue-400">Analíticas</h1>
+        
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold mb-6">Estadísticas Generales</h2>
+          {renderStatCards(Object.values(groupedCharts.value).flat())}
+        </div>
+
         <div className="space-y-12">
           {origins.map((origin) => (
             <div key={origin} className="bg-gray-800/50 p-6 rounded-lg shadow-lg">
@@ -202,22 +218,16 @@ const Analytics = () => {
                 <span className="ml-2">{modulesTitleEsp(origin)}</span>
               </h2>
               <div className="space-y-8">
-                {groupedCharts[origin].value.length > 0 && (
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4">Estadísticas</h3>
-                    {renderStatCards(groupedCharts[origin].value)}
-                  </div>
-                )}
-                {groupedCharts[origin].bar.length > 0 && (
+                {groupedCharts.bar[origin].length > 0 && (
                   <div>
                     <h3 className="text-xl font-semibold mb-4">Gráficos de Barras</h3>
-                    {renderBarCharts(groupedCharts[origin].bar)}
+                    {renderBarCharts(groupedCharts.bar[origin])}
                   </div>
                 )}
-                {groupedCharts[origin].pie.length > 0 && (
+                {groupedCharts.pie[origin].length > 0 && (
                   <div>
                     <h3 className="text-xl font-semibold mb-4">Gráficos Circulares</h3>
-                    {renderDoughnutCharts(groupedCharts[origin].pie)}
+                    {renderDoughnutCharts(groupedCharts.pie[origin])}
                   </div>
                 )}
               </div>

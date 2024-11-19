@@ -11,6 +11,7 @@ interface ProcessedChartData {
       label: string;
       data: number[] | number;
       backgroundColor?: string | string[];
+      time?: string;
     }[];
   };
 }
@@ -136,11 +137,33 @@ function processPieChartData(chart: AnalyticsData): ProcessedChartData | null {
 function processValueData(chart: AnalyticsData): ProcessedChartData | null {
   if (chart.values.length === 0) return null;
 
-  const value =
-    chart.values[0].quantity ||
-    (chart.values[0].avg ? processInterval(chart.values[0].avg) : 0) ||
-    chart.values[0].count ||
-    0;
+  const avgValue = chart.values[0].avg;
+  let value: number;
+  let timeUnit: string = "";
+
+  if (avgValue && avgValue.type === "interval") {
+    if (avgValue.years > 0) {
+      value = avgValue.years;
+      timeUnit = "Años";
+    } else if (avgValue.months > 0) {
+      value = avgValue.months;
+      timeUnit = "Meses";
+    } else if (avgValue.days > 0) {
+      value = avgValue.days;
+      timeUnit = "Días";
+    } else if (avgValue.hours > 0) {
+      value = avgValue.hours;
+      timeUnit = "Horas";
+    } else if (avgValue.minutes > 0) {
+      value = avgValue.minutes;
+      timeUnit = "Minutos";
+    } else {
+      value = Math.round(avgValue.seconds);
+      timeUnit = "Segundos";
+    }
+  } else {
+    value = chart.values[0].quantity || chart.values[0].count || 0;
+  }
 
   return {
     origin: chart.origin,
@@ -152,6 +175,7 @@ function processValueData(chart: AnalyticsData): ProcessedChartData | null {
         {
           label: "Valor",
           data: value,
+          time: timeUnit
         },
       ],
     },
