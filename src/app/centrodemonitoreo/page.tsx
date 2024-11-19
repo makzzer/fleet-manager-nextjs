@@ -399,10 +399,13 @@ const CentroDeMonitoreoConTabs = () => {
                       >
                         <div className="flex flex-col items-center justify-between">
                           <div className="text-lg font-bold">
-                            Reserva {reserva.id}
+                            Reserva: {reserva.id.slice(0,8)}
                           </div>
                           <div className="text-sm text-gray-400">
                             Vehículo ID: {reserva.vehicle_id}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                           {}
                           </div>
                           <div
                             className={`text-sm font-semibold ${
@@ -499,8 +502,10 @@ const CentroDeMonitoreoConTabs = () => {
                       >
                         <div className="flex flex-col items-center justify-between">
                           <div className="text-lg font-bold">
-                            Reserva {reserva.id}
+                            
+                            Reserva: {reserva.id.slice(0,8)}
                           </div>
+                          
                           <div className="text-sm text-gray-400">
                             Vehículo ID: {reserva.vehicle_id}
                           </div>
