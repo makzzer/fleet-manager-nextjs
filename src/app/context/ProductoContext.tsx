@@ -14,6 +14,7 @@ import { useApi } from "./ApiContext";
 
 const apiProductosBackend = `https://fleet-manager-vrxj.onrender.com/api/products`;
 const apiProveedoresBackend = `https://fleet-manager-vrxj.onrender.com/api/providers`;
+const apiEmpresasBackend = `https://fleet-manager-vrxj.onrender.com/api/enterprises`;
 
 export interface Producto {
   id: string;
@@ -37,8 +38,10 @@ export interface ProductoRequest {
   quantity: number;
   measurement: string;
   price: number;
-  provider_id: string;
-  min_stock: number;
+  providerId: string;
+  minStock: number;
+  autoPurchase: string;
+  enterpriseId: string;
 }
 
 interface Proveedor {
@@ -50,18 +53,24 @@ interface Proveedor {
   address: string;
 }
 
+export interface Enterprise {
+  id: string;
+  name: string;
+}
+
 interface ProductoContextProps {
   productos: Producto[];
   producto: Producto | null;
   proveedores: Proveedor[];
+  empresas: Enterprise[];
   proveedoresProducto: Proveedor[];
   fetchProductos: () => void;
   fetchProducto: (id: string) => void;
   fetchProveedores: () => void;
   fetchProveedoresProducto: (id: string) => void;
+  fetchEmpresas: () => void;
   // createProducto: (producto: ProductoRequest) => Promise<void>;
   createProducto: (producto: Omit<ProductoRequest, "id">) => Promise<{ resultado: boolean; mensaje?: string}>;
-  modifyProducto: (producto: ProductoRequest) => Promise<void>;
   exportProductoToExcel: () => void;
   associateProvider: (productId: string, providerId: string) => void;
   removeProvider: (productId: string, providerId: string) => void;
@@ -83,6 +92,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [producto, setProducto] = useState<Producto | null>(null);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+  const [empresas, setEmpresas] = useState<Enterprise[]>([]);
   const [proveedoresProducto, setProveedoresProducto] = useState<Proveedor[]>(
     []
   );
@@ -129,6 +139,8 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error("Error al crear producto:", error.response.data);
+        console.log(error.response?.data.message);
+        console.log(producto);
         return { resultado: false, mensaje: error.response?.data.message };
       } else {
         console.error("Error desconocido al crear producto", error);
@@ -138,28 +150,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
         };
       }
     }
-  };
-
-  const modifyProducto = async (productoEditado: ProductoRequest) => {
-    try {
-      console.log("consol 2- producto a modificar: ", productoEditado);
-      // Realiza la solicitud PUT para modificar el producto en el backend
-      await api.put(`${apiProductosBackend}/${productoEditado.id}`, productoEditado);
-  
-      // Actualiza localmente los datos si la respuesta es exitosa
-      setProductos((prevProductos) =>
-        prevProductos.map((producto) =>
-          producto.id === productoEditado.id
-            ? { ...producto, ...productoEditado }
-            : producto
-        )
-      );
-  
-      console.log(`consol 3- El Producto con ID ${productoEditado.id} ha sido editado en el backend.`);
-    } catch (error) {
-      console.error("Error editando producto en el backend:", error);
-    }
-  };  
+  }; 
 
   const fetchProveedores = useCallback(async () => {
     try {
@@ -184,6 +175,15 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     },
     [api]
   );
+
+  const fetchEmpresas = useCallback(async () => {
+    try {
+      const response = await api.get(apiEmpresasBackend);
+      setEmpresas(response.data);
+    } catch (error) {
+      console.error("Error al obtener las empresas:", error);
+    }
+  }, [api]);
 
   const associateProvider = async (productId: string, providerId: string) => {
     try {
@@ -236,13 +236,15 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
         productos,
         producto,
         proveedores,
+        empresas, 
         proveedoresProducto,
         fetchProductos,
         fetchProducto,
         fetchProveedores,
         fetchProveedoresProducto,
+        fetchEmpresas,
         createProducto,
-        modifyProducto, exportProductoToExcel,
+        exportProductoToExcel,
         associateProvider,
         removeProvider,
       }}

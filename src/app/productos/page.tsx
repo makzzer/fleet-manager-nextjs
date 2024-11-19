@@ -63,10 +63,11 @@ const Stock = () => {
   const {
     productos,
     proveedores,
+    empresas,
     fetchProductos,
     fetchProveedores,
+    fetchEmpresas,
     createProducto,
-    modifyProducto,
     exportProductoToExcel,
   } = useProducto();
   const [isLoading, setIsLoading] = useState(true); // Estado de carga para el uso del placholder
@@ -94,6 +95,15 @@ const Stock = () => {
     };
     loadProveedores();
   }, [fetchProveedores]);
+
+  useEffect(() => {
+    const loadEmpresas = async () => {
+      setIsLoading(true);
+      await fetchEmpresas();
+      setIsLoading(false);
+    };
+    loadEmpresas();
+  }, [fetchEmpresas]);
 
   // función para filtrar tildes y caracteres especiales en el buscador.
   const removeAccents = (str: string) => {
@@ -402,6 +412,12 @@ const Stock = () => {
       )
       .join("");
 
+    const enterprisesOptions = empresas
+      .map((enterprise) => 
+        `<option value="${enterprise.id}">${enterprise.name}</option>`
+      )
+      .join("");
+
     Swal.fire({
       title: "Agregar Producto",
       html: `
@@ -436,6 +452,15 @@ const Stock = () => {
                ${proveedoresOptions}
             </select>
             <input type="text" id="minStock" class="swal2-input" placeholder="Stock mínimo">
+            <select id="autoPurchase" class="swal2-select">
+              <option value="" diasbled selected>Seleccione una opción</option>
+               <option value="ENABLED" selected>Activado</option>
+               <option value="DISABLED" selected>Desactivado</option> 
+            </select>
+            <select id="enterpriseId" class="swal2-select">
+              <option value="" selected>Seleccione la empresa</option>
+               ${enterprisesOptions}
+            </select>
           `,
       confirmButtonText: "Agregar",
       cancelButtonText: "Cancelar",
@@ -467,6 +492,12 @@ const Stock = () => {
         const minStockElement = document.getElementById(
           "minStock"
         ) as HTMLInputElement;
+        const autoPurchaseElement = document.getElementById(
+          "autoPurchase"
+        ) as HTMLInputElement;
+        const enterpriseIdElement = document.getElementById(
+          "enterpriseId"
+        ) as HTMLInputElement;
 
         const name = nameElement?.value;
         const brand = brandElement?.value;
@@ -477,6 +508,8 @@ const Stock = () => {
         const price = priceElement?.value;
         const preferenceProviderId = preferenceProviderIdElement?.value;
         const minStock = minStockElement?.value;
+        const autoPurchase = autoPurchaseElement?.value;
+        const enterpriseId = enterpriseIdElement?.value;
 
         if (
           !name ||
@@ -487,7 +520,9 @@ const Stock = () => {
           !measurement ||
           !price ||
           !preferenceProviderId ||
-          !minStock
+          !minStock ||
+          // !autoPurchase ||
+          !enterpriseId
         ) {
           Swal.showValidationMessage("Completa todos los campos");
           return null;
@@ -503,60 +538,34 @@ const Stock = () => {
           price,
           preferenceProviderId,
           minStock,
+          autoPurchase,
+          enterpriseId,
         };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        // Buscar un producto en la lista que coincida con los atributos ingresados
-        const existingProduct = productos.find(
-          (product) =>
-            product.name === result.value.name &&
-            product.brand === result.value.brand &&
-            product.category === result.value.category
-        );
-  
-        if (existingProduct) {
-          // Si el producto ya existe, incrementar su cantidad
-          const updatedProduct = {
-            ...existingProduct,
-            quantity: existingProduct.quantity + result.value.quantity,
-            provider_id: existingProduct.preference_provider_id,  // Asegurarse de que tiene provider_id
-          };
+        const producto = {
+          id: result.value.id,
+          name: result.value.name,
+          brand: result.value.brand,
+          description: result.value.description,
+          category: result.value.category,
+          quantity: result.value.quantity,
+          measurement: result.value.measurement,
+          price: result.value.price,
+          providerId: result.value.preferenceProviderId,
+          minStock: result.value.minStock,
+          autoPurchase: result.value.autoPurchase,
+          enterpriseId: result.value.enterpriseId,
+        };
 
-          console.log("consol de modificacion para producto: ", existingProduct, "id: ", existingProduct.id);
-  
-          modifyProducto(updatedProduct);
-  
-          Swal.fire({
-            title: "Producto actualizado",
-            text: `La cantidad del producto '${existingProduct.name}' ha sido incrementada en ${result.value.quantity}.`,
-            icon: "success",
-          });
-        } else {
-          // Si el producto no existe, crear un nuevo producto
-          const nuevoProducto = {
-            id: "", // Usar un valor vacío o nulo si no tienes la ID al momento de crear
-            name: result.value.name,
-            brand: result.value.brand,
-            description: result.value.description,
-            category: result.value.category,
-            quantity: result.value.quantity,
-            measurement: result.value.measurement,
-            price: result.value.price,
-            provider_id: result.value.provider_id,
-            min_stock: result.value.min_stock,
-          };
+        createProducto(producto);
 
-          console.log("consol de producto creado: ", nuevoProducto.id)
-  
-          createProducto(nuevoProducto);
-  
-          Swal.fire({
-            title: "Producto agregado",
-            text: "El nuevo producto ha sido creado y registrado correctamente.",
-            icon: "success",
-          });
-        }
+        Swal.fire({
+          title: "Producto agregado con éxito",
+          text: "El nuevo producto ha sido creado y registrado correctamente.",
+          icon: "success",
+        });
       }
     });
   };
