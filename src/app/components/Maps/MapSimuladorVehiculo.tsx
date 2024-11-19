@@ -1,5 +1,3 @@
-// MapSimuladorVehiculo.tsx
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -19,14 +17,6 @@ const customMarker = new L.Icon({
   iconRetinaUrl: markerRetina.src,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-const customVehicle = new L.Icon({
-  iconUrl: '/icons/rocket.png',
-  iconSize: [40, 40],
-  iconAnchor: [20, 40],
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
@@ -96,7 +86,15 @@ const MapSimuladorVehiculo = ({
         const coordinates = route.coordinates;
 
         if (!vehicleMarkerRef.current) {
-          vehicleMarkerRef.current = L.marker(startPosition, { icon: customVehicle }).addTo(mapRef.current!);
+          vehicleMarkerRef.current = L.marker(startPosition, { icon: customMarker }).addTo(mapRef.current!);
+
+          // Añadimos el tooltip permanente con el ID del vehículo
+          vehicleMarkerRef.current.bindTooltip(vehicleId, {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -10],
+            className: 'vehicle-id-tooltip',
+          });
         }
 
         let index = 0;
@@ -124,7 +122,7 @@ const MapSimuladorVehiculo = ({
           } else {
             clearInterval(intervalRef.current);
           }
-        }, 1000);
+        }, 200);
       });
     }
   };
@@ -167,7 +165,10 @@ const MapSimuladorVehiculo = ({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; OpenStreetMap contributors'
           />
+          {/* Marcador de inicio */}
           <Marker position={startPosition} icon={customMarker} />
+          {/* Marcador de destino */}
+          <Marker position={endPosition} icon={customMarker} />
         </MapContainer>
       </div>
 

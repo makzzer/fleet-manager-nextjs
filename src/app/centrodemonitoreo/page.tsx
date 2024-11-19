@@ -128,7 +128,7 @@ const CentroDeMonitoreoConTabs = () => {
     };
 
     cargarDatos();
-  }, [fetchReservas, fetchVehiculos]);
+  }, [activeTab,fetchReservas, fetchVehiculos]);
 
   // Procesar reservas y obtener coordenadas de los vehículos
   useEffect(() => {
@@ -344,6 +344,7 @@ const CentroDeMonitoreoConTabs = () => {
             <div className="w-full lg:w-3/4 h-full relative z-0">
               {typeof window !== "undefined" && (
                 <MapCentroMonitoreo
+                //key={`map-centro-monitoreo-${activeTab}-${vehiculoSeleccionado}`}
                   vehiculos={vehiculosEnViaje.filter((vehiculo) =>
                     filtroEstadoVehiculos === "Todos"
                       ? true
@@ -437,7 +438,7 @@ const CentroDeMonitoreoConTabs = () => {
             <div className="w-full lg:w-3/4 h-full relative z-0">
               {typeof window !== "undefined" && (
                 <MapContainer
-                  center={[-34.493027, -58.639397]}
+                key={`map-trazado-ruta-${activeTab}-${vehiculoConRuta ? vehiculoConRuta.id : ''}`}                  center={[-34.493027, -58.639397]}
                   zoom={14}
                   scrollWheelZoom={false}
                   style={{ height: "100%", width: "100%" }}
@@ -544,6 +545,7 @@ const CentroDeMonitoreoConTabs = () => {
                 coordenadasSimulador.vehicleId && (
                   <div style={{ height: "100%", width: "100%" }}>
                     <MapSimuladorVehiculo
+                    key={`map-simulador-${activeTab}-${coordenadasSimulador.vehicleId}`}
                       startPosition={coordenadasSimulador.start}
                       endPosition={coordenadasSimulador.end}
                       vehicleId={coordenadasSimulador.vehicleId}
