@@ -173,11 +173,11 @@ const Proveedores = () => {
           "max-w-lg w-full flex flex-col justify-between bg-gray-800 p-8 rounded-2xl shadow-2xl space-y-6 transition-all duration-500 ease-in-out transform hover:scale-[1.01]",
         title: "text-4xl font-bold mb-4 text-blue-500",
         confirmButton:
-          "px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 ml-auto mr-4",
+          "w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-blue-600 rounded-lg hover:bg-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95",
         cancelButton:
-          "px-6 py-2 bg-gray-500 rounded-lg hover:bg-gray-700 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 ml-4",
+          "w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-gray-500 rounded-lg hover:bg-gray-700 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95",
         actions:
-          "flex justify-between w-full px-24 py-2 sm: flex justify-between w-full px-16 py-2",
+          "flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 sm:space-x-4",
       },
 
       preConfirm: async () => {
@@ -379,15 +379,13 @@ const Proveedores = () => {
           // Actualizar la barra de progreso
           Swal.update({
             title: "Procesando vehículos...",
-            html: `Procesados: ${successCount + failedCount} de ${
-              formatedProviders.length
-            }
+            html: `Procesados: ${successCount + failedCount} de ${formatedProviders.length
+              }
                    <div class="progress-bar-container">
-                     <div class="progress-bar" style="width: ${
-                       ((successCount + failedCount) /
-                         formatedProviders.length) *
-                       100
-                     }%"></div>
+                     <div class="progress-bar" style="width: ${((successCount + failedCount) /
+                formatedProviders.length) *
+              100
+              }%"></div>
                    </div>`,
           });
         } catch (error) {

@@ -276,15 +276,13 @@ const Stock = () => {
           // Actualizar la barra de progreso
           Swal.update({
             title: "Procesando vehículos...",
-            html: `Procesados: ${successCount + failedCount} de ${
-              formatedProducts.length
-            }
+            html: `Procesados: ${successCount + failedCount} de ${formatedProducts.length
+              }
                    <div class="progress-bar-container">
-                     <div class="progress-bar" style="width: ${
-                       ((successCount + failedCount) /
-                         formatedProducts.length) *
-                       100
-                     }%"></div>
+                     <div class="progress-bar" style="width: ${((successCount + failedCount) /
+                formatedProducts.length) *
+              100
+              }%"></div>
                    </div>`,
           });
         } catch (error) {
@@ -330,35 +328,6 @@ const Stock = () => {
     setSelectedCategory(selectedCategory);
   };
 
-  // Función para escanear códigos QR
-  const handleScanQRClick = () => {
-    MySwal.fire({
-      title: "Escanear Código QR",
-      html: (
-        <div style={{ width: "100%", height: "400px" }}>
-          <QrScanner
-            onScan={(resultText: string) => {
-              if (resultText) {
-                MySwal.close();
-                router.push(resultText);
-              }
-            }}
-            onError={(error: unknown) => {
-              console.error(`Error al escanear: ${error}`);
-            }}
-          />
-        </div>
-      ),
-      showCancelButton: true,
-      showConfirmButton: false,
-      cancelButtonText: "Cancelar",
-      customClass: {
-        popup: "bg-gray-900 text-white",
-        title: "text-white",
-        cancelButton: "bg-red-500 text-white",
-      },
-    });
-  };
 
   const handleDesplegarOpciones = () => {
     Swal.fire({
@@ -478,15 +447,16 @@ const Stock = () => {
 
       customClass: {
         popup:
-          "max-w-lg w-full flex flex-col justify-between bg-gray-800 p-8 rounded-2xl shadow-2xl space-y-6 transition-all duration-500 ease-in-out transform hover:scale-[1.01]",
-        title: "text-4xl font-bold mb-4 text-blue-500",
+          "max-w-lg w-full flex flex-col justify-between bg-gray-800 p-4 sm:p-8 rounded-2xl shadow-2xl space-y-4 sm:space-y-6 transition-all duration-500 ease-in-out transform hover:scale-[1.01]",
+        title: "text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-blue-500",
         confirmButton:
-          "px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 ml-auto mr-4",
+          "w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-blue-500 rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95",
         cancelButton:
-          "px-6 py-2 bg-gray-500 rounded-lg hover:bg-gray-700 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 ml-4",
+          "w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-gray-500 rounded-lg hover:bg-gray-700 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 mt-2 sm:mt-0",
         actions:
-          "flex justify-between w-full px-24 py-2 sm: flex justify-between w-full px-16 py-2",
+          "flex flex-col sm:flex-row justify-between space-y-2 sm:space-y-0 sm:space-x-4",
       },
+
       preConfirm: () => {
         const nameElement = document.getElementById("name") as HTMLInputElement;
         const brandElement = document.getElementById(
