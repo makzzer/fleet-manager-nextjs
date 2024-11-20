@@ -25,7 +25,7 @@ const AlertList = () => {
         <h2 className="text-3xl font-bold mb-8 text-blue-400">Alertas</h2>
 
         {alerts.length > 0 ? (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 transition-all duration-500 ease-in-out">
             {alerts.map((alert) => (
               <AlertCard
                 key={alert.id}

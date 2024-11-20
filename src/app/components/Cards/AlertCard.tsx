@@ -38,19 +38,20 @@ const AlertCard: React.FC<AlertCardProps> = ({
   };
 
   const handleAcknowledgeClick = () => {
-    // Iniciar la animación de desvanecimiento
+    // Iniciar la animación de desvanecimiento y desplazamiento
     setIsVisible(false);
     // Esperar a que termine la animación antes de llamar a onAcknowledge
     setTimeout(() => {
       onAcknowledge();
-    }, 300); // Duración de la transición en milisegundos
+    }, 500); // Duración de la transición en milisegundos (ajustada a 500ms)
   };
 
   return (
     <div
-      className={`bg-gray-800 p-4 border-l-4 ${getPriorityColor()} shadow rounded-lg transform transition-all duration-300 ${
-        isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-      }`}
+      className={`bg-gray-800 p-4 border-l-4 ${getPriorityColor()} shadow rounded-lg
+      transition-all duration-500 ease-in-out
+      ${isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-5 scale-95"}
+      `}
     >
       <h4 className="font-bold text-lg text-white">{title}</h4>
       <p className="text-sm text-gray-300 mt-1">{description}</p>
