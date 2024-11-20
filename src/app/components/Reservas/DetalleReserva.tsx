@@ -215,7 +215,7 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
               )
             }
           >
-            Ver Controles
+            Estado de Controles
           </button>
 
 
