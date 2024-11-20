@@ -395,7 +395,7 @@ export const ControlCreation: React.FC = () => {
   return (
     <button
       onClick={handleAgregarControl}
-      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center gap-2"
+      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center justify-center gap-2"
     >
       <FaPlus />
       Agregar Control
