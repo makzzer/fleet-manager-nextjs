@@ -52,21 +52,23 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+
   // Función para reconocer una alerta
   const acknowledgeAlert = useCallback(async (id: string) => {
     try {
-      await api.patch(`${apiAlertsBackend}/${id}`, { acknowledge: true });
-      // Actualizar la alerta localmente
-      setAlerts((prevAlerts) =>
-        prevAlerts.map((alert) =>
-          alert.id === id ? { ...alert, acknowledge: true } : alert
-        )
-      );
+      // Hacer una solicitud PUT al endpoint /alerts/{id}/ack con { acknowledge: true } en el cuerpo
+      await api.put(`/alerts/${id}/ack`, { acknowledge: true });
+
+      // Eliminar la alerta del estado local con una animación
+      setAlerts((prevAlerts) => prevAlerts.filter((alert) => alert.id !== id));
     } catch (error) {
       console.error("Error al reconocer la alerta:", error);
     }
-  }, []);
+  }, [api]);
 
+
+
+  
   // Función para filtrar alertas por prioridad
   const filterAlertsByPriority = (priority: "HIGH" | "MEDIUM" | "LOW"): Alert[] => {
     return alerts.filter((alert) => alert.priority === priority);
