@@ -260,11 +260,9 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
                   setStartDate(date);
                   setSelectedVehicle(null);
                 }}
-                dateFormat="dd/MM/yyyy HH:mm"
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                placeholderText="Selecciona fecha y hora de inicio"
+                //dateFormat="dd/MM/yyyy HH:mm"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Selecciona fecha de inicio"
                 className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 locale={es}
                 minDate={new Date()}
@@ -282,9 +280,6 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
                   setSelectedVehicle(null);
                 }}
                 dateFormat="dd/MM/yyyy HH:mm"
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
                 placeholderText="Selecciona fecha y hora de fin"
                 className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 locale={es}

@@ -67,7 +67,8 @@ const MapSimuladorVehiculo = ({
 
     if (mapRef.current) {
       if (routingControlRef.current) {
-        mapRef.current.removeControl(routingControlRef.current);
+        //mapRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current.remove()
       }
 
       routingControlRef.current = (L as any).Routing.control({
@@ -154,7 +155,8 @@ const MapSimuladorVehiculo = ({
         clearInterval(intervalRef.current);
       }
       if (routingControlRef.current && mapRef.current) {
-        mapRef.current.removeControl(routingControlRef.current);
+        //mapRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current.remove()
         routingControlRef.current = null;
       }
       if (vehicleMarkerRef.current && mapRef.current) {
