@@ -255,17 +255,17 @@ const Stock = () => {
         try {
           const product = {
             // ...formatedProduct,
-            name: formatedProduct.name, 
-            brand: formatedProduct.brand, 
-            description: formatedProduct.description, 
-            category: formatedProduct.category, 
-            quantity: formatedProduct.quantity, 
-            measurement: formatedProduct.measurement, 
-            price: formatedProduct.price, 
-            providerId: formatedProduct.providerId, 
-            minStock: formatedProduct.minStock, 
-            autoPurchase: formatedProduct.autoPurchase, 
-            enterpriseId: formatedProduct.enterpriseId
+            name: formatedProduct.name,
+            brand: formatedProduct.brand,
+            description: formatedProduct.description,
+            category: formatedProduct.category,
+            quantity: formatedProduct.quantity,
+            measurement: formatedProduct.measurement,
+            price: formatedProduct.price,
+            providerId: formatedProduct.providerId,
+            minStock: formatedProduct.minStock,
+            autoPurchase: formatedProduct.autoPurchase,
+            enterpriseId: formatedProduct.enterpriseId,
           };
           const result = await createProducto(product);
           if (result) {
@@ -424,59 +424,69 @@ const Stock = () => {
       .join("");
 
     const enterprisesOptions = empresas
-      .map((enterprise) => 
-        `<option value="${enterprise.id}">${enterprise.name}</option>`
+      .map(
+        (enterprise) =>
+          `<option value="${enterprise.id}">${enterprise.name}</option>`
       )
       .join("");
 
     Swal.fire({
       title: "Agregar Producto",
       html: `
-       <style>
-        input.swal2-input, select.swal2-select {
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          padding: 10px;
-          width: 80%;
-          height: 54px;
-          margin-top: 5px;
-          margin-bottom: 10px;
-          box-sizing: border-box;
-        }
-      
-      </style>
-            <input type="text" id="name" class="swal2-input" placeholder="Nombre">
-            <input type="text" id="brand" class="swal2-input" placeholder="Marca">
-            <input type="text" id="description" class="swal2-input" placeholder="Descripción">
-            <select id="category" class="swal2-select">
+       <div class="space-y-4 ">
+            <input type="text" id="name" class="bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Nombre">
+
+            <input type="text" id="brand" class="bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Marca">
+
+            <input type="text" id="description" class="bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Descripción">
+
+            <select id="category" class="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out">
               <option value="" disabled selected>Seleccione una categoria</option>
               ${opcionesCategorias}
             </select>
-            <input type="text" id="quantity" class="swal2-input" placeholder="Cantidad">
-            <select id="measurement" class="swal2-select">
+            <input type="text" id="quantity" class="bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Cantidad">
+
+            <select id="measurement" class="bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full">
               <option value="" selected>Seleccione unidad de medida</option>
                ${opcionesUnidadMedida}
             </select>
-            <input type="text" id="price" class="swal2-input" placeholder="Precio">
-            <select id="preferenceProviderId" class="swal2-select">
+            <input type="text" id="price" class="bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Precio">
+
+            <select id="preferenceProviderId" class="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out">
               <option value="" selected>Seleccione un proveedor</option>
                ${proveedoresOptions}
             </select>
-            <input type="text" id="minStock" class="swal2-input" placeholder="Stock mínimo">
-            <select id="autoPurchase" class="swal2-select">
+            <input type="text" id="minStock" class="bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Stock mínimo">
+
+            <select id="autoPurchase" class="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out">
               <option value="" diasbled selected>Seleccione una opción</option>
                <option value="ENABLED" selected>Activado</option>
                <option value="DISABLED" selected>Desactivado</option> 
             </select>
-            <select id="enterpriseId" class="swal2-select">
+
+            <select id="enterpriseId" class="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out">
               <option value="" selected>Seleccione la empresa</option>
                ${enterprisesOptions}
             </select>
+
+            </div>
           `,
       confirmButtonText: "Agregar",
       cancelButtonText: "Cancelar",
       showCancelButton: true,
       focusConfirm: false,
+
+      customClass: {
+        popup:
+          "max-w-lg w-full flex flex-col justify-between bg-gray-800 p-8 rounded-2xl shadow-2xl space-y-6 transition-all duration-500 ease-in-out transform hover:scale-[1.01]",
+        title: "text-4xl font-bold mb-4 text-blue-500",
+        confirmButton:
+          "px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 ml-auto mr-4",
+        cancelButton:
+          "px-6 py-2 bg-gray-500 rounded-lg hover:bg-gray-700 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 ml-4",
+        actions:
+          "flex justify-between w-full px-24 py-2 sm: flex justify-between w-full px-16 py-2",
+      },
       preConfirm: () => {
         const nameElement = document.getElementById("name") as HTMLInputElement;
         const brandElement = document.getElementById(
