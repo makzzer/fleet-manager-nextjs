@@ -599,12 +599,12 @@ const Stock = () => {
             measurementUnits={unidadesDeMedida}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-lg font-semibold text-gray-800">
-              No hay productos disponibles
+          <div className="flex flex-col items-center justify-center mt-8 p-6 bg-gray-900 border border-blue-200 rounded-lg">
+            <p className="text-lg font-semibold text-gray-200">
+              Producto no encontrado
             </p>
-            <p className="text-sm font-semibold text-gray-600 mt-2">
-              Por favor, añade algunos productos para empezar.
+            <p className="text-sm font-semibold text-gray-400 mt-2">
+              No hay productos que coincidan con su busqueda.
             </p>
           </div>
         )}

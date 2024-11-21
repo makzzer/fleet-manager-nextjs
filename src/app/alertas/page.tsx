@@ -8,13 +8,13 @@ import ProtectedRoute from "../components/Routes/ProtectedRoutes";
 import { useAuth } from '../context/AuthContext';
 
 const AlertList = () => {
-  const { getEnterpriseId } = useAuth(); 
+  const { getEnterpriseId } = useAuth();
   const { alerts, fetchAlerts, acknowledgeAlert } = useAlert();
   const [opsgenieLink, setOpsgenieLink] = useState<string | null>(null);
 
 
-   // Obtener la URL de Opsgenie
-   useEffect(() => {
+  // Obtener la URL de Opsgenie
+  useEffect(() => {
     const fetchOpsgenieLink = async () => {
       try {
         const enterpriseId = getEnterpriseId();
@@ -72,11 +72,14 @@ const AlertList = () => {
             ))}
           </div>
         ) : (
-          <div className="flex items-center justify-center h-64 bg-gray-800 rounded-lg shadow-md">
-            <p className="text-gray-400 text-lg font-semibold">
-              No hay alertas disponibles para mostrar.
-            </p>
+          <div className="flex items-center justify-center bg-gray-800 rounded-lg">
+            <div className="flex flex-col sm:ms-4 items-center justify-center h-64 bg-gray-800 rounded-lg shadow-md sm:w-3/4 sm:text-center sm:p-4">
+              <p className="text-gray-400 text-center text-lg font-semibold">
+                No hay alertas disponibles para mostrar.
+              </p>
+            </div>
           </div>
+
         )}
       </div>
     </ProtectedRoute>
