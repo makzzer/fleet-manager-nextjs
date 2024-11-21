@@ -14,6 +14,7 @@ const FormAddProductoOC = () => {
     ordenesDeCompra,
     fetchOrdenesDeCompra,
     agregarProductosOrdenDeCompra,
+    createOrdenDeCompra,
   } = useOrdenesDeCompra();
 
   const [producto, setProducto] = useState<any>(null);
@@ -59,6 +60,19 @@ const FormAddProductoOC = () => {
         {`Orden #${orden.id} - Proveedor: ${orden.provider.name}`}
       </option>
     ));
+
+     // Función para crear una nueva orden de compra
+  const handleCreateOrder = async () => {
+    try {
+      await createOrdenDeCompra(producto.preference_provider_id);
+      // Llamamos a fetchOrdenesDeCompra para obtener la nueva orden
+      await fetchOrdenesDeCompra();
+      Swal.fire("Éxito", "Se ha creado una nueva orden de compra.", "success");
+    } catch (error) {
+      console.error("Error al crear la orden de compra:", error);
+      Swal.fire("Error", "Ocurrió un error al crear la orden de compra.", "error");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,9 +162,22 @@ const FormAddProductoOC = () => {
               ) : (
                 <option disabled>No hay órdenes de compra abiertas para este proveedor</option>
               )}
+              <option value="create-new" disabled={ordenesOptions.length > 0}>
+                Crear nueva orden de compra
+              </option>
             </select>
           </div>
-
+          
+          {selectedOrdenId === "create-new" && (
+            <button
+              type="button"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
+              onClick={handleCreateOrder}
+            >
+              Crear Nueva Orden de Compra
+            </button>
+          )}
+          
           <button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
