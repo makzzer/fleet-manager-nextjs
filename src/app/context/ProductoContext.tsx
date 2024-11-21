@@ -25,14 +25,14 @@ export interface Producto {
   quantity: number;
   measurement: string;
   price: number;
-  providerId: string;
+  provider_id: string;
   minStock: number;
   autoPurchase: string;
-  enterpriseId: string;
+  enterprise_id: string;
 }
 
 export interface ProductoRequest {
-  id: string;
+  id?: string; // Se marcó como opcional
   name: string;
   brand: string;
   description: string;
@@ -40,10 +40,10 @@ export interface ProductoRequest {
   quantity: number;
   measurement: string;
   price: number;
-  providerId: string;
+  provider_id: string;
   minStock: number;
   autoPurchase: string;
-  enterpriseId: string;
+  enterprise_id: string;
 }
 
 interface Proveedor {
@@ -71,8 +71,9 @@ interface ProductoContextProps {
   fetchProveedores: () => void;
   fetchProveedoresProducto: (id: string) => void;
   fetchEmpresas: () => void;
-  // createProducto: (producto: ProductoRequest) => Promise<void>;
-  createProducto: (producto: Omit<ProductoRequest, "id">) => Promise<{ resultado: boolean; mensaje?: string}>;
+  createProducto: (
+    producto: Omit<ProductoRequest, "id">
+  ) => Promise<{ resultado: boolean; mensaje?: string }>;
   exportProductoToExcel: () => void;
   associateProvider: (productId: string, providerId: string) => void;
   removeProvider: (productId: string, providerId: string) => void;
@@ -131,8 +132,9 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     [api]
   );
 
-  const createProducto = async (producto: Omit<ProductoRequest, "id">) => 
-    {
+  const createProducto = async (
+    producto: Omit<ProductoRequest, "id">
+  ): Promise<{ resultado: boolean; mensaje?: string }> => {
     try {
       console.log("Producto a enviar:", producto);
       await api.post(apiProductosBackend, producto);
@@ -141,9 +143,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error("Error al crear producto:", error.response.data);
-        console.log(error.response?.data.message);
-        console.log(producto);
-        return { resultado: false, mensaje: error.response?.data.message };
+        return { resultado: false, mensaje: error.response.data.message };
       } else {
         console.error("Error desconocido al crear producto", error);
         return {
@@ -152,7 +152,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
         };
       }
     }
-  }; 
+  };
 
   const fetchProveedores = useCallback(async () => {
     try {
@@ -238,7 +238,7 @@ export const ProductoProvider = ({ children }: { children: ReactNode }) => {
         productos,
         producto,
         proveedores,
-        empresas, 
+        empresas,
         proveedoresProducto,
         fetchProductos,
         fetchProducto,

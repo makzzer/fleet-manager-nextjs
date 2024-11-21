@@ -262,10 +262,10 @@ const Stock = () => {
             quantity: formatedProduct.quantity,
             measurement: formatedProduct.measurement,
             price: formatedProduct.price,
-            providerId: formatedProduct.providerId,
+            provider_id: formatedProduct.providerId,
             minStock: formatedProduct.minStock,
             autoPurchase: formatedProduct.autoPurchase,
-            enterpriseId: formatedProduct.enterpriseId,
+            enterprise_id: formatedProduct.enterpriseId,
           };
           const result = await createProducto(product);
           if (result) {
@@ -544,10 +544,10 @@ const Stock = () => {
           quantity: result.value.quantity,
           measurement: result.value.measurement,
           price: result.value.price,
-          providerId: result.value.preferenceProviderId,
+          provider_id: result.value.preferenceProviderId,
           minStock: result.value.minStock,
           autoPurchase: result.value.autoPurchase,
-          enterpriseId: result.value.enterpriseId,
+          enterprise_id: result.value.enterpriseId,
         };
 
         createProducto(producto);

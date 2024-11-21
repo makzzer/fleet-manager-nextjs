@@ -3,20 +3,9 @@ import { IconButton } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useRouter } from "next/navigation";
-import QRCode from "react-qr-code"; // Importamos el componente QRCode
+import QRCode from "react-qr-code";
 
 interface Producto {
-  // id: string;
-  // name: string;
-  // brand: string;
-  // description: string;
-  // category: string;
-  // quantity: number;
-  // measurement: string;
-  // price: number;
-  // preference_provider_id: string;
-  // min_stock: number;
-
   id: string;
   name: string;
   brand: string;
@@ -52,8 +41,32 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
     router.push(`/productos/${id}`);
   };
 
-  const handleInter = (id: string) => {
-    router.push(`/inter_p/${id}`);
+  const handleDownloadQR = (qrValue: string, productName: string) => {
+    const canvas = document.createElement("canvas");
+    const qrCodeElement = document.querySelector(`[data-qr="${qrValue}"]`) as HTMLElement;
+
+    if (qrCodeElement) {
+      const svg = qrCodeElement.querySelector("svg");
+      if (svg) {
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const img = new Image();
+        img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.fillStyle = "#1a202c"; // Fondo oscuro
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            const link = document.createElement("a");
+            link.download = `${productName}-qr.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+          }
+        };
+      }
+    }
   };
 
   useEffect(() => {
@@ -83,7 +96,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
               Marca
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-              Categoria
+              Categoría
             </th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
               Cantidad
@@ -97,19 +110,20 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
             <th className="px-6 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
               Acciones
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
               QR
             </th>
           </tr>
         </thead>
         <tbody className="bg-gray-800 divide-y divide-gray-600 text-gray-200">
           {products.map((product) => {
-            console.log("producto:", product, "id: ", product.id);
-            // Usamos una ruta relativa en el QR para evitar problemas con diferentes dominios
-            // const qrValue = `/productos/${product.id}/page`;
-            const qrValue = `${window.location.origin}/inter_p/${product.id}`;
-            return (
+            // Verificar si window está disponible para evitar errores de prerendering
+            const qrValue =
+              typeof window !== "undefined"
+                ? `${window.location.origin}/inter_p/${product.id}`
+                : "";
 
+            return (
               <tr key={product.id} className={""}>
                 <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{product.brand}</td>
@@ -118,7 +132,6 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   {measurementUnits[product.measurement] || product.measurement}
                 </td>
-
                 <td className="px-6 py-4 whitespace-nowrap text-center">{product.price}</td>
                 <td className="px-6 py-4 whitespace-nowrap flex space-x-2 justify-end">
                   <IconButton
@@ -126,7 +139,6 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
                     color="primary"
                     title="Ver producto"
                     onClick={() => handleView(product.id)}
-                    // onClick={() => handleView(product.id)}
                   >
                     <VisibilityIcon />
                   </IconButton>
@@ -134,17 +146,22 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, measurementUnits 
                     aria-label="Descargar QR"
                     color="success"
                     title="Descargar QR"
+                    onClick={() => handleDownloadQR(qrValue, product.name)}
                   >
                     <DownloadIcon />
                   </IconButton>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center"> <QRCode value={qrValue} size={64} bgColor="#1a202c" fgColor="#ffffff" /></td>
+                <td
+                  className="px-6 py-4 whitespace-nowrap text-center"
+                  data-qr={qrValue}
+                >
+                  <QRCode value={qrValue} size={64} bgColor="#1a202c" fgColor="#ffffff" />
+                </td>
               </tr>
-            )
+            );
           })}
         </tbody>
       </table>
-      {/* Flecha con bounce solo en responsive */}
       {showScrollIcon && (
         <div className="absolute bottom-0 right-0 p-2 text-gray-500 md:hidden">
           <svg
