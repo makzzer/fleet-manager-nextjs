@@ -1,4 +1,5 @@
 "use client";
+//mod this map --> push a vercel
 
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
@@ -66,7 +67,8 @@ const MapSimuladorVehiculo = ({
 
     if (mapRef.current) {
       if (routingControlRef.current) {
-        mapRef.current.removeControl(routingControlRef.current);
+        //mapRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current.remove()
       }
 
       routingControlRef.current = (L as any).Routing.control({
@@ -153,7 +155,8 @@ const MapSimuladorVehiculo = ({
         clearInterval(intervalRef.current);
       }
       if (routingControlRef.current && mapRef.current) {
-        mapRef.current.removeControl(routingControlRef.current);
+        //mapRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current.remove()
         routingControlRef.current = null;
       }
       if (vehicleMarkerRef.current && mapRef.current) {

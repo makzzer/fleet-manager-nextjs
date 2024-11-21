@@ -132,16 +132,54 @@ const Proveedores = () => {
     Swal.fire({
       title: "Agregar Proveedor",
       html: `
-      <input type="text" id="name" class="swal2-input" placeholder="Nombre">
-      <input type="text" id="email" class="swal2-input" placeholder="Email">
-      <input type="text" id="cuit" class="swal2-input" placeholder="CUIT">
-      <input type="text" id="phone_number" class="swal2-input" placeholder="Teléfono">
-      <input type="text" id="street" class="swal2-input" placeholder="Calle">
-      <input type="text" id="number" class="swal2-input" placeholder="Número">
-      <input type="text" id="locality" class="swal2-input" placeholder="Localidad">
+      <div class="space-y-4 ">
+        <div>
+          
+          <input type="text" id="name" class=" bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Ingrese su nombre">
+        </div>
+        <div>
+          
+          <input type="text" id="email" class=" bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Ingrese email">
+        </div>
+        <div>
+          
+          <input type="text" id="cuit" class=" bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Ingrese un CUIT">
+        </div>
+        <div>
+          
+          <input type="text" id="phone_number" class=" bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Teléfono">
+        </div>
+        <div>
+          
+          <input type="text" id="street" class=" bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Calle">
+        </div>
+        <div>
+          
+          <input type="text" id="number" class=" bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Número">
+        </div>
+        <div>
+         
+          <input type="text" id="locality" class=" bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out w-full" placeholder="Localidad">
+        </div>
+      </div>
+      
     `,
       confirmButtonText: "Agregar",
       showCancelButton: true,
+      cancelButtonText: "Cancelar",
+
+      customClass: {
+        popup:
+          "max-w-lg w-full flex flex-col justify-between bg-gray-800 p-8 rounded-2xl shadow-2xl space-y-6 transition-all duration-500 ease-in-out transform hover:scale-[1.01]",
+        title: "text-4xl font-bold mb-4 text-blue-500",
+        confirmButton:
+          "w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-blue-600 rounded-lg hover:bg-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95",
+        cancelButton:
+          "w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-gray-500 rounded-lg hover:bg-gray-700 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95",
+        actions:
+          "flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 sm:space-x-4",
+      },
+
       preConfirm: async () => {
         const nameElement = document.getElementById("name") as HTMLInputElement;
         const emailElement = document.getElementById(
@@ -219,7 +257,7 @@ const Proveedores = () => {
           Swal.showValidationMessage("Localidad inválida.");
           return null;
         }
-
+        // una vez que se pasaron las validaciones se mandan los atributos para armar objeto  proveedor local
         return {
           name,
           email,
@@ -341,15 +379,13 @@ const Proveedores = () => {
           // Actualizar la barra de progreso
           Swal.update({
             title: "Procesando vehículos...",
-            html: `Procesados: ${successCount + failedCount} de ${
-              formatedProviders.length
-            }
+            html: `Procesados: ${successCount + failedCount} de ${formatedProviders.length
+              }
                    <div class="progress-bar-container">
-                     <div class="progress-bar" style="width: ${
-                       ((successCount + failedCount) /
-                         formatedProviders.length) *
-                       100
-                     }%"></div>
+                     <div class="progress-bar" style="width: ${((successCount + failedCount) /
+                formatedProviders.length) *
+              100
+              }%"></div>
                    </div>`,
           });
         } catch (error) {

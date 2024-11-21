@@ -8,6 +8,7 @@ import { useReserva } from '../context/ReservesContext';
 import Swal from 'sweetalert2';
 import { useRouter } from "next/navigation";
 import axios from 'axios';
+import { useApi } from '../context/ApiContext';
 
 interface SolicitarAsistenciaFormProps {
   vehicleIdFromQuery: string | null;
@@ -22,6 +23,10 @@ const SolicitarAsistenciaForm: React.FC<SolicitarAsistenciaFormProps> = ({ vehic
   const [selectedReserva, setSelectedReserva] = useState<string | null>(null);
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
+
+
+  const api = useApi();
+
 
   useEffect(() => {
     fetchReservas();
@@ -45,20 +50,22 @@ const SolicitarAsistenciaForm: React.FC<SolicitarAsistenciaFormProps> = ({ vehic
     }
   }, [vehicleIdFromQuery, reservas, authenticatedUser, router]);
 
-  const createAlert = async (vehicle_id: string) => {
-    try {
-      const response = await fetch('https://fleet-manager-vrxj.onrender.com/api/alerts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          strategy: 'CONTROL',
-          vehicle_id: vehicle_id,
-        }),
-      });
 
-      if (!response.ok) {
+  const createAlert = async (vehicle_id: string) => {
+    
+    const requestData = {
+      strategy: 'CONTROL',
+      vehicle_id: vehicle_id,
+    }
+
+    try {
+
+      const response = await api.post(
+        'https://fleet-manager-vrxj.onrender.com/api/alerts', 
+        requestData
+      );
+
+      if (response.status != 201) {
         throw new Error('Error al crear la alerta');
       }
     } catch (error) {

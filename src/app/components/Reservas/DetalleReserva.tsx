@@ -24,7 +24,7 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
   const [reserva, setReserva] = useState<Reserva>(initialReserva); // Utilizamos un estado para manejar la reserva localmente
   const [loading, setLoading] = useState(false); // Estado de carga
   const router = useRouter();
-  
+
   useEffect(() => {
     const vehiculoEncontrado = vehiculos.find((v) => v.id === reserva.vehicle_id);
     if (vehiculoEncontrado) {
@@ -73,15 +73,14 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
         <div className="mb-6 text-center">
           <h2 className="text-2xl font-semibold text-white mb-2">Estado del Viaje</h2>
           <p
-            className={`text-lg font-bold py-2 rounded-lg ${
-              reserva.status === "COMPLETED"
+            className={`text-lg font-bold py-2 rounded-lg ${reserva.status === "COMPLETED"
                 ? "bg-green-600"
                 : reserva.status === "CANCELED"
-                ? "bg-red-600"
-                : reserva.status === "ACTIVATED"
-                ? "bg-blue-600 text-white"
-                : "bg-yellow-500 text-white"
-            }`}
+                  ? "bg-red-600"
+                  : reserva.status === "ACTIVATED"
+                    ? "bg-blue-600 text-white"
+                    : "bg-yellow-500 text-white"
+              }`}
           >
             {reserva.status}
           </p>
@@ -190,7 +189,10 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
         {/* Botón de Volver más responsivo */}
         <div className="w-full mt-4 ">
 
-       
+
+
+
+
           <button
             className="bg-red-600 hover:bg-red-700 mb-2 w-full text-white font-bold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
             onClick={() =>
@@ -201,8 +203,20 @@ const DetalleReserva = ({ reserva: initialReserva, reservaId }: DetalleReservaPr
           >
             Solicitar Asistencia
           </button>
-   
 
+
+          <button
+            className="bg-yellow-600 hover:bg-yellow-700 mb-2 w-full text-white font-bold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
+            onClick={() =>
+              router.push(
+                `/verControlesAuto?vehiculoId=${encodeURIComponent(
+                  vehiculo?.id || ""
+                )}`
+              )
+            }
+          >
+            Estado de Controles
+          </button>
 
 
           <button

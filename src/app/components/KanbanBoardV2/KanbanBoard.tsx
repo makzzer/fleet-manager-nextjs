@@ -5,6 +5,7 @@ import { Control } from '@/app/context/ControlContext'
 import { Column } from './Column'
 import { KanbanFilters } from './KanbanFilters'
 import { ControlCreation } from './ControlCreation'
+import ControlsExport from './ControlsExport'
 
 interface KanbanBoardProps {
   controls: Control[]
@@ -47,8 +48,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ controls, setControlSt
 
   return (
     <div className="flex flex-col w-full gap-3">
-      <div className="flex justify-between items-center mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ControlCreation />  
+        <ControlsExport /> 
       </div>
       <KanbanFilters
         controls={controls}

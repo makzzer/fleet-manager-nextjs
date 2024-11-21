@@ -1,5 +1,5 @@
 // components/AlertList.tsx
-//push vercel3
+
 "use client";
 import React, { useEffect, useState } from "react";
 import { useAlert } from "../context/AlertsContext";
@@ -35,7 +35,8 @@ const AlertList = () => {
 
   const handleAcknowledge = async (id: string) => {
     await acknowledgeAlert(id);
-    alert("Alerta reconocida.");
+    // Puedes mostrar una notificación si lo deseas
+    //Swal.fire("Alerta reconocida", "La alerta ha sido reconocida.", "success");
   };
 
   return (
@@ -56,10 +57,11 @@ const AlertList = () => {
         </div>
 
         {alerts.length > 0 ? (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 transition-all duration-500 ease-in-out">
             {alerts.map((alert) => (
               <AlertCard
                 key={alert.id}
+                id={alert.id}
                 title={alert.title}
                 description={alert.description}
                 dateCreated={alert.date_created}

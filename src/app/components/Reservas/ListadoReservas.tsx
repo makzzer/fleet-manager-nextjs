@@ -204,7 +204,7 @@ const ListadoReservas: React.FC<ListadoReservasProps> = ({
                     Solicitar Asistencia
                   </button>
                   <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
                     onClick={() =>
                       router.push(
                         `/verControlesAuto?vehiculoId=${encodeURIComponent(
@@ -213,7 +213,7 @@ const ListadoReservas: React.FC<ListadoReservasProps> = ({
                       )
                     }
                   >
-                    Ver Controles del Auto
+                    Estado de Controles
                   </button>
                 </div>
               </li>
