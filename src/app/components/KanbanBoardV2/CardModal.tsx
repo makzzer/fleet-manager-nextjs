@@ -93,7 +93,7 @@ export default function CardModal({ control, closeModal, showModal }: KanbanCard
       full_name: `${usuario.full_name} (${getControlCount(usuario.id)} controles)`,
       control_count: getControlCount(usuario.id)
     }))
-    .filter(operator => operator.control_count <= 5)
+    .filter(operator => operator.control_count <= 20)
     .sort((a, b) => a.control_count - b.control_count)
 
   const handleRemoveProduct = (productId: any) => {
