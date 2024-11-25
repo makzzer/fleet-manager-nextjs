@@ -8,7 +8,6 @@ import { useVehiculo, Vehiculo } from "../context/VehiculoContext";
 import { useAuth } from "../context/AuthContext";
 import { useReserva } from "../context/ReservesContext";
 import Swal from "sweetalert2";
-import axios from "axios";
 import Carousel from "../components/Carousel/Carousel";
 import { EmblaOptionsType } from "embla-carousel";
 import DatePicker from "react-datepicker";
@@ -16,7 +15,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale";
 import dynamic from "next/dynamic";
 import ProtectedRoute from "../components/Routes/ProtectedRoutes";
-import { isSameDay, setHours, setMinutes } from "date-fns";
 import { useApi } from "../context/ApiContext";
 
 const MapPickCoordinates = dynamic(
@@ -40,12 +38,19 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
   const { reservas, fetchReservas } = useReserva();
   const { authenticatedUser } = useAuth();
 
-  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(vehicleIdFromQuery);
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(
+    vehicleIdFromQuery
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [pickedCoordinates, setPickedCoordinates] = useState<{ lat: number; lng: number } | null>(null);
-  const [vehiculosDisponibles, setVehiculosDisponibles] = useState<Vehiculo[]>([]);
+  const [pickedCoordinates, setPickedCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [vehiculosDisponibles, setVehiculosDisponibles] = useState<Vehiculo[]>(
+    []
+  );
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const api = useApi();
@@ -84,7 +89,9 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
   useEffect(() => {
     if (vehiculos.length > 0 && reservas.length >= 0 && startDate && endDate) {
       if (vehicleIdFromQuery) {
-        const vehiculo = vehiculos.find((v) => v.id === vehicleIdFromQuery);
+        const vehiculo = vehiculos.find(
+          (v) => v.id === vehicleIdFromQuery && v.status === "AVAILABLE"
+        );
 
         if (vehiculo) {
           if (isVehicleAvailable(vehiculo.id)) {
@@ -97,31 +104,35 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
               "warning"
             );
             const disponibles = vehiculos.filter(
-              (v) => v.id !== vehiculo.id && isVehicleAvailable(v.id)
+              (v) =>
+                v.id !== vehiculo.id &&
+                v.status === "AVAILABLE" &&
+                isVehicleAvailable(v.id)
             );
             setVehiculosDisponibles(disponibles);
             setSelectedVehicle(null);
           }
         } else {
           Swal.fire(
-            "Vehículo no encontrado",
-            "El vehículo especificado no existe.",
+            "Vehículo no encontrado o no disponible",
+            "El vehículo especificado no existe o no está disponible.",
             "error"
           );
           setVehiculosDisponibles([]);
           setSelectedVehicle(null);
         }
       } else {
-        const disponibles = vehiculos.filter((vehiculo) =>
-          isVehicleAvailable(vehiculo.id)
+        const disponibles = vehiculos.filter(
+          (vehiculo) =>
+            vehiculo.status === "AVAILABLE" && isVehicleAvailable(vehiculo.id)
         );
 
         const filtrados = disponibles.filter((vehiculo) => {
           const search = searchTerm.toLowerCase();
           return (
-            vehiculo.id.toLowerCase().includes(search) ||
-            vehiculo.brand.toLowerCase().includes(search) ||
-            vehiculo.model.toLowerCase().includes(search)
+            vehiculo.id?.toLowerCase().includes(search) ||
+            vehiculo.brand?.toLowerCase().includes(search) ||
+            vehiculo.model?.toLowerCase().includes(search)
           );
         });
 
@@ -151,7 +162,11 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
     }
 
     if (!authenticatedUser) {
-      Swal.fire("Error", "Debes estar autenticado para reservar un vehículo.", "error");
+      Swal.fire(
+        "Error",
+        "Debes estar autenticado para reservar un vehículo.",
+        "error"
+      );
       return;
     }
 
@@ -260,7 +275,6 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
                   setStartDate(date);
                   setSelectedVehicle(null);
                 }}
-                //dateFormat="dd/MM/yyyy HH:mm"
                 dateFormat="dd/MM/yyyy"
                 placeholderText="Selecciona fecha de inicio"
                 className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
