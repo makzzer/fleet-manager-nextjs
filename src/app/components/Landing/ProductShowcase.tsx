@@ -10,7 +10,7 @@ const ProductShowcase = () => {
   const rotateX = useTransform(scrollYProgress, [0, 1], [15, 0]);
   const opacity = useTransform(scrollYProgress, [0, 1], [0.5, 1]);
   return (
-    <section className="bg-gradient-to-b from-blue-950 to-gray-800 py-24">
+    <section className="bg-gradient-to-b from-blue-950 to-gray-800 pt-24 pb-18">
       <div className="container mx-auto px-6 sm:px-8">
         <div className="section-heading text-center">
           <div className="flex justify-center mb-4">
@@ -33,7 +33,7 @@ const ProductShowcase = () => {
           className="flex justify-center"
         >
           <Image
-            src={'/landingMedia/dashboardSS.jpeg'}
+            src={'/landingMedia/monitor.JPG'}
             alt={"Imagen del dashboard de la aplicación fleetfly"}
             width={1920}
             height={1080}
