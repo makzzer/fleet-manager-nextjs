@@ -14,7 +14,7 @@ const FormAddProductoOC = () => {
     ordenesDeCompra,
     fetchOrdenesDeCompra,
     agregarProductosOrdenDeCompra,
-    createOrdenDeCompra,
+    createOrdenDeCompraWithProduct,
   } = useOrdenesDeCompra();
 
   const [producto, setProducto] = useState<any>(null);
@@ -61,13 +61,33 @@ const FormAddProductoOC = () => {
       </option>
     ));
 
-     // Función para crear una nueva orden de compra
+  // Función para crear una nueva orden de compra
   const handleCreateOrder = async () => {
     try {
-      await createOrdenDeCompra(producto.preference_provider_id);
+      const order_id = await createOrdenDeCompraWithProduct(
+        producto.preference_provider_id, 
+        producto.id,
+        cantidad,
+        producto.price * cantidad);
+      Swal.fire("Éxito", "Se ha creado una nueva orden de compra.", "success").then(() => {
+        router.push(`/ordenesdecompra/${order_id}`);
+      });
+/*
       // Llamamos a fetchOrdenesDeCompra para obtener la nueva orden
       await fetchOrdenesDeCompra();
-      Swal.fire("Éxito", "Se ha creado una nueva orden de compra.", "success");
+      const ordenes = ordenesDeCompra.filter(
+        (orden) =>
+          (orden.status === "CREATED" || orden.status === "APPROVED") &&
+          orden.provider.id === producto.preference_provider_id
+      );
+      console.log("Ordenes: " + ordenes);
+      if(ordenes.length>0) {
+        await agregarProductosOrdenDeCompra(ordenes[0].id, producto.id, cantidad, producto.price * cantidad);
+        
+      } else {
+        Swal.fire("Error", "Ocurrió un error al crear la orden de compra.", "error");
+      }
+        */
     } catch (error) {
       console.error("Error al crear la orden de compra:", error);
       Swal.fire("Error", "Ocurrió un error al crear la orden de compra.", "error");
@@ -105,7 +125,7 @@ const FormAddProductoOC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white p-4">
+    <><div className="flex items-center justify-center min-h-screen bg-gray-900 text-white p-4">
       <div className="bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
         <h2 className="text-2xl font-semibold mb-6 text-blue-400">
           Agregar Producto a Orden de Compra
@@ -120,8 +140,7 @@ const FormAddProductoOC = () => {
               type="text"
               value={`${producto.name} - ${producto.brand}`}
               disabled
-              className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none"
-            />
+              className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none" />
           </div>
 
           <div>
@@ -137,64 +156,64 @@ const FormAddProductoOC = () => {
               min="1"
               value={cantidad}
               onChange={(e) => setCantidad(parseInt(e.target.value) || 0)}
-              className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none"
-            />
+              className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none" />
           </div>
 
-          <div>
-            <label
-              htmlFor="orden"
-              className="block text-sm font-medium text-gray-300 mb-2"
-            >
-              Seleccionar Orden de Compra
-            </label>
-            <select
-              id="orden"
-              value={selectedOrdenId}
-              onChange={(e) => setSelectedOrdenId(e.target.value)}
-              className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none"
-            >
-              <option value="" disabled>
-                Selecciona una orden de compra
-              </option>
-              {ordenesOptions.length > 0 ? (
-                ordenesOptions
-              ) : (
-                <option disabled>No hay órdenes de compra abiertas para este proveedor</option>
-              )}
-              <option value="create-new" disabled={ordenesOptions.length > 0}>
-                Crear nueva orden de compra
-              </option>
-            </select>
-          </div>
-          
-          {selectedOrdenId === "create-new" && (
-            <button
-              type="button"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
-              onClick={handleCreateOrder}
-            >
-              Crear Nueva Orden de Compra
-            </button>
+          {(ordenesOptions.length > 0) ? (
+            <><div>
+              <label
+                htmlFor="orden"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
+                Seleccionar Orden de Compra
+              </label>
+              <select
+                id="orden"
+                value={selectedOrdenId}
+                onChange={(e) => setSelectedOrdenId(e.target.value)}
+                className="bg-gray-700 text-white w-full p-3 rounded-lg focus:outline-none"
+              >
+                <option value="" disabled>
+                  Selecciona una orden de compra
+                </option>
+                {ordenesOptions}
+              </select>
+              
+            </div>
+            <div>
+              <button
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
+                >
+                Agregar a Orden de Compra
+              </button>
+            </div></>
+          ) : (
+            <div>
+              <label
+                htmlFor="orden"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
+                No hay órdenes de compra abiertas para este proveedor
+              </label>
+              <button
+                type="button"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
+                onClick={handleCreateOrder}
+              >
+                Crear Nueva Orden de Compra
+              </button>
+            </div>
           )}
-          
-          <button
-            type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
-          >
-            Agregar a Orden de Compra
-          </button>
-        </form>
-
-        <button
+        </form><button
           className="w-full mt-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 rounded-lg shadow-md transition-all"
           onClick={() => router.back()}
         >
           Volver
         </button>
-      </div>
-    </div>
-  );
+      </div >
+    </div >
+    </>);
 };
 
-export default FormAddProductoOC;
+      export default FormAddProductoOC;

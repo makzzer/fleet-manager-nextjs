@@ -63,6 +63,7 @@ interface OrdenDeCompraContextProps {
   fetchProductos: (providerId: string) => Promise<Producto[]>;
   fetchProveedores: () => void;
   createOrdenDeCompra: (provider_id: string) => Promise<void>;
+  createOrdenDeCompraWithProduct: (provider_id: string, product_id: string, quantity: number, amount: number) => Promise<string>;
   actualizarEstadoOrdenDeCompra: (id: string, estado: string) => Promise<void>;
   agregarProductosOrdenDeCompra: (orden_id: string, product_id: string, quantity: number, amount: number) => void,
   exportOrdenesDeCompraToExcel: () => void;
@@ -133,6 +134,28 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
     }
   };
 
+  const createOrdenDeCompraWithProduct = async (provider_id: string, product_id: string, quantity: number, amount: number) => {
+    try {
+      await api.post(apiOrdenesDeCompraBackend, { provider_id });
+      const response = await api.get(apiOrdenesDeCompraBackend);
+      const fetchedOrdenesDeCompra = response.data
+      const orden = fetchedOrdenesDeCompra.find(
+        (orden: OrdenDeCompra) =>
+          (orden.status === "CREATED" || orden.status === "APPROVED") &&
+          orden.provider.id === provider_id);
+
+      if(orden) {
+        agregarProductosOrdenDeCompra(orden.id, product_id, quantity, amount);
+        return orden.id;
+      } else {
+        console.log("No se creó la orden de compra para agregar el producto");
+        throw new Error("No se creó la orden de compra para agregar el producto");
+      }
+    } catch (error) {
+      console.error("Error al crear la orden de compra:", error);
+    }
+  };
+
   const actualizarEstadoOrdenDeCompra = async (id: string, estado: string) => {
     await api.put(`${apiOrdenesDeCompraBackend}/${id}/status/${estado}`);
     fetchOrdenesDeCompra(); //despues de crear la orde de compra nuevo vuelvo a llamarlas asi actualizo las tablas
@@ -176,6 +199,7 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
         fetchProductos,
         fetchProveedores,
         createOrdenDeCompra,
+        createOrdenDeCompraWithProduct,
         actualizarEstadoOrdenDeCompra,
         agregarProductosOrdenDeCompra,
         exportOrdenesDeCompraToExcel,
