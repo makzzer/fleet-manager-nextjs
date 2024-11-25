@@ -1,11 +1,16 @@
 'use client'
 
+import { useEffect } from 'react'
 import { KanbanBoard } from '../components/KanbanBoardV2/KanbanBoard'
 import ProtectedRoute from '../components/Routes/ProtectedRoutes'
 import { useControl } from '../context/ControlContext'
 
 export default function ControlesPage() {
-  const { controls, setControlStatus } = useControl()
+  const { controls, fetchControls, setControlStatus } = useControl()
+
+  useEffect(() => {
+    fetchControls();
+  }, []);
 
 return (
   <ProtectedRoute requiredModule='CONTROLS'>
