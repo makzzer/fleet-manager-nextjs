@@ -72,22 +72,6 @@ const FormAddProductoOC = () => {
       Swal.fire("Éxito", "Se ha creado una nueva orden de compra.", "success").then(() => {
         router.push(`/ordenesdecompra/${order_id}`);
       });
-/*
-      // Llamamos a fetchOrdenesDeCompra para obtener la nueva orden
-      await fetchOrdenesDeCompra();
-      const ordenes = ordenesDeCompra.filter(
-        (orden) =>
-          (orden.status === "CREATED" || orden.status === "APPROVED") &&
-          orden.provider.id === producto.preference_provider_id
-      );
-      console.log("Ordenes: " + ordenes);
-      if(ordenes.length>0) {
-        await agregarProductosOrdenDeCompra(ordenes[0].id, producto.id, cantidad, producto.price * cantidad);
-        
-      } else {
-        Swal.fire("Error", "Ocurrió un error al crear la orden de compra.", "error");
-      }
-        */
     } catch (error) {
       console.error("Error al crear la orden de compra:", error);
       Swal.fire("Error", "Ocurrió un error al crear la orden de compra.", "error");

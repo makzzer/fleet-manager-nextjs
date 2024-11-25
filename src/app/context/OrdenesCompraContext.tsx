@@ -145,7 +145,11 @@ export const OrdenDeCompraProvider = ({ children }: { children: ReactNode }) => 
           orden.provider.id === provider_id);
 
       if(orden) {
-        agregarProductosOrdenDeCompra(orden.id, product_id, quantity, amount);
+        await api.put(`${apiOrdenesDeCompraBackend}/${orden.id}/products`, {
+          product_id,
+          quantity,
+          amount,
+        });
         return orden.id;
       } else {
         console.log("No se creó la orden de compra para agregar el producto");
