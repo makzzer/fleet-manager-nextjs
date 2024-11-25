@@ -67,7 +67,9 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
 
   const isVehicleAvailable = (vehicleId: string) => {
     const reservasVehiculo = reservas.filter(
-      (reserva) => reserva.vehicle_id === vehicleId
+      (reserva) =>
+        reserva.vehicle_id === vehicleId &&
+        (reserva.status === "ACTIVATED" || reserva.status === "CREATED")
     );
 
     if (reservasVehiculo.length === 0) return true;
@@ -89,12 +91,12 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
   useEffect(() => {
     if (vehiculos.length > 0 && reservas.length >= 0 && startDate && endDate) {
       if (vehicleIdFromQuery) {
-        const vehiculo = vehiculos.find(
-          (v) => v.id === vehicleIdFromQuery && v.status === "AVAILABLE"
-        );
+        // Buscar el vehículo por ID sin importar su estado
+        const vehiculo = vehiculos.find((v) => v.id === vehicleIdFromQuery);
 
         if (vehiculo) {
           if (isVehicleAvailable(vehiculo.id)) {
+            // Si el vehículo está disponible en las fechas, mostrarlo
             setVehiculosDisponibles([vehiculo]);
             setSelectedVehicle(vehiculo.id);
           } else {
@@ -103,6 +105,7 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
               `El vehículo ${vehiculo.brand} ${vehiculo.model} no está disponible para las fechas seleccionadas. Por favor, selecciona otro vehículo o cambia las fechas.`,
               "warning"
             );
+            // Mostrar otros vehículos disponibles en estado AVAILABLE
             const disponibles = vehiculos.filter(
               (v) =>
                 v.id !== vehiculo.id &&
@@ -114,14 +117,15 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
           }
         } else {
           Swal.fire(
-            "Vehículo no encontrado o no disponible",
-            "El vehículo especificado no existe o no está disponible.",
+            "Vehículo no encontrado",
+            "El vehículo especificado no existe.",
             "error"
           );
           setVehiculosDisponibles([]);
           setSelectedVehicle(null);
         }
       } else {
+        // Cuando no hay vehicleIdFromQuery, filtrar vehículos disponibles en estado AVAILABLE
         const disponibles = vehiculos.filter(
           (vehiculo) =>
             vehiculo.status === "AVAILABLE" && isVehicleAvailable(vehiculo.id)
@@ -267,7 +271,7 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">
-                Fecha y hora de inicio
+                Fecha de inicio
               </label>
               <DatePicker
                 selected={startDate}
@@ -285,7 +289,7 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
 
             <div>
               <label className="block text-sm font-medium mb-2">
-                Fecha y hora de fin
+                Fecha de fin
               </label>
               <DatePicker
                 selected={endDate}
@@ -293,8 +297,8 @@ const ReservaViaje: React.FC<ReservaViajeProps> = ({ vehicleIdFromQuery }) => {
                   setEndDate(date);
                   setSelectedVehicle(null);
                 }}
-                dateFormat="dd/MM/yyyy HH:mm"
-                placeholderText="Selecciona fecha y hora de fin"
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Selecciona fecha de fin"
                 className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 locale={es}
                 minDate={startDate || new Date()}

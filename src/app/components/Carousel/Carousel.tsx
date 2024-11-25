@@ -1,9 +1,10 @@
+// src/app/components/Carousel/Carousel.tsx
+
 import React, { useCallback, useEffect } from 'react'
 import { EmblaOptionsType } from 'embla-carousel'
 import useEmblaCarousel from 'embla-carousel-react'
 import { Vehiculo } from '../../context/VehiculoContext'
 import { FaCar, FaTruck, FaMotorcycle, FaCaravan } from 'react-icons/fa'
-
 
 type PropType = {
   vehicles: Vehiculo[]
@@ -20,7 +21,9 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
     if (!emblaApi) return
     const selectedIndex = emblaApi.selectedScrollSnap()
     const selectedVehicle = vehicles[selectedIndex]
-    onSelectVehicle(selectedVehicle.id)
+    if (selectedVehicle) {
+      onSelectVehicle(selectedVehicle.id)
+    }
   }, [emblaApi, vehicles, onSelectVehicle])
 
   useEffect(() => {
@@ -33,7 +36,15 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
   }, [emblaApi, onSelect])
 
   const typeIcons = (type: string, fuelType: string) => {
-    const iconClass = `text-2xl font-bold ${fuelType === 'NAPHTHA' ? 'text-amber-400' : fuelType === 'DIESEL' ? 'text-red-400' : fuelType === 'GAS' ? 'text-gray-400' : 'text-cyan-400'}`
+    const iconClass = `text-2xl font-bold ${
+      fuelType === 'NAPHTHA'
+        ? 'text-amber-400'
+        : fuelType === 'DIESEL'
+        ? 'text-red-400'
+        : fuelType === 'GAS'
+        ? 'text-gray-400'
+        : 'text-cyan-400'
+    }`
     switch (type) {
       case 'CAR':
         return <FaCar className={iconClass} />
@@ -49,11 +60,10 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
   const handleCardClick = (vehicleId: string) => {
     onSelectVehicle(vehicleId)
     const clickedIndex = vehicles.findIndex(v => v.id === vehicleId)
-    if (emblaApi) {
+    if (emblaApi && clickedIndex !== -1) {
       emblaApi.scrollTo(clickedIndex)
     }
   }
-
 
   return (
     <section className="embla h-[250px]">
@@ -63,7 +73,9 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
             <div className="embla__slide flex-[0_0_100%] md:flex-[0_0_33.33%] min-w-0 relative" key={vehicle.id}>
               <div 
                 className={`p-4 m-4 rounded-lg shadow-lg text-white transition duration-300 ease-in-out bg-gray-800 hover:bg-gray-700 h-full flex flex-col justify-between cursor-pointer ${
-                  selectedVehicleId === vehicle.id ? 'ring-2 ring-blue-500 scale-100 opacity-100 z-10' : 'scale-95 opacity-60'
+                  selectedVehicleId === vehicle.id 
+                    ? 'ring-2 ring-blue-500 scale-100 opacity-100 z-10' 
+                    : 'scale-95 opacity-60'
                 }`}
                 onClick={() => handleCardClick(vehicle.id)}
               >

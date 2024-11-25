@@ -14,6 +14,7 @@ export const dynamic = "force-dynamic";
 
 const ReservaPage: React.FC<ReservaPageProps> = ({ searchParams }) => {
   const vehicleIdFromQuery = searchParams.vehiculoId || null;
+  console.log("el vehiculo es"+vehicleIdFromQuery)
 
   return (
     <Suspense fallback={<div>Cargando...</div>}>

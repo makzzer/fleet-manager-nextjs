@@ -83,15 +83,7 @@ const VehiculoDinamicoPage = () => {
             <strong className="text-blue-300">Acoplado:</strong>{" "}
             {vehiculoData.has_trailer ? "Sí" : "No"}
           </p>
-           {/* Enlaces Condicionales según el estado */}
-           {vehiculoData.status === "MAINTENANCE" && (
-            <button
-              onClick={() => router.push(`/controles/${vehiculoData.id}`)}
-              className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out"
-            >
-              Ir a Controles
-            </button>
-          )}
+
           {vehiculoData.status === "RESERVED" && (
             <button
               onClick={() => router.push(`/reservas/${vehiculoData.id}`)}
